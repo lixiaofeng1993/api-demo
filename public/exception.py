@@ -25,7 +25,7 @@ class InactiveException(HTTPException):
 
 class LoginRepeatException(HTTPException):
     def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, name=None, token=None):
-        token = token.decode() if token and isinstance(token, bytes) else None
+        token = token.decode() if token and isinstance(token, bytes) else token
         self.status_code = status_code
         self.detail = f" {name} 已登录！"
         self.headers = {"WWW-Authenticate": f"Bearer {token}"}

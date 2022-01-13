@@ -39,7 +39,7 @@ async def register(request: Request, user_create: UserCreate, db: Session = Depe
     user = crud_users.create_user(db=db, user=user_create)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": user.name}, expires_delta=access_token_expires)
-    await request.app.state.redis.set(user.name, access_token, ACCESS_TOKEN_EXPIRE_MINUTES * 60)
+    await request.app.state.redis.setex(key=user.name, value=access_token, seconds=ACCESS_TOKEN_EXPIRE_MINUTES * 60)
     user.access_token = access_token
     return user
 
@@ -60,7 +60,7 @@ async def login(request: Request, db: Session = Depends(get_db), form_data: OAut
         raise exception.LoginRepeatException(name=username, token=cache_token)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": username}, expires_delta=access_token_expires)
-    await request.app.state.redis.set(username, access_token, ACCESS_TOKEN_EXPIRE_MINUTES * 60)
+    await request.app.state.redis.setex(key=username, value=access_token, seconds=ACCESS_TOKEN_EXPIRE_MINUTES * 60)
     db_user.access_token = access_token
     return db_user
 
