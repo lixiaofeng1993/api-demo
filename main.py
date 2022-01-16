@@ -5,7 +5,7 @@ from aioredis import Redis, create_redis_pool
 from api import users, project, sign
 from dependencies import get_current_user
 
-app = FastAPI()
+app = FastAPI(title="EasyTest接口项目", description="这是一个接口文档", version="1.0.0")
 
 data = {
     400: {

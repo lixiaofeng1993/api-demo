@@ -22,7 +22,7 @@ from public.public import get_db
 router = APIRouter()
 
 
-@router.post("/", response_model=Project)
+@router.post("/", response_model=Project, summary="创建项目接口")
 async def create_project(project: ProjectCreate, db: Session = Depends(get_db),
                          user: User = Depends(get_current_user_info)):
     field_check.check_name(project.name)
@@ -33,13 +33,13 @@ async def create_project(project: ProjectCreate, db: Session = Depends(get_db),
     return crud_project.create_project(db=db, project=project)
 
 
-@router.get("/", response_model=List[Project])
+@router.get("/", response_model=List[Project], summary="获取所有项目信息")
 def read_project(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud_project.get_project(db, skip=skip, limit=limit)
     return users
 
 
-@router.get("/{project_id}", response_model=Project)
+@router.get("/{project_id}", response_model=Project, summary="获取指定项目信息")
 def read_user(project_id: str, db: Session = Depends(get_db)):
     db_user = crud_project.get_project_by_id(db, project_id=project_id)
     if db_user is None:

@@ -28,7 +28,6 @@ class Sign(SignBase):
     is_delete: bool = False
     update_date: datetime
     create_date: datetime
-    users: Optional[User] = {}
 
     class Config:
         orm_mode = True
