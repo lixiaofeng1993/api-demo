@@ -17,7 +17,7 @@ from public import exception
 from public import field_check
 from dependencies import get_current_user_info
 
-from public.public import get_db
+from public.public import get_db, json_format
 
 router = APIRouter()
 
@@ -30,13 +30,14 @@ async def create_project(project: ProjectCreate, db: Session = Depends(get_db),
     if db_user:
         raise exception.AlreadyExistException(name=project.name)
     project.users_id = user.id
-    return crud_project.create_project(db=db, project=project)
+    print(project.sign_id, 11111111111111111111)
+    return json_format(crud_project.create_project(db=db, project=project))
 
 
 @router.get("/", response_model=List[Project], summary="获取所有项目信息")
 def read_project(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud_project.get_project(db, skip=skip, limit=limit)
-    return users
+    return json_format(users)
 
 
 @router.get("/{project_id}", response_model=Project, summary="获取指定项目信息")
@@ -44,4 +45,4 @@ def read_user(project_id: str, db: Session = Depends(get_db)):
     db_user = crud_project.get_project_by_id(db, project_id=project_id)
     if db_user is None:
         raise exception.NotExitException(name=f"ID {project_id}")
-    return db_user
+    return json_format(db_user)

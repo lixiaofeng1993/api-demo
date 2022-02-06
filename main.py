@@ -57,7 +57,8 @@ app.include_router(
 
 @app.get("/")
 async def root():
-    return {"message": "Hello Bigger Applications!"}
+    from datetime import datetime
+    return {"message": "Hello Bigger Applications!", "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 
 if __name__ == '__main__':

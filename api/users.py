@@ -19,7 +19,7 @@ from sql_app import crud_users
 from sql_app.database import Base, engine
 from dependencies import get_current_user, verify_password
 from public.jwt_sign import create_access_token
-from public.public import get_db
+from public.public import get_db, json_format
 from conf.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from public import exception
 from public import field_check
@@ -44,7 +44,7 @@ async def register(request: Request, user_create: UserCreate, db: Session = Depe
     access_token = create_access_token(data={"sub": user.name}, expires_delta=access_token_expires)
     await request.app.state.redis.setex(key=user.name, value=access_token, seconds=ACCESS_TOKEN_EXPIRE_MINUTES * 60)
     user.access_token = access_token
-    return user
+    return json_format(user)
 
 
 @router.post("/login", response_model=UserToken, summary="登录接口", description="这是一个登录接口")
@@ -65,12 +65,12 @@ async def login(request: Request, db: Session = Depends(get_db), form_data: OAut
     access_token = create_access_token(data={"sub": username}, expires_delta=access_token_expires)
     await request.app.state.redis.setex(key=username, value=access_token, seconds=ACCESS_TOKEN_EXPIRE_MINUTES * 60)
     db_user.access_token = access_token
-    return db_user
+    return json_format(db_user)
 
 
 @router.get("/me", response_model=User, summary="获取当前登录用户信息")
 async def read_users_me(current_user: User = Depends(get_current_user)):
-    return current_user
+    return json_format(current_user)
 
 
 @router.get("/", response_model=List[User], summary="获取所有用户信息")
@@ -79,7 +79,7 @@ async def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_
     users = crud_users.get_users(db, skip=skip, limit=limit)
     if users is None:
         raise exception
-    return users
+    return json_format(users)
 
 
 @router.get("/{user_id}", response_model=User, summary="获取指定用户信息")
@@ -87,7 +87,7 @@ async def read_user(user_id: str, db: Session = Depends(get_db), user: User = De
     db_user = crud_users.get_user(db, user_id=user_id)
     if db_user is None:
         raise exception.NotExitException(name=f"ID {user_id}")
-    return db_user
+    return json_format(db_user)
 
 
 @router.put("/super/{user_id}", response_model=User, summary="修改用户权限为管理员")
@@ -102,7 +102,7 @@ async def set_super_user(user_id: str, verify_code=None, db: Session = Depends(g
         raise exception.NotExitException(name=f"ID {user_id}")
     crud_users.set_super_user(db, user_id=user_id)
     super_user = crud_users.get_super_user(db, user_id)
-    return super_user
+    return json_format(super_user)
 
 
 @router.delete("/{user_id}", response_model=User, summary="删除指定用户信息")
@@ -117,4 +117,4 @@ async def delete_user(user_id: str, db: Session = Depends(get_db), user: User = 
     db_user = crud_users.get_delete_user(db, user_id)
     if db_user is None:
         raise exception.DeleteException
-    return db_user
+    return json_format(db_user)

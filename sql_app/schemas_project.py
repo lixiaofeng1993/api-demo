@@ -7,7 +7,6 @@
 # @Version：V 0.1
 # @desc :
 from typing import List, Optional, Dict, Text
-from datetime import datetime
 from pydantic import BaseModel
 
 from sql_app.schemas_sign import Sign, User
@@ -26,8 +25,8 @@ class ProjectCreate(ProjectBase):
 class Project(ProjectBase):
     id: str
     is_delete: bool = False
-    update_date: datetime
-    create_date: datetime
+    update_date: str
+    create_date: str
     sign: Optional[Sign] = {}
     users: Optional[User] = {}
 

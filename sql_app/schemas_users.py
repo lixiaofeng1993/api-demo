@@ -6,7 +6,7 @@
 # 创建时间: 2021/12/25 11:40
 # @Version：V 0.1
 # @desc :
-from datetime import datetime
+
 from pydantic import BaseModel
 
 
@@ -26,8 +26,8 @@ class User(UserBase):
     is_delete: bool = False
     is_active: bool = True
     is_superuser: bool = False
-    last_login: datetime
-    create_date: datetime
+    last_login: str
+    create_date: str
 
     class Config:
         orm_mode = True
