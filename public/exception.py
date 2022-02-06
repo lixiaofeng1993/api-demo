@@ -65,3 +65,9 @@ class CheckFieldException(HTTPException):
     def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, name=None, patt=None):
         self.status_code = status_code
         self.detail = f"{name} 不符合格式 {patt}"
+
+
+class CheckIDException(HTTPException):
+    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, name=None, patt=None):
+        self.status_code = status_code
+        self.detail = f"{name} ID {patt} 不存在！"

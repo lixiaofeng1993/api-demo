@@ -12,7 +12,7 @@ from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
 
 from sql_app.schemas_project import Project, ProjectCreate, User
-from sql_app import crud_project
+from sql_app import crud_project, crud_sign
 from public import exception
 from public import field_check
 from dependencies import get_current_user_info
@@ -30,7 +30,9 @@ async def create_project(project: ProjectCreate, db: Session = Depends(get_db),
     if db_user:
         raise exception.AlreadyExistException(name=project.name)
     project.users_id = user.id
-    print(project.sign_id, 11111111111111111111)
+    sign_user = crud_sign.get_sign_by_id(db, project.sign_id)
+    if not sign_user:
+        raise exception.CheckIDException(name="sign", patt=project.sign_id)
     return json_format(crud_project.create_project(db=db, project=project))
 
 

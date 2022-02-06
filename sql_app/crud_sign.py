@@ -13,15 +13,15 @@ from sql_app.schemas_sign import SignCreate
 
 
 def get_sign(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Sign).offset(skip).limit(limit).all()
+    return db.query(Sign).filter(Sign.is_delete == 0).offset(skip).limit(limit).all()
 
 
 def get_sign_by_id(db: Session, sign_id: str):
-    return db.query(Sign).filter(Sign.id == sign_id).first()
+    return db.query(Sign).filter(Sign.id == sign_id, Sign.is_delete == 0).first()
 
 
 def get_sign_by_name(db: Session, name: str):
-    return db.query(Sign).filter(Sign.name == name).first()
+    return db.query(Sign).filter(Sign.name == name, Sign.is_delete == 0).first()
 
 
 def create_sign(db: Session, sign: SignCreate):

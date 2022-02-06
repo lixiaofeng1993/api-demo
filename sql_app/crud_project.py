@@ -13,15 +13,15 @@ from sql_app.schemas_project import ProjectCreate
 
 
 def get_project(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Project).offset(skip).limit(limit).all()
+    return db.query(Project).filter(Project.is_delete == 0).offset(skip).limit(limit).all()
 
 
 def get_project_by_id(db: Session, project_id: str):
-    return db.query(Project).filter(Project.id == project_id).first()
+    return db.query(Project).filter(Project.id == project_id, Project.is_delete == 0).first()
 
 
 def get_project_by_name(db: Session, name: str):
-    return db.query(Project).filter(Project.name == name).first()
+    return db.query(Project).filter(Project.name == name, Project.is_delete == 0).first()
 
 
 def create_project(db: Session, project: ProjectCreate):
