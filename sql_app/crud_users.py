@@ -69,3 +69,12 @@ def delete_user(db: Session, user_id):
     ).update({User.is_delete: True})
     db.commit()
     db.close()
+
+
+def set_last_login(db: Session, user_id):
+    db.query(User).filter(
+        User.id == user_id,
+        User.is_delete == 0
+    ).update({User.is_active: True})
+    db.commit()
+    # db.close()
