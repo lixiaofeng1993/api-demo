@@ -15,25 +15,25 @@ def check_name(name: str) -> None:
     pattern = r"[A-Za-z1-9\-\_]{1,20}"
     patt = re.match(pattern, name)
     if not patt:
-        raise exception.CheckFieldException(name=name, patt=pattern)
+        raise exception.FormatFieldException(name=name, patt=pattern)
 
 
 def check_zh_name(name: str) -> None:
     pattern = r"[^x00-xff]{1,20}"
     patt = re.match(pattern, name)
     if not patt:
-        raise exception.CheckFieldException(name=name, patt=pattern)
+        raise exception.FormatFieldException(name=name, patt=pattern)
 
 
 def check_password(name: str) -> None:
     pattern = r"[A-Za-z1-9\-\_]{6,100}"
     patt = re.match(pattern, name)
     if not patt:
-        raise exception.CheckFieldException(name=name, patt=pattern)
+        raise exception.FormatFieldException(name=name, patt=pattern)
 
 
 def check_email(name: str) -> None:
     pattern = r"(^[\w\.\-]+\@[\w\.\-]+\.[A-Za-z]{2,4}$){1,50}"
     patt = re.match(pattern, name)
     if not patt or len(name) > 50:
-        raise exception.CheckFieldException(name=name, patt=pattern)
+        raise exception.FormatFieldException(name=name, patt=pattern)

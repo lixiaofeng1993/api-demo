@@ -37,8 +37,10 @@ async def register(request: Request, user_create: UserCreate, db: Session = Depe
     field_check.check_email(user_create.email)
     db_name = crud_users.get_user_by_name(db, name=user_create.name)
     db_email = crud_users.get_user_by_email(db, email=user_create.email)
-    if db_name or db_email:
-        raise exception.AlreadyExistException(name="name 或者 email")
+    if db_name:
+        raise exception.AlreadyExistException(name="name")
+    if db_email:
+        raise exception.AlreadyExistException(name="email")
     user = crud_users.create_user(db=db, user=user_create)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": user.name}, expires_delta=access_token_expires)
