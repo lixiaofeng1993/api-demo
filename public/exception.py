@@ -23,7 +23,7 @@ class TokenException(HTTPException):
 
 
 class InactiveException(HTTPException):
-    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, name=None):
+    def __init__(self, status_code=status.HTTP_200_OK, name=None):
         self.status_code = status_code
         self.detail = {
             "code": InactiveException,
@@ -32,7 +32,7 @@ class InactiveException(HTTPException):
 
 
 class LoginRepeatException(HTTPException):
-    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, name=None, token=None):
+    def __init__(self, status_code=status.HTTP_200_OK, name=None, token=None):
         token = token.decode() if token and isinstance(token, bytes) else token
         self.status_code = status_code
         self.detail = {
@@ -44,7 +44,7 @@ class LoginRepeatException(HTTPException):
 
 class PasswordExitException(HTTPException):
     def __init__(self):
-        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.status_code = status.HTTP_200_OK
         self.detail = {
             "code": EXCEPTION_PASS_CODE,
             "message": "密码错误！"
@@ -53,7 +53,7 @@ class PasswordExitException(HTTPException):
 
 class NotSuperUserException(HTTPException):
     def __init__(self):
-        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.status_code = status.HTTP_200_OK
         self.detail = {
             "code": EXCEPTION_SUPER_CODE,
             "message": "登录用户没有权限！"
@@ -62,7 +62,7 @@ class NotSuperUserException(HTTPException):
 
 class DeleteException(HTTPException):
     def __init__(self):
-        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.status_code = status.HTTP_200_OK
         self.detail = {
             "code": EXCEPTION_DELETE_CODE,
             "message": "删除失败！"
@@ -70,7 +70,7 @@ class DeleteException(HTTPException):
 
 
 class NotExitException(HTTPException):
-    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, name=None):
+    def __init__(self, status_code=status.HTTP_200_OK, name=None):
         self.status_code = status_code
         self.detail = {
             "code": EXCEPTION_NOT_EXIT_CODE,
@@ -79,7 +79,7 @@ class NotExitException(HTTPException):
 
 
 class AlreadyExistException(HTTPException):
-    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, name=None):
+    def __init__(self, status_code=status.HTTP_200_OK, name=None):
         self.status_code = status_code
         self.detail = {
             "code": EXCEPTION_ALREADY_EXIST_CODE,
@@ -88,7 +88,7 @@ class AlreadyExistException(HTTPException):
 
 
 class FormatFieldException(HTTPException):
-    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, name=None, patt=None):
+    def __init__(self, status_code=status.HTTP_200_OK, name=None, patt=None):
         self.status_code = status_code
         self.detail = {
             "code": EXCEPTION_FORMAT_CODE,
@@ -97,9 +97,27 @@ class FormatFieldException(HTTPException):
 
 
 class CheckIDException(HTTPException):
-    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, name=None, patt=None):
+    def __init__(self, status_code=status.HTTP_200_OK, name=None, patt=None):
         self.status_code = status_code
         self.detail = {
             "code": EXCEPTION_CHECK_CODE,
             "message": f"{name} ID {patt} 不存在！"
+        }
+
+
+class LogoutException(HTTPException):
+    def __init__(self, status_code=status.HTTP_200_OK, name=None, patt=None):
+        self.status_code = status_code
+        self.detail = {
+            "code": NOT_LOGIN_CODE,
+            "message": f"{name} 未登录！"
+        }
+
+
+class LogoutResponse(HTTPException):
+    def __init__(self, status_code=status.HTTP_200_OK, name=None, patt=None):
+        self.status_code = status_code
+        self.detail = {
+            "code": LOGOUT_CODE,
+            "message": f"{name} 退出登录成功！"
         }

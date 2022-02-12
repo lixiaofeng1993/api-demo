@@ -121,3 +121,12 @@ async def delete_user(user_id: str, db: Session = Depends(get_db), user: User = 
     if db_user is None:
         raise exception.DeleteException
     return json_format(db_user)
+
+
+@router.post("/logout", summary="退出登录")
+async def logout(request: Request, user: User = Depends(get_current_user)):
+    access_token = await request.app.state.redis.get(user.name)
+    if not access_token:
+        raise exception.LogoutException(name=user.name)
+    await request.app.state.redis.delete(key=user.name)
+    raise exception.LogoutResponse(name=user.name)
