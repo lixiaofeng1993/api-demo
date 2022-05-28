@@ -29,7 +29,7 @@ Base.metadata.create_all(bind=engine)  # 生成数据库
 router = APIRouter()
 
 
-@router.post("/register", response_model=UserToken, summary="注册接口", description="这是一个注册接口")
+@router.post("/register", summary="注册接口", description="这是一个注册接口")
 async def register(request: Request, user_create: UserCreate, db: Session = Depends(get_db)):
     field_check.check_name(user_create.name)
     field_check.check_zh_name(user_create.zh_name)
@@ -49,7 +49,7 @@ async def register(request: Request, user_create: UserCreate, db: Session = Depe
     return json_format(user)
 
 
-@router.post("/login", response_model=UserToken, summary="登录接口", description="这是一个登录接口")
+@router.post("/login", summary="登录接口", description="这是一个登录接口")
 async def login(request: Request, db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     username = form_data.username
     password = form_data.password
@@ -71,12 +71,12 @@ async def login(request: Request, db: Session = Depends(get_db), form_data: OAut
     return json_format(db_user)
 
 
-@router.get("/me", response_model=User, summary="获取当前登录用户信息")
+@router.get("/me", summary="获取当前登录用户信息")
 async def read_users_me(current_user: User = Depends(get_current_user)):
     return json_format(current_user)
 
 
-@router.get("/", response_model=List[User], summary="获取所有用户信息")
+@router.get("/", summary="获取所有用户信息")
 async def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
                      user: User = Depends(get_current_user)):
     users = crud_users.get_users(db, skip=skip, limit=limit)
@@ -85,7 +85,7 @@ async def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_
     return json_format(users)
 
 
-@router.get("/{user_id}", response_model=User, summary="获取指定用户信息")
+@router.get("/{user_id}", summary="获取指定用户信息")
 async def read_user(user_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     db_user = crud_users.get_user(db, user_id=user_id)
     if db_user is None:
@@ -108,7 +108,7 @@ async def set_super_user(user_id: str, verify_code=None, db: Session = Depends(g
     return json_format(super_user)
 
 
-@router.delete("/{user_id}", response_model=User, summary="删除指定用户信息")
+@router.delete("/{user_id}", summary="删除指定用户信息")
 async def delete_user(user_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     super_user = crud_users.get_super_user(db, user.id)
     if super_user is None:

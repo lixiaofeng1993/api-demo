@@ -35,8 +35,7 @@ def get_user_by_email(db: Session, email: str):
 
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(User).filter(User.is_delete == 0).offset(skip).limit(
-        limit).all()
+    return db.query(User).filter(User.is_delete == 0).offset(skip).limit(limit).all()
 
 
 def create_user(db: Session, user: UserCreate):

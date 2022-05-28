@@ -8,8 +8,12 @@
 # @desc :
 
 from sql_app.database import SessionLocal
+from fastapi.encoders import jsonable_encoder
 from datetime import datetime
 import uuid
+import json
+
+from public.res_sign import encrypt
 
 
 def get_db():
@@ -42,12 +46,14 @@ def format_time(data):
 
 
 def json_format(data):
-    json_data = None
+    json_data = {"code": 200, "message": "请求成功", "result": ""}
     if isinstance(data, object):
-        json_data = format_time(data)
+        data = json.dumps(jsonable_encoder(format_time(data)), ensure_ascii=False)
+        json_data["result"] = encrypt(data)
     if isinstance(data, list):
-        json_data = list()
+        json_list = list()
         for d in data:
             d = format_time(d)
-            json_data.append(d)
+            json_list.append(d)
+        json_data["result"] = json_list
     return json_data
