@@ -25,7 +25,7 @@ router = APIRouter()
 @router.post("/", summary="创建项目接口")
 async def create_project(project: ProjectCreate, db: Session = Depends(get_db),
                          user: User = Depends(get_current_user_info)):
-    field_check.check_name(project.name)
+    field_check.check_zh_name(project.name)
     db_user = crud_project.get_project_by_name(db, name=project.name)
     if db_user:
         raise exception.AlreadyExistException(name=project.name)
