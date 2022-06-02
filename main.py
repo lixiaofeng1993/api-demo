@@ -84,7 +84,7 @@ app.include_router(
 async def root():
     from datetime import datetime
     return {
-        "message": "Hello Bigger Applications!",
+        "message": "儿砸，叫爸爸！！！",
         "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "doc": "http://121.41.54.234/docs#/"
     }
