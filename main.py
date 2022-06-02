@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 MEDIA_PATH = BASE_DIR / 'media'
 
-app.mount('/static', StaticFiles(directory=BASE_DIR / 'static' / 'swagger-ui'), name='static')
+app.mount('/static', StaticFiles(directory='static'), name='static')
 
 app.add_middleware(
     CORSMiddleware,
