@@ -9,6 +9,7 @@ from pathlib import Path
 
 from api import users, project, sign
 from dependencies import get_current_user
+from public.custom_code import response_error
 
 app = FastAPI(title="EasyTest接口项目", description="这是一个接口文档", version="1.0.0", docs_url=None, redoc_url=None)
 
@@ -48,11 +49,7 @@ app.include_router(
     prefix="/users",
     tags=["users"],
     # dependencies=[Depends(get_current_active_user)],
-    responses={
-        400: {
-            "message": "返回错误"
-        }
-    }
+    responses=response_error
 )
 
 app.include_router(
@@ -60,11 +57,7 @@ app.include_router(
     prefix="/project",
     tags=["project"],
     dependencies=[Depends(get_current_user)],
-    responses={
-        400: {
-            "message": "返回错误"
-        }
-    }
+    responses=response_error
 )
 
 app.include_router(
@@ -72,11 +65,7 @@ app.include_router(
     prefix="/sign",
     tags=["sign"],
     dependencies=[Depends(get_current_user)],
-    responses={
-        400: {
-            "message": "返回错误"
-        }
-    }
+    responses=response_error
 )
 
 
@@ -96,8 +85,6 @@ async def custom_swagger_ui_html():
         openapi_url=app.openapi_url,
         title=app.title + " - Swagger UI",
         oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
-        # swagger_js_url=BASE_DIR/'static'/'swagger-ui'/'swagger-ui-bundle.js',
-        # swagger_css_url=BASE_DIR/'static'/'swagger-ui'/'swagger-ui.css',
         swagger_js_url="/static/swagger-ui-bundle.js",
         swagger_css_url="/static/swagger-ui.css",
     )

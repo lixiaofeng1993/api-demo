@@ -93,7 +93,7 @@ async def read_user(user_id: str, db: Session = Depends(get_db), user: User = De
     return json_format(db_user)
 
 
-@router.put("/super/{user_id}", response_model=User, summary="修改用户权限为管理员")
+@router.put("/super/{user_id}", summary="修改用户权限为管理员")
 async def set_super_user(user_id: str, verify_code=None, db: Session = Depends(get_db),
                          user: User = Depends(get_current_user)):
     if not verify_code == "8023":

@@ -7,6 +7,10 @@
 # @Version：V 0.1
 # @desc :
 
+# 返回成功
+result = {"code": 200, "message": "请求成功", "result": ""}
+# 请求异常
+response_error = {400: {"message": "请求异常！"}}
 
 # token校验失败
 EXCEPTION_TOKEN_CODE = 10000
