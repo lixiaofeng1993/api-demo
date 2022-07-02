@@ -51,8 +51,10 @@ def json_format(data):
         for d in data:
             d = jsonable_encoder(format_time(d))
             json_list.append(d)
-        result["result"] = encrypt(json.dumps(json_list, ensure_ascii=False))
+        # result["result"] = encrypt(json.dumps(json_list, ensure_ascii=False))
+        result["result"] = json_list
     else:
-        data = json.dumps(jsonable_encoder(format_time(data)), ensure_ascii=False)
-        result["result"] = encrypt(data)
+        # data = json.dumps(jsonable_encoder(format_time(data)), ensure_ascii=False)
+        # result["result"] = encrypt(data)
+        result["result"] = format_time(data)
     return result
