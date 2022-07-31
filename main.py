@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
 from pathlib import Path
 
-from api import users, project, sign
+from api import users, project, sign, calendar
 from dependencies import get_current_user
 from public.custom_code import response_error
 
@@ -65,6 +65,13 @@ app.include_router(
     prefix="/sign",
     tags=["sign"],
     dependencies=[Depends(get_current_user)],
+    responses=response_error
+)
+
+app.include_router(
+    calendar.router,
+    prefix="/calendar",
+    tags=["calendar"],
     responses=response_error
 )
 
