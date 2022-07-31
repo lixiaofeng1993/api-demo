@@ -9,7 +9,6 @@
 import re
 import datetime
 import requests
-import sxtwl
 from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
 
