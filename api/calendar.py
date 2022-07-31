@@ -8,16 +8,8 @@
 
 import re
 from fastapi import Depends, APIRouter
-from sqlalchemy.orm import Session
-import chinese_calendar as calendar
 import datetime
 from requests_html import HTMLSession
-
-from public import exception
-from public import field_check
-from dependencies import get_current_user_info
-
-from public.public import get_db, json_format
 
 router = APIRouter()
 
@@ -30,7 +22,6 @@ def get_calendar():
         "放假安排": {},
     }
     now = str(datetime.datetime.now().date()).split("-")
-    print(now)
     with HTMLSession() as session:
         res = session.get(f"https://www.rili.com.cn/wannianli/{now[0]}/{now[1]}{now[2]}.html").html
         result["今天"]["公历日期"] = res.xpath('//div[@id="textbody"]/p/table/tr[1]/td[2]', first=True).text
