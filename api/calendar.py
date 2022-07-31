@@ -9,6 +9,7 @@
 import re
 import datetime
 import requests
+import sxtwl
 from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
 
@@ -139,7 +140,7 @@ def get_calendar():
 
 
 @router.get("/v1", summary="万年历api接口")
-def get_calendar():
+def get_calendar_api():
     week = {
         "星期一": 5,
         "星期二": 4,
@@ -175,4 +176,29 @@ def get_calendar():
         result["今天"]["今日所忌"] = res["result"]["data"]["avoid"]
     elif res["error_code"] == 10012:
         result["今天"] = "请求用完了，明天再来吧~"
+    return result
+
+
+@router.get("/age", summary="走过了多少天")
+def get_calendar_api():
+    age = datetime.date(1993, 2, 9)
+    now = datetime.datetime.now().date()
+    age_num = str(now - age).split(" ")[0]
+    age_50 = datetime.date(2043, 2, 9)
+    age_60 = datetime.date(2053, 2, 9)
+    age_70 = datetime.date(2063, 2, 9)
+    age_80 = datetime.date(2073, 2, 9)
+    age_100 = datetime.date(2093, 2, 9)
+    result = {
+        "公告": "【走过了多少天】",
+        "出生在": "癸酉年正月十八",
+        "已走过": f" {age_num} 天",
+        "然后呢": {
+            "五十岁": f"到 半百 一共 {str(age_50 - age).split(' ')[0]} 天， 还剩下 {str(age_50 - now).split(' ')[0]} 天。",
+            "六十岁": f"到 花甲 一共 {str(age_60 - age).split(' ')[0]} 天， 还剩下 {str(age_60 - now).split(' ')[0]} 天。",
+            "七十岁": f"到 古稀 一共 {str(age_70 - age).split(' ')[0]} 天， 还剩下 {str(age_70 - now).split(' ')[0]} 天。",
+            "八十岁": f"到 耄耋 一共 {str(age_80 - age).split(' ')[0]} 天， 还剩下 {str(age_80 - now).split(' ')[0]} 天。",
+            "一百岁": f"到 期颐 一共 {str(age_100 - age).split(' ')[0]} 天， 还剩下 {str(age_100 - now).split(' ')[0]} 天。",
+        }
+    }
     return result
