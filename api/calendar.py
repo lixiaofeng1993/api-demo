@@ -12,7 +12,7 @@ import datetime
 import requests
 from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
-# from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse
 
 from conf.settings import HOST, ASSETS_PATH, os
 
@@ -207,13 +207,19 @@ def get_calendar_api():
     return result
 
 
-@router.get("/girl", summary="获取美女图片")
+@router.get("/girl/url", summary="获取美女图片地址")
 async def get_girl():
     girl_list = os.listdir(ASSETS_PATH)
-    # girl_path = os.path.join(ASSETS_PATH, girl_list[random.randint(0, len(girl_list) - 1)])
-    # girl = open(girl_path, mode="rb")
     girl = girl_list[random.randint(0, len(girl_list) - 1)]
     return {
         "code": 200,
         "imgUrl": f"{HOST}/media/{girl}"
     }
+
+
+@router.get("/girl", summary="获取美女图片")
+async def get_girl():
+    girl_list = os.listdir(ASSETS_PATH)
+    girl_path = os.path.join(ASSETS_PATH, girl_list[random.randint(0, len(girl_list) - 1)])
+    girl = open(girl_path, mode="rb")
+    return StreamingResponse(girl, media_type="image/jpg")
