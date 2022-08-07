@@ -14,7 +14,7 @@ from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
 from fastapi.responses import StreamingResponse
 
-from conf.settings import HOST, ASSETS_PATH, os
+from conf.settings import HOST, ASSETS_PATH, os, DEBUG
 
 router = APIRouter()
 
@@ -213,7 +213,7 @@ async def get_girl():
     girl = girl_list[random.randint(0, len(girl_list) - 1)]
     return {
         "code": 200,
-        "imgUrl": f"{HOST}/media/{girl}"
+        "imgUrl": f"{HOST}/media/{girl}" if DEBUG else f"{HOST}/{girl}"
     }
 
 

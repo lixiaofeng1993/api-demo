@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent
 MEDIA_PATH = BASE_DIR / 'media'
 
 app.mount('/static', StaticFiles(directory='static'), name='static')
-app.mount(path="/media", app=StaticFiles(directory='media'), name='media')
+app.mount(path="/media", app=StaticFiles(directory=MEDIA_PATH), name='media')
 
 app.add_middleware(
     CORSMiddleware,
