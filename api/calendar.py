@@ -7,10 +7,14 @@
 # @Software: PyCharm
 
 import re
+import random
 import datetime
 import requests
 from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
+# from fastapi.responses import StreamingResponse
+
+from conf.settings import HOST, ASSETS_PATH, os
 
 router = APIRouter()
 
@@ -201,3 +205,15 @@ def get_calendar_api():
         }
     }
     return result
+
+
+@router.get("/girl", summary="获取美女图片")
+async def get_girl():
+    girl_list = os.listdir(ASSETS_PATH)
+    # girl_path = os.path.join(ASSETS_PATH, girl_list[random.randint(0, len(girl_list) - 1)])
+    # girl = open(girl_path, mode="rb")
+    girl = girl_list[random.randint(0, len(girl_list) - 1)]
+    return {
+        "code": 200,
+        "imgUrl": f"{HOST}/assets/{girl}"
+    }

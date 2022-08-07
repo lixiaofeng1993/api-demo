@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
 from pathlib import Path
+from conf.settings import ASSETS_PATH
 
 from api import users, project, sign, calendar
 from dependencies import get_current_user
@@ -110,6 +111,7 @@ async def redoc_html():
         redoc_js_url="/static/redoc.standalone.js",
     )
 
+app.mount(path="/assets", app=StaticFiles(directory=ASSETS_PATH))
 
 if __name__ == '__main__':
     uvicorn.run(app="main:app", host="0.0.0.0", port=8000, reload=True, debug=True)
