@@ -215,5 +215,5 @@ async def get_girl():
     girl = girl_list[random.randint(0, len(girl_list) - 1)]
     return {
         "code": 200,
-        "imgUrl": f"{HOST}/assets/{girl}"
+        "imgUrl": f"{HOST}/media/{girl}"
     }

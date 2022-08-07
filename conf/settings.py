@@ -19,4 +19,4 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 DEBUG = True if platform.system() == "Windows" else False
 
 HOST = "http://127.0.0.1:8000" if platform.system() == "Windows" else "http://121.41.54.234"
-ASSETS_PATH = os.path.join(BASE_PATH, "assets")
+ASSETS_PATH = os.path.join(BASE_PATH, "media")
