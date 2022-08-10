@@ -15,16 +15,17 @@ from requests_html import HTMLSession
 from fastapi.responses import StreamingResponse
 
 from conf.settings import HOST, ASSETS_PATH, os, DEBUG
+from public.custom_code import result
 
 router = APIRouter()
 
 
 @router.get("/", summary="解析html数据")
 def get_calendar():
-    result = {
-        "公告": "【摸鱼办宣】",
-        "今天": {},
-        "放假安排": {},
+    result["result"] = {
+        "title": "【摸鱼办宣】",
+        "today": {},
+        "holiday": {},
     }
     week = {
         "星期一": 5,
@@ -40,17 +41,17 @@ def get_calendar():
     # now = ["2022", "07", "25"]
     with HTMLSession() as session:
         res = session.get(f"https://www.rili.com.cn/wannianli/{now[0]}/{now[1]}{now[2]}.html").html
-    result["今天"]["公历日期"] = res.xpath('//div[@id="textbody"]/p/table/tr[1]/td[2]', first=True).text
-    result["今天"]["农历日期"] = res.xpath('//div[@id="textbody"]/p/table/tr[2]/td[2]', first=True).text
+    result["result"]["today"]["gregorian"] = res.xpath('//div[@id="textbody"]/p/table/tr[1]/td[2]', first=True).text
+    result["result"]["today"]["lunar"] = res.xpath('//div[@id="textbody"]/p/table/tr[2]/td[2]', first=True).text
     week_day = res.xpath('//div[@id="textbody"]/p/table/tr[3]/td[2]', first=True).text
-    result["今天"]["星　　期"] = week_day
-    result["今天"]["星　　座"] = res.xpath('//div[@id="textbody"]/p/table/tr[4]/td[2]', first=True).text
-    result["今天"]["季　　节"] = res.xpath('//div[@id="textbody"]/p/table/tr[5]/td[2]', first=True).text
-    result["今天"]["节　　气"] = res.xpath('//div[@id="textbody"]/p/table/tr[6]/td[2]', first=True).text
-    result["今天"]["节　　日"] = res.xpath('//div[@id="textbody"]/p/table/tr[7]/td[2]', first=True).text
-    result["今天"]["三伏数九"] = res.xpath('//div[@id="textbody"]/p/table/tr[8]/td[2]', first=True).text
-    result["今天"]["今日所宜"] = res.xpath('//div[@id="textbody"]/p/table/tr[11]/td[2]', first=True).text
-    result["今天"]["今日所忌"] = res.xpath('//div[@id="textbody"]/p/table/tr[12]/td[2]', first=True).text
+    result["result"]["today"]["week"] = week_day
+    result["result"]["today"]["constellations"] = res.xpath('//div[@id="textbody"]/p/table/tr[4]/td[2]', first=True).text
+    result["result"]["today"]["season"] = res.xpath('//div[@id="textbody"]/p/table/tr[5]/td[2]', first=True).text
+    result["result"]["today"]["Solar"] = res.xpath('//div[@id="textbody"]/p/table/tr[6]/td[2]', first=True).text
+    result["result"]["today"]["festivals"] = res.xpath('//div[@id="textbody"]/p/table/tr[7]/td[2]', first=True).text
+    result["result"]["today"]["three_volts_count_nine"] = res.xpath('//div[@id="textbody"]/p/table/tr[8]/td[2]', first=True).text
+    result["result"]["today"]["suitable"] = res.xpath('//div[@id="textbody"]/p/table/tr[11]/td[2]', first=True).text
+    result["result"]["today"]["taboo"] = res.xpath('//div[@id="textbody"]/p/table/tr[12]/td[2]', first=True).text
     with HTMLSession() as session:
         now = datetime.datetime.now().date()
         res = session.get("https://www.rili.com.cn/fangjiaanpai/").html
@@ -64,14 +65,14 @@ def get_calendar():
     new_year = datetime.date(now_year, new_year_month, new_year_day)
     diff_new_year = str(new_year - now).split(" ")[0]
     if week[week_day]:
-        result["放假安排"]["周末"] = f"还有 {week[week_day]} 天"
+        result["result"]["holiday"]["weekend"] = f"还有 {week[week_day]} 天"
     else:
-        result["放假安排"]["周末"] = "当前是周末，要好好享受生活丫~"
+        result["result"]["holiday"]["weekend"] = "当前是周末，要好好享受生活丫~"
     if "-" in diff_new_year:
 
-        result["放假安排"]["元旦"] = f"已过 {abs(int(diff_new_year))} 天"
+        result["result"]["holiday"]["new_year_day"] = f"已过 {abs(int(diff_new_year))} 天"
     else:
-        result["放假安排"]["元旦"] = f"还有 {diff_new_year} 天"
+        result["result"]["holiday"]["new_year_day"] = f"还有 {diff_new_year} 天"
 
     spring_festival_month_day = res.xpath('//*[@id="fjb_id"]/tr[3]/td[2]')[0].text
     spring_festival_month, spring_festival_day = re.findall(patt, spring_festival_month_day)[0]
@@ -80,9 +81,9 @@ def get_calendar():
     spring_festival = datetime.date(now_year, spring_festival_month, spring_festival_day)
     diff_spring_festival = str(spring_festival - now).split(" ")[0]
     if "-" in diff_spring_festival:
-        result["放假安排"]["春节"] = f"已过 {abs(int(diff_spring_festival))} 天"
+        result["result"]["holiday"]["spring_festival"] = f"已过 {abs(int(diff_spring_festival))} 天"
     else:
-        result["放假安排"]["春节"] = f"还有 {diff_spring_festival} 天"
+        result["result"]["holiday"]["spring_festival"] = f"还有 {diff_spring_festival} 天"
 
     tomb_sweeping_month_day = res.xpath('//*[@id="fjb_id"]/tr[4]/td[2]')[0].text
     tomb_sweeping_month, tomb_sweeping_day = re.findall(patt, tomb_sweeping_month_day)[0]
@@ -91,9 +92,9 @@ def get_calendar():
     tomb_sweeping = datetime.date(now_year, tomb_sweeping_month, tomb_sweeping_day)
     diff_tomb_sweeping = str(tomb_sweeping - now).split(" ")[0]
     if "-" in diff_tomb_sweeping:
-        result["放假安排"]["清明节"] = f"已过 {abs(int(diff_tomb_sweeping))} 天"
+        result["result"]["holiday"]["tomb_sweeping"] = f"已过 {abs(int(diff_tomb_sweeping))} 天"
     else:
-        result["放假安排"]["清明节"] = f"还有 {diff_tomb_sweeping} 天"
+        result["result"]["holiday"]["tomb_sweeping"] = f"还有 {diff_tomb_sweeping} 天"
 
     labour_day_month_day = res.xpath('//*[@id="fjb_id"]/tr[5]/td[2]')[0].text
     labour_day_month, labour_day_day = re.findall(patt, labour_day_month_day)[0]
@@ -102,9 +103,9 @@ def get_calendar():
     labour_day = datetime.date(now_year, labour_day_month, labour_day_day)
     diff_labour_day = str(labour_day - now).split(" ")[0]
     if "-" in diff_labour_day:
-        result["放假安排"]["劳动节"] = f"已过 {abs(int(diff_labour_day))} 天"
+        result["result"]["holiday"]["labour_day"] = f"已过 {abs(int(diff_labour_day))} 天"
     else:
-        result["放假安排"]["劳动节"] = f"还有 {diff_labour_day} 天"
+        result["result"]["holiday"]["labour_day"] = f"还有 {diff_labour_day} 天"
 
     dragon_boat_month_day = res.xpath('//*[@id="fjb_id"]/tr[6]/td[2]')[0].text
     dragon_boat_month, dragon_boat_day = re.findall(patt, dragon_boat_month_day)[0]
@@ -113,9 +114,9 @@ def get_calendar():
     dragon_boat = datetime.date(now_year, dragon_boat_month, dragon_boat_day)
     diff_dragon_boat = str(dragon_boat - now).split(" ")[0]
     if "-" in diff_dragon_boat:
-        result["放假安排"]["端午节"] = f"已过 {abs(int(diff_dragon_boat))} 天"
+        result["result"]["holiday"]["dragon_boat"] = f"已过 {abs(int(diff_dragon_boat))} 天"
     else:
-        result["放假安排"]["端午节"] = f"还有 {diff_dragon_boat} 天"
+        result["result"]["holiday"]["dragon_boat"] = f"还有 {diff_dragon_boat} 天"
 
     national_month_day = res.xpath('//*[@id="fjb_id"]/tr[7]/td[2]')[0].text
     national_month, national_day = re.findall(patt, national_month_day)[0]
@@ -124,9 +125,9 @@ def get_calendar():
     national = datetime.date(now_year, national_month, national_day)
     diff_national = str(national - now).split(" ")[0]
     if "-" in diff_national:
-        result["放假安排"]["中秋节"] = f"已过 {abs(int(diff_national))} 天"
+        result["result"]["holiday"]["national"] = f"已过 {abs(int(diff_national))} 天"
     else:
-        result["放假安排"]["中秋节"] = f"还有 {diff_national} 天"
+        result["result"]["holiday"]["national"] = f"还有 {diff_national} 天"
 
     autumn_month_day = res.xpath('//*[@id="fjb_id"]/tr[8]/td[2]')[0].text
     autumn_month, autumn_day = re.findall(patt, autumn_month_day)[0]
@@ -135,9 +136,9 @@ def get_calendar():
     autumn = datetime.date(now_year, autumn_month, autumn_day)
     diff_autumn = str(autumn - now).split(" ")[0]
     if "-" in diff_autumn:
-        result["放假安排"]["国庆节"] = f"已过 {abs(int(diff_autumn))} 天"
+        result["result"]["holiday"]["autumn"] = f"已过 {abs(int(diff_autumn))} 天"
     else:
-        result["放假安排"]["国庆节"] = f"还有 {diff_autumn} 天"
+        result["result"]["holiday"]["autumn"] = f"还有 {diff_autumn} 天"
 
     return result
 
@@ -192,18 +193,19 @@ def get_calendar_api():
     age_70 = datetime.date(2063, 2, 9)
     age_80 = datetime.date(2073, 2, 9)
     age_100 = datetime.date(2093, 2, 9)
-    result = {
-        "公告": "【走过了多少天】",
-        "出生在": "癸酉年正月十八",
-        "已走过": f" {age_num} 天",
-        "然后呢": {
-            "五十岁": f"到 半百 一共 {str(age_50 - age).split(' ')[0]} 天， 还剩下 {str(age_50 - now).split(' ')[0]} 天。",
-            "六十岁": f"到 花甲 一共 {str(age_60 - age).split(' ')[0]} 天， 还剩下 {str(age_60 - now).split(' ')[0]} 天。",
-            "七十岁": f"到 古稀 一共 {str(age_70 - age).split(' ')[0]} 天， 还剩下 {str(age_70 - now).split(' ')[0]} 天。",
-            "八十岁": f"到 耄耋 一共 {str(age_80 - age).split(' ')[0]} 天， 还剩下 {str(age_80 - now).split(' ')[0]} 天。",
-            "一百岁": f"到 期颐 一共 {str(age_100 - age).split(' ')[0]} 天， 还剩下 {str(age_100 - now).split(' ')[0]} 天。",
+    data = {
+        "title": "【走过了多少天】",
+        "born_in": "癸酉年正月十八",
+        "pass_by": f" {age_num} 天",
+        "so": {
+            "fifty": f"到 半百 一共 {str(age_50 - age).split(' ')[0]} 天， 还剩下 {str(age_50 - now).split(' ')[0]} 天。",
+            "sixty": f"到 花甲 一共 {str(age_60 - age).split(' ')[0]} 天， 还剩下 {str(age_60 - now).split(' ')[0]} 天。",
+            "seventy": f"到 古稀 一共 {str(age_70 - age).split(' ')[0]} 天， 还剩下 {str(age_70 - now).split(' ')[0]} 天。",
+            "eighty": f"到 耄耋 一共 {str(age_80 - age).split(' ')[0]} 天， 还剩下 {str(age_80 - now).split(' ')[0]} 天。",
+            "hundred": f"到 期颐 一共 {str(age_100 - age).split(' ')[0]} 天， 还剩下 {str(age_100 - now).split(' ')[0]} 天。",
         }
     }
+    result["result"] = data
     return result
 
 
