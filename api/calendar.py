@@ -202,7 +202,7 @@ def get_calendar_api():
             "sixty": f"到 花甲 一共 {str(age_60 - age).split(' ')[0]} 天， 还剩下 {str(age_60 - now).split(' ')[0]} 天。",
             "seventy": f"到 古稀 一共 {str(age_70 - age).split(' ')[0]} 天， 还剩下 {str(age_70 - now).split(' ')[0]} 天。",
             "eighty": f"到 耄耋 一共 {str(age_80 - age).split(' ')[0]} 天， 还剩下 {str(age_80 - now).split(' ')[0]} 天。",
-            "eighty": f"到 期颐 一共 {str(age_100 - age).split(' ')[0]} 天， 还剩下 {str(age_100 - now).split(' ')[0]} 天。",
+            "hundred": f"到 期颐 一共 {str(age_100 - age).split(' ')[0]} 天， 还剩下 {str(age_100 - now).split(' ')[0]} 天。",
         }
     }
     result["result"] = data
