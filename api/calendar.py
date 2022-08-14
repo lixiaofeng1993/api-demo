@@ -194,7 +194,7 @@ def get_calendar_api():
     age_80 = datetime.date(2073, 2, 9)
     age_100 = datetime.date(2093, 2, 9)
     data = {
-        "title": "【走过了多少天】",
+        "title": "走过了多少天",
         "born_in": "癸酉年正月十八",
         "pass_by": f" {age_num} 天",
         "so": {
@@ -202,7 +202,7 @@ def get_calendar_api():
             "sixty": f"到 花甲 一共 {str(age_60 - age).split(' ')[0]} 天， 还剩下 {str(age_60 - now).split(' ')[0]} 天。",
             "seventy": f"到 古稀 一共 {str(age_70 - age).split(' ')[0]} 天， 还剩下 {str(age_70 - now).split(' ')[0]} 天。",
             "eighty": f"到 耄耋 一共 {str(age_80 - age).split(' ')[0]} 天， 还剩下 {str(age_80 - now).split(' ')[0]} 天。",
-            "hundred": f"到 期颐 一共 {str(age_100 - age).split(' ')[0]} 天， 还剩下 {str(age_100 - now).split(' ')[0]} 天。",
+            "eighty": f"到 期颐 一共 {str(age_100 - age).split(' ')[0]} 天， 还剩下 {str(age_100 - now).split(' ')[0]} 天。",
         }
     }
     result["result"] = data
@@ -215,7 +215,7 @@ async def get_girl():
     girl = girl_list[random.randint(0, len(girl_list) - 1)]
     return {
         "code": 200,
-        "imgUrl": f"{HOST}/media/{girl}" if DEBUG else f"{HOST}/{girl}"
+        "img": f"{HOST}/media/{girl}" if DEBUG else f"{HOST}/{girl}"
     }
 
 

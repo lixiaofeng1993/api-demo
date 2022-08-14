@@ -9,6 +9,8 @@
 
 # 返回成功
 result = {"code": 200, "message": "请求成功", "result": ""}
+# 分页
+page = {"skip": 0, "limit": 15, "total": 0, "data": {}}
 # 请求异常
 response_error = {400: {"message": "请求异常！"}}
 

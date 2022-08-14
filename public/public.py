@@ -13,7 +13,7 @@ from fastapi.encoders import jsonable_encoder
 from datetime import datetime
 
 from public.res_sign import encrypt
-from public.custom_code import result
+from public.custom_code import result, page
 
 
 def get_db():

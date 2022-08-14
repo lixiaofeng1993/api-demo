@@ -30,12 +30,20 @@ def get_user_by_name(db: Session, name: str):
     return db.query(User).filter(User.name == name, User.is_delete == 0).first()
 
 
+def get_user_by_name_edit(db: Session, name: str, user_id: str):
+    return db.query(User).filter(User.name == name, User.is_delete == 0, User.id != user_id).first()
+
+
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email, User.is_delete == 0).first()
 
 
+def get_user_by_email_edit(db: Session, email: str, user_id: str):
+    return db.query(User).filter(User.email == email, User.is_delete == 0, User.id != user_id).first()
+
+
 def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(User).filter(User.is_delete == 0).offset(skip).limit(limit).all()
+    return db.query(User).filter(User.is_delete == 0).order_by(User.create_date.desc()).offset(skip).limit(limit).all()
 
 
 def create_user(db: Session, user: UserCreate):
@@ -48,6 +56,35 @@ def create_user(db: Session, user: UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def edit_user(db: Session, user: UserCreate, user_id):
+    if user.hashed_password:
+        fake_hashed_password = get_password_hash(user.hashed_password)
+        db.query(User).filter(
+            User.id == user_id,
+            User.is_delete == 0,
+            User.is_superuser == 0
+        ).update({
+            User.name: user.name,
+            User.zh_name: user.zh_name,
+            User.email: user.email,
+            User.description: user.description,
+            User.hashed_password: fake_hashed_password,
+        })
+    else:
+        db.query(User).filter(
+            User.id == user_id,
+            User.is_delete == 0,
+            User.is_superuser == 0
+        ).update({
+            User.name: user.name,
+            User.zh_name: user.zh_name,
+            User.email: user.email,
+            User.description: user.description
+        })
+    db.commit()
+    db.close()
 
 
 def set_super_user(db: Session, user_id):
