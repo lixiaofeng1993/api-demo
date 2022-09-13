@@ -23,7 +23,7 @@ router = APIRouter()
 @router.get("/", summary="解析html数据")
 def get_calendar():
     result["result"] = {
-        "title": "【摸鱼办宣】",
+        "title": "摸鱼办宣",
         "today": {},
         "holiday": {},
     }
