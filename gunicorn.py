@@ -16,7 +16,7 @@ from multiprocessing import cpu_count
 reload_engine = 'inotify'
 # //绑定与Nginx通信的端口
 # bind = '127.0.0.1:3002'
-bind = '127.0.0.1:8000'
+bind = '0.0.0.0:8000'
 # pidfile = 'www/gunicorn.pid'
 
 daemon = True   # 守护进程
