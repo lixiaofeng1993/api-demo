@@ -1,0 +1,5 @@
+FROM python:3.8.10
+
+EXPOSE 8000
+
+CMD ["gunicorn -c gunicorn.py main:app -k uvicorn.workers.UvicornWorker"]
