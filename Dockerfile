@@ -1,6 +1,6 @@
 FROM python:3.7
 
-RUN pip install --no-cache-dir --upgrade -r /root/apps/api-demo/requirements.txt -i https://pypi.douban.com/simple/
+RUN pip install --no-cache-dir --upgrade -r requirements.txt -i https://pypi.douban.com/simple/
 
 EXPOSE 8000
 
