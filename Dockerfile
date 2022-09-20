@@ -8,4 +8,5 @@ RUN pip install --no-cache-dir uvicorn gunicorn aioredis==1.3.1 fastapi==0.71.0 
 
 EXPOSE 8000
 
-CMD ["gunicorn", "-c", "/root/apps/api-demo/gunicorn.py", "main:app", "-k", "uvicorn.workers.UvicornWorker"]
+#CMD ["gunicorn", "-c", "/root/apps/api-demo/gunicorn.py", "main:app", "-k", "uvicorn.workers.UvicornWorker"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0","--port", "8000"]
