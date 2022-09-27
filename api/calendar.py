@@ -10,6 +10,7 @@ import re
 import random
 import datetime
 import requests
+from faker import Faker
 from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
 from fastapi.responses import StreamingResponse
@@ -45,11 +46,13 @@ def get_calendar():
     result["result"]["today"]["lunar"] = res.xpath('//div[@id="textbody"]/p/table/tr[2]/td[2]', first=True).text
     week_day = res.xpath('//div[@id="textbody"]/p/table/tr[3]/td[2]', first=True).text
     result["result"]["today"]["week"] = week_day
-    result["result"]["today"]["constellations"] = res.xpath('//div[@id="textbody"]/p/table/tr[4]/td[2]', first=True).text
+    result["result"]["today"]["constellations"] = res.xpath('//div[@id="textbody"]/p/table/tr[4]/td[2]',
+                                                            first=True).text
     result["result"]["today"]["season"] = res.xpath('//div[@id="textbody"]/p/table/tr[5]/td[2]', first=True).text
     result["result"]["today"]["Solar"] = res.xpath('//div[@id="textbody"]/p/table/tr[6]/td[2]', first=True).text
     result["result"]["today"]["festivals"] = res.xpath('//div[@id="textbody"]/p/table/tr[7]/td[2]', first=True).text
-    result["result"]["today"]["three_volts_count_nine"] = res.xpath('//div[@id="textbody"]/p/table/tr[8]/td[2]', first=True).text
+    result["result"]["today"]["three_volts_count_nine"] = res.xpath('//div[@id="textbody"]/p/table/tr[8]/td[2]',
+                                                                    first=True).text
     result["result"]["today"]["suitable"] = res.xpath('//div[@id="textbody"]/p/table/tr[11]/td[2]', first=True).text
     result["result"]["today"]["taboo"] = res.xpath('//div[@id="textbody"]/p/table/tr[12]/td[2]', first=True).text
     with HTMLSession() as session:
@@ -225,3 +228,31 @@ async def get_girl():
     girl_path = os.path.join(ASSETS_PATH, girl_list[random.randint(0, len(girl_list) - 1)])
     girl = open(girl_path, mode="rb")
     return StreamingResponse(girl, media_type="image/jpg")
+
+
+@router.get("/faker", summary="返回随机人物数据")
+async def get_faker(number: int = 1):
+    faker = Faker("zh-CN")
+    number = 1 if number < 1 else number
+    data = faker.profile()
+    if number == 1:
+        data["phone"] = faker.phone_number()
+        data["card"] = faker.credit_card_number()
+    else:
+        del data["job"]
+        del data["residence"]
+        del data["current_location"]
+        del data["website"]
+        data["phone"] = []
+        data["card"] = []
+        data["ssn"] = []
+        data["address"] = []
+        data["mail"] = []
+        for i in range(number):
+            data["phone"].append(faker.phone_number())
+            data["card"].append(faker.credit_card_number())
+            data["address"].append(faker.address())
+            data["ssn"].append(faker.ssn())
+            data["mail"].append(faker.email())
+    result["result"] = data
+    return result
