@@ -44,7 +44,7 @@ def send_ding():
     now_time = datetime.now()
     if now_time <= start_time or now_time >= end_time:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
-        # return
+        return
     stock_code = "601069"
     # 数据间隔时间为 1 分钟
     freq = 1
