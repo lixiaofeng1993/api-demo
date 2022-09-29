@@ -19,10 +19,11 @@ reload_engine = 'inotify'
 bind = '0.0.0.0:8000'
 # pidfile = 'www/gunicorn.pid'
 
-daemon = True   # 守护进程
+daemon = True  # 守护进程
 
 # workers = 4  # 进程数
-workers = cpu_count() * 2 + 1  # 进程数
+# workers = cpu_count() * 2 + 1  # 进程数
+workers = 1  # 进程数
 
 worker_class = 'gevent'  # 默认为阻塞模式，最好选择gevent模式,默认的是sync模式
 
