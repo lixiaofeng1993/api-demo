@@ -72,8 +72,8 @@ def send_ding():
         "text": {
             "content": f"股票名称：{share_name} \n【开盘价】 {open_price} 元/股\n【最高价】 {top_price} 元/股\n【最低价】 {down_price} 元/股 \n"
                        f"【平均价】 {average} 元/股\n【涨跌幅】 {rise_and_fall} %\n【涨跌额】 {rise_and_price} 元\n"
-                       f"【成交量】 {turnover} 手\n【换手率】 {turnover_rate} % \n【最新价】 {new_price} 元/股\n"
-                       f"【时间】 {new_time}\n【状态】 {status}"
+                       f"【成交量】 {turnover} 手\n【换手率】 {turnover_rate} % \n【时间】 {new_time}\n【最新价】 {new_price} 元/股\n"
+                       f"【状态】 {status}"
         }
     }
     res = requests.post(

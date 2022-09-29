@@ -44,7 +44,6 @@ async def startup_event():
 @app.on_event('startup')
 @repeat_task(seconds=60, wait_first=True)
 def repeat_task_aggregate_request_records() -> None:
-    logger.info('触发重复任务: 聚合请求记录')
     send_ding()
 
 
