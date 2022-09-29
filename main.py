@@ -7,7 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
 from pathlib import Path
 
-from api import users, project, sign, calendar
+from tasks import repeat_task, logger
+from public.send_ding import send_ding
+from api import users, project, sign, api
 from dependencies import get_current_user
 from public.custom_code import response_error
 
@@ -37,6 +39,13 @@ async def get_redis_pool() -> Redis:
 @app.on_event("startup")
 async def startup_event():
     app.state.redis = await get_redis_pool()
+
+
+@app.on_event('startup')
+@repeat_task(seconds=60, wait_first=True)
+def repeat_task_aggregate_request_records() -> None:
+    logger.info('触发重复任务: 聚合请求记录')
+    send_ding()
 
 
 @app.on_event("shutdown")
@@ -70,9 +79,9 @@ app.include_router(
 )
 
 app.include_router(
-    calendar.router,
-    prefix="/calendar",
-    tags=["calendar"],
+    api.router,
+    prefix="/api",
+    tags=["api"],
     responses=response_error
 )
 

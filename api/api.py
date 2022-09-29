@@ -3,13 +3,14 @@
 # @Time    : 2022/7/29 19:23
 # @Author  : lixiaofeng
 # @Site    : 
-# @File    : calendar.py
+# @File    : api.py
 # @Software: PyCharm
 
 import re
 import random
 import datetime
 import requests
+import efinance as ef
 from faker import Faker
 from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
@@ -254,5 +255,48 @@ async def get_faker(number: int = 1):
             data["address"].append(faker.address())
             data["ssn"].append(faker.ssn())
             data["mail"].append(faker.email())
+    result["result"] = data
+    return result
+
+
+@router.get("/shares", summary="股票实时信息")
+async def shares(stock_code: str = ""):
+    # 股票代码
+    stock_code = stock_code if stock_code else ["601069"]
+    try:
+        if isinstance(stock_code, str):
+            stock_code = eval(stock_code)
+    except:
+        result["result"] = "参数类型错误！！！"
+        return result
+    # 数据间隔时间为 1 分钟
+    freq = 1
+    # 获取最新一个交易日的分钟级别股票行情数据
+    df = ef.stock.get_quote_history(
+        stock_code, klt=freq)
+    data = list()
+    for d in df:
+        share_name = df[d]["股票名称"].values[0]
+        open_price = df[d]["开盘"].values[0]
+        new_price = df[d]["收盘"].values[-1]
+        top_price = df[d]["最高"].max()
+        down_price = df[d]["最低"].min()
+        turnover = df[d]["成交量"].sum()
+        average = df[d]["开盘"].mean()
+        rise_and_fall = df[d]["涨跌幅"].sum()
+        rise_and_price = df[d]["涨跌额"].sum()
+        turnover_rate = df[d]["换手率"].sum()
+        data.append({
+            "股票名称": f"【{share_name}】",
+            "开盘价": f" {open_price} 元/股",
+            "最高价": f" {top_price} 元/股",
+            "最低价": f" {down_price} 元/股",
+            "平均价": f" {round(average, 2)} 元/股",
+            "涨跌幅": f" {round(rise_and_fall, 2)} %",
+            "涨跌额": f" {round(rise_and_price, 2)} 元",
+            "成交量": f" {turnover} 手",
+            "换手率": f" {round(turnover_rate, 2)} %",
+            "最新价": f"【{new_price}】 元/股",
+        })
     result["result"] = data
     return result
