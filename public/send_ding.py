@@ -7,7 +7,7 @@ import urllib3
 import time
 from datetime import datetime, date
 import efinance as ef
-from loguru import logger
+from public.log import logger
 
 urllib3.disable_warnings()
 
@@ -43,13 +43,9 @@ def send_ding():
     start_time = datetime(year, month, day, 9, 30, 0)
     end_time = datetime(year, month, day, 15, 00, 0)
     now_time = datetime.now()
-    status = ""
-    if start_time <= now_time <= end_time:
-        status = "开盘中"
-    elif now_time < start_time:
-        status = "未开盘"
-    elif now_time > end_time:
-        status = "已收盘"
+    if now_time <= start_time or now_time >= end_time:
+        logger.info(f"当前时间 {now_time} 未开盘!!!")
+        return
     stock_code = "601069"
     # 数据间隔时间为 1 分钟
     freq = 1
@@ -73,7 +69,7 @@ def send_ding():
             "content": f"股票名称：{share_name} \n【开盘价】 {open_price} 元/股\n【最高价】 {top_price} 元/股\n【最低价】 {down_price} 元/股 \n"
                        f"【平均价】 {average} 元/股\n【涨跌幅】 {rise_and_fall} %\n【涨跌额】 {rise_and_price} 元\n"
                        f"【成交量】 {turnover} 手\n【换手率】 {turnover_rate} % \n【时间】 {new_time}\n【最新价】 {new_price} 元/股\n"
-                       f"【状态】 {status}"
+                       f"【状态】 开盘中"
         }
     }
     res = requests.post(

@@ -8,11 +8,12 @@
 # 说   明: 
 """
 import asyncio
-from loguru import logger
 from functools import wraps
 from asyncio import ensure_future
 from starlette.concurrency import run_in_threadpool
 from typing import Any, Callable, Coroutine, Optional, Union
+
+from public.log import logger
 
 NoArgsNoReturnFuncT = Callable[[], None]
 NoArgsNoReturnAsyncFuncT = Callable[[], Coroutine[Any, Any, None]]
