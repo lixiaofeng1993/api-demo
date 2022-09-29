@@ -30,7 +30,6 @@ def ding_sign():
 def send_ding():
     """
     发送钉钉消息
-    :param content:
     :return:
     """
     headers = {"Content-Type": "application/json"}
