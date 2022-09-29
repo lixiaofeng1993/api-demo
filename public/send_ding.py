@@ -45,36 +45,36 @@ def send_ding():
     if now_time <= start_time or now_time >= end_time:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
         return
-    # stock_code = "601069"
-    # # 数据间隔时间为 1 分钟
-    # freq = 1
-    # # 获取最新一个交易日的分钟级别股票行情数据
-    # df = ef.stock.get_quote_history(stock_code, klt=freq)
-    # share_name = df["股票名称"].values[0]
-    # open_price = df["开盘"].values[0]
-    # new_price = df["收盘"].values[-1]
-    # new_time = df["日期"].values[-1]
-    # top_price = df["最高"].max()
-    # down_price = df["最低"].min()
-    # turnover = df["成交量"].sum()
-    # average = round(df["开盘"].mean(), 2)
-    # rise_and_fall = round(df["涨跌幅"].sum(), 2)
-    # rise_and_price = round(df["涨跌额"].sum(), 2)
-    # turnover_rate = round(df["换手率"].sum(), 2)
-    #
-    # body = {
-    #     "msgtype": "text",
-    #     "text": {
-    #         "content": f"股票名称：{share_name} \n【开盘价】 {open_price} 元/股\n【最高价】 {top_price} 元/股\n【最低价】 {down_price} 元/股 \n"
-    #                    f"【平均价】 {average} 元/股\n【涨跌幅】 {rise_and_fall} %\n【涨跌额】 {rise_and_price} 元\n"
-    #                    f"【成交量】 {turnover} 手\n【换手率】 {turnover_rate} % \n【时间】 {new_time}\n【最新价】 {new_price} 元/股\n"
-    #                    f"【状态】 开盘中"
-    #     }
-    # }
-    # res = requests.post(
-    #     "https://oapi.dingtalk.com/robot/send?access_token={}&timestamp={}&sign={}".format(
-    #         access_token, timestamp, sign), headers=headers, json=body, verify=False).json()
-    # if res["errcode"] == 0 and res["errmsg"] == "ok":
-    #     logger.info("钉钉通知发送成功！info：{}".format(body["text"]["content"]))
-    # else:
-    #     logger.error("钉钉通知发送失败！返回值：{}".format(res))
+    stock_code = "601069"
+    # 数据间隔时间为 1 分钟
+    freq = 1
+    # 获取最新一个交易日的分钟级别股票行情数据
+    df = ef.stock.get_quote_history(stock_code, klt=freq)
+    share_name = df["股票名称"].values[0]
+    open_price = df["开盘"].values[0]
+    new_price = df["收盘"].values[-1]
+    new_time = df["日期"].values[-1]
+    top_price = df["最高"].max()
+    down_price = df["最低"].min()
+    turnover = df["成交量"].sum()
+    average = round(df["开盘"].mean(), 2)
+    rise_and_fall = round(df["涨跌幅"].sum(), 2)
+    rise_and_price = round(df["涨跌额"].sum(), 2)
+    turnover_rate = round(df["换手率"].sum(), 2)
+
+    body = {
+        "msgtype": "text",
+        "text": {
+            "content": f"股票名称：{share_name} \n【开盘价】 {open_price} 元/股\n【最高价】 {top_price} 元/股\n【最低价】 {down_price} 元/股 \n"
+                       f"【平均价】 {average} 元/股\n【涨跌幅】 {rise_and_fall} %\n【涨跌额】 {rise_and_price} 元\n"
+                       f"【成交量】 {turnover} 手\n【换手率】 {turnover_rate} % \n【时间】 {new_time}\n【最新价】 {new_price} 元/股\n"
+                       f"【状态】 开盘中"
+        }
+    }
+    res = requests.post(
+        "https://oapi.dingtalk.com/robot/send?access_token={}&timestamp={}&sign={}".format(
+            access_token, timestamp, sign), headers=headers, json=body, verify=False).json()
+    if res["errcode"] == 0 and res["errmsg"] == "ok":
+        logger.info("钉钉通知发送成功！info：{}".format(body["text"]["content"]))
+    else:
+        logger.error("钉钉通知发送失败！返回值：{}".format(res))
