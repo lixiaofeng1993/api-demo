@@ -41,8 +41,10 @@ def send_ding():
     day = date.today().day
     start_time = datetime(year, month, day, 9, 30, 0)
     end_time = datetime(year, month, day, 15, 00, 0)
+    am_time = datetime(year, month, day, 11, 30, 0)
+    pm_time = datetime(year, month, day, 13, 00, 0)
     now_time = datetime.now()
-    if now_time <= start_time or now_time >= end_time:
+    if now_time <= start_time or now_time >= end_time or am_time <= now_time <= pm_time:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
         return
     stock_code = "601069"
