@@ -8,7 +8,7 @@ from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html, get_swagge
 from pathlib import Path
 
 from tasks import repeat_task
-from public.send_ding import send_ding
+from public.shares import shares
 from api import users, project, sign, api
 from dependencies import get_current_user
 from public.custom_code import response_error
@@ -42,9 +42,9 @@ async def startup_event():
 
 
 @app.on_event('startup')
-@repeat_task(seconds=60 * 5, wait_first=True)
+@repeat_task(seconds=60, wait_first=True)
 def repeat_task_aggregate_request_records() -> None:
-    send_ding()
+    shares()
 
 
 @app.on_event("shutdown")
