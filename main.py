@@ -25,9 +25,12 @@ app.mount(path="/media", app=StaticFiles(directory=MEDIA_PATH), name='media')
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=['*', 'GET'],  # * 可以通配
+    allow_headers=['*'],  # 头部
+    allow_credentials=False,  # HTTPS 证书
+    allow_origin_regex=None,  # 正则表达式匹配  'https://.*\.example\.org
+    expose_headers=[],  # 指明可以被 浏览器访问 的 响应头
+    max_age=600  # 设定浏览器缓存 CORS 响应的最长时间，单位是秒。默认为 600
 )
 
 
