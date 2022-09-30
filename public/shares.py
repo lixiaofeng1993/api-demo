@@ -28,7 +28,7 @@ def shares():
     pm_time = datetime(year, month, day, 13, 00, 0)
     if now_time <= start_time or now_time >= end_time or am_time <= now_time <= pm_time:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
-        # return
+        return
     stock_code = "601069"
     # 数据间隔时间为 1 分钟
     freq = 1
