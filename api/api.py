@@ -22,10 +22,10 @@ from public.custom_code import result
 router = APIRouter()
 
 
-@router.get("/", summary="解析html数据")
+@router.get("/", summary="摸鱼办")
 def get_calendar():
     result["result"] = {
-        "title": "摸鱼办宣",
+        "title": "【摸鱼办宣】",
         "today": {},
         "holiday": {},
     }
@@ -39,111 +39,65 @@ def get_calendar():
         "星期日": 0,
 
     }
+    holiday = {
+        "2": ["元旦", "NewYear"],
+        "3": ["春节", "SpringFestival"],
+        "4": ["清明节", "TombSweeping"],
+        "5": ["劳动节", "LabourDay"],
+        "6": ["端午节", "DragonBoat"],
+        "7": ["中秋节", "AutumnFestival"],
+        "8": ["国庆节", "NationalDay"],
+    }
+    today = {
+        "1": "GregorianCalendarDate",
+        "2": "LunarDate",
+        "3": "Week",
+        "4": "Constellations",
+        "5": "Season",
+        "6": "SolarTerm",
+        "7": "Festivals",
+        "8": "HeavenlyStemsAndEarthlyBranches",
+        "9": "FiveElements",
+        "10": "Suitable",
+        "11": "Taboo",
+    }
+    week_day = "星期日"
     now = str(datetime.datetime.now().date()).split("-")
     # now = ["2022", "07", "25"]
     with HTMLSession() as session:
         res = session.get(f"https://www.rili.com.cn/wannianli/{now[0]}/{now[1]}{now[2]}.html").html
-    result["result"]["today"]["gregorian"] = res.xpath('//div[@id="textbody"]/p/table/tr[1]/td[2]', first=True).text
-    result["result"]["today"]["lunar"] = res.xpath('//div[@id="textbody"]/p/table/tr[2]/td[2]', first=True).text
-    week_day = res.xpath('//div[@id="textbody"]/p/table/tr[3]/td[2]', first=True).text
-    result["result"]["today"]["week"] = week_day
-    result["result"]["today"]["constellations"] = res.xpath('//div[@id="textbody"]/p/table/tr[4]/td[2]',
-                                                            first=True).text
-    result["result"]["today"]["season"] = res.xpath('//div[@id="textbody"]/p/table/tr[5]/td[2]', first=True).text
-    result["result"]["today"]["Solar"] = res.xpath('//div[@id="textbody"]/p/table/tr[6]/td[2]', first=True).text
-    result["result"]["today"]["festivals"] = res.xpath('//div[@id="textbody"]/p/table/tr[7]/td[2]', first=True).text
-    result["result"]["today"]["three_volts_count_nine"] = res.xpath('//div[@id="textbody"]/p/table/tr[8]/td[2]',
-                                                                    first=True).text
-    result["result"]["today"]["suitable"] = res.xpath('//div[@id="textbody"]/p/table/tr[11]/td[2]', first=True).text
-    result["result"]["today"]["taboo"] = res.xpath('//div[@id="textbody"]/p/table/tr[12]/td[2]', first=True).text
+    for key, value in today.items():
+        result["result"]["today"][value] = res.xpath(f'//div[@id="textbody"]/p/table/tr[{key}]/td[2]', first=True).text
+        week_day = res.xpath('//div[@id="textbody"]/p/table/tr[3]/td[2]', first=True).text
+    if week[week_day]:
+        result["result"]["holiday"]["Weekend"] = f"还有 {week[week_day]} 天"
+    else:
+        result["result"]["holiday"]["Weekend"] = "当前是周末，要好好享受生活丫~"
+
     with HTMLSession() as session:
         now = datetime.datetime.now().date()
         res = session.get("https://www.rili.com.cn/fangjiaanpai/").html
     now_year_num = res.find("#fjb_title")[0].text[2:6]
     now_year = int(now_year_num) if now_year_num.isdigit() else 2022
-    new_year_month_day = res.xpath('//*[@id="fjb_id"]/tr[2]/td[2]')[0].text
     patt = r"(\d{1,2})月(\d{1,2})日~"
-    new_year_month, new_year_day = re.findall(patt, new_year_month_day)[0]
-    new_year_month = int(new_year_month) if new_year_month.isdigit() else 1
-    new_year_day = int(new_year_day) if new_year_day.isdigit() else 1
-    new_year = datetime.date(now_year, new_year_month, new_year_day)
-    diff_new_year = str(new_year - now).split(" ")[0]
-    if week[week_day]:
-        result["result"]["holiday"]["weekend"] = f"还有 {week[week_day]} 天"
-    else:
-        result["result"]["holiday"]["weekend"] = "当前是周末，要好好享受生活丫~"
-    if "-" in diff_new_year:
-
-        result["result"]["holiday"]["new_year_day"] = f"已过 {abs(int(diff_new_year))} 天"
-    else:
-        result["result"]["holiday"]["new_year_day"] = f"还有 {diff_new_year} 天"
-
-    spring_festival_month_day = res.xpath('//*[@id="fjb_id"]/tr[3]/td[2]')[0].text
-    spring_festival_month, spring_festival_day = re.findall(patt, spring_festival_month_day)[0]
-    spring_festival_month = int(spring_festival_month) if spring_festival_month.isdigit() else 1
-    spring_festival_day = int(spring_festival_day) if spring_festival_day.isdigit() else 1
-    spring_festival = datetime.date(now_year, spring_festival_month, spring_festival_day)
-    diff_spring_festival = str(spring_festival - now).split(" ")[0]
-    if "-" in diff_spring_festival:
-        result["result"]["holiday"]["spring_festival"] = f"已过 {abs(int(diff_spring_festival))} 天"
-    else:
-        result["result"]["holiday"]["spring_festival"] = f"还有 {diff_spring_festival} 天"
-
-    tomb_sweeping_month_day = res.xpath('//*[@id="fjb_id"]/tr[4]/td[2]')[0].text
-    tomb_sweeping_month, tomb_sweeping_day = re.findall(patt, tomb_sweeping_month_day)[0]
-    tomb_sweeping_month = int(tomb_sweeping_month) if tomb_sweeping_month.isdigit() else 1
-    tomb_sweeping_day = int(tomb_sweeping_day) if tomb_sweeping_day.isdigit() else 1
-    tomb_sweeping = datetime.date(now_year, tomb_sweeping_month, tomb_sweeping_day)
-    diff_tomb_sweeping = str(tomb_sweeping - now).split(" ")[0]
-    if "-" in diff_tomb_sweeping:
-        result["result"]["holiday"]["tomb_sweeping"] = f"已过 {abs(int(diff_tomb_sweeping))} 天"
-    else:
-        result["result"]["holiday"]["tomb_sweeping"] = f"还有 {diff_tomb_sweeping} 天"
-
-    labour_day_month_day = res.xpath('//*[@id="fjb_id"]/tr[5]/td[2]')[0].text
-    labour_day_month, labour_day_day = re.findall(patt, labour_day_month_day)[0]
-    labour_day_month = int(labour_day_month) if labour_day_month.isdigit() else 1
-    labour_day_day = int(labour_day_day) if labour_day_day.isdigit() else 1
-    labour_day = datetime.date(now_year, labour_day_month, labour_day_day)
-    diff_labour_day = str(labour_day - now).split(" ")[0]
-    if "-" in diff_labour_day:
-        result["result"]["holiday"]["labour_day"] = f"已过 {abs(int(diff_labour_day))} 天"
-    else:
-        result["result"]["holiday"]["labour_day"] = f"还有 {diff_labour_day} 天"
-
-    dragon_boat_month_day = res.xpath('//*[@id="fjb_id"]/tr[6]/td[2]')[0].text
-    dragon_boat_month, dragon_boat_day = re.findall(patt, dragon_boat_month_day)[0]
-    dragon_boat_month = int(dragon_boat_month) if dragon_boat_month.isdigit() else 1
-    dragon_boat_day = int(dragon_boat_day) if dragon_boat_day.isdigit() else 1
-    dragon_boat = datetime.date(now_year, dragon_boat_month, dragon_boat_day)
-    diff_dragon_boat = str(dragon_boat - now).split(" ")[0]
-    if "-" in diff_dragon_boat:
-        result["result"]["holiday"]["dragon_boat"] = f"已过 {abs(int(diff_dragon_boat))} 天"
-    else:
-        result["result"]["holiday"]["dragon_boat"] = f"还有 {diff_dragon_boat} 天"
-
-    national_month_day = res.xpath('//*[@id="fjb_id"]/tr[7]/td[2]')[0].text
-    national_month, national_day = re.findall(patt, national_month_day)[0]
-    national_month = int(national_month) if national_month.isdigit() else 1
-    national_day = int(national_day) if national_day.isdigit() else 1
-    national = datetime.date(now_year, national_month, national_day)
-    diff_national = str(national - now).split(" ")[0]
-    if "-" in diff_national:
-        result["result"]["holiday"]["national"] = f"已过 {abs(int(diff_national))} 天"
-    else:
-        result["result"]["holiday"]["national"] = f"还有 {diff_national} 天"
-
-    autumn_month_day = res.xpath('//*[@id="fjb_id"]/tr[8]/td[2]')[0].text
-    autumn_month, autumn_day = re.findall(patt, autumn_month_day)[0]
-    autumn_month = int(autumn_month) if autumn_month.isdigit() else 1
-    autumn_day = int(autumn_day) if autumn_day.isdigit() else 1
-    autumn = datetime.date(now_year, autumn_month, autumn_day)
-    diff_autumn = str(autumn - now).split(" ")[0]
-    if "-" in diff_autumn:
-        result["result"]["holiday"]["autumn"] = f"已过 {abs(int(diff_autumn))} 天"
-    else:
-        result["result"]["holiday"]["autumn"] = f"还有 {diff_autumn} 天"
-
+    for key, value in holiday.items():
+        day = res.xpath(f'//*[@id="fjb_id"]/tr[{key}]/td[2]')[0].text
+        days = res.xpath(f'//*[@id="fjb_id"]/tr[{key}]/td[4]')[0].text[:1]
+        _month, _day = re.findall(patt, day)[0]
+        _month = int(_month) if _month.isdigit() else 1
+        _day = int(_day) if _day.isdigit() else 1
+        _time = datetime.date(now_year, _month, _day)
+        diff_year = str(_time - now).split(" ")[0]
+        if diff_year == "0:00:00":
+            result["result"]["holiday"][value[1]] = f"{value[0]}喽！！！第一天开始~"
+        elif abs(int(diff_year)) < int(days) - 1:
+            result["result"]["holiday"][value[1]] = f"{value[0]}喽！！！这是第 {abs(int(diff_year)) + 1} 天"
+        elif abs(int(diff_year)) == int(days) - 1:
+            result["result"]["holiday"][value[1]] = f"{value[0]}喽！！！已经到最后一天……"
+        elif "-" in diff_year:
+            result["result"]["holiday"][value[1]] = f"{value[0]}，已过 {abs(int(diff_year))} 天"
+        else:
+            result["result"]["holiday"][value[1]] = f"{value[0]}，还有 {diff_year} 天"
     return result
 
 
