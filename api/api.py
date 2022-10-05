@@ -61,6 +61,7 @@ def get_calendar():
         "10": "Suitable",
         "11": "Taboo",
     }
+    data = dict()
     week_day = "星期日"
     now = str(datetime.datetime.now().date()).split("-")
     # now = ["2022", "07", "25"]
@@ -81,23 +82,32 @@ def get_calendar():
     now_year = int(now_year_num) if now_year_num.isdigit() else 2022
     patt = r"(\d{1,2})月(\d{1,2})日~"
     for key, value in holiday.items():
+        data[value[1]] = dict()
         day = res.xpath(f'//*[@id="fjb_id"]/tr[{key}]/td[2]')[0].text
+        work_day = res.xpath(f'//*[@id="fjb_id"]/tr[{key}]/td[3]')[0].text
         days = res.xpath(f'//*[@id="fjb_id"]/tr[{key}]/td[4]')[0].text[:1]
+        data[value[1]].update({
+            "节日": value[0],
+            "放假时间": day,
+            "调休上班时间": work_day,
+            "放假天数": days + "天",
+        })
         _month, _day = re.findall(patt, day)[0]
         _month = int(_month) if _month.isdigit() else 1
         _day = int(_day) if _day.isdigit() else 1
         _time = datetime.date(now_year, _month, _day)
         diff_year = str(_time - now).split(" ")[0]
         if diff_year == "0:00:00":
-            result["result"]["holiday"][value[1]] = f"{value[0]}喽！！！第一天开始~"
+            data[value[1]]["描述"] = f"今天是第一天！"
         elif abs(int(diff_year)) < int(days) - 1:
-            result["result"]["holiday"][value[1]] = f"{value[0]}喽！！！这是第 {abs(int(diff_year)) + 1} 天"
+            data[value[1]]["描述"] = f"今天是第 {abs(int(diff_year)) + 1} 天！"
         elif abs(int(diff_year)) == int(days) - 1:
-            result["result"]["holiday"][value[1]] = f"{value[0]}喽！！！已经到最后一天……"
+            data[value[1]]["描述"] = f"今天是最后一天……"
         elif "-" in diff_year:
-            result["result"]["holiday"][value[1]] = f"{value[0]}，已过 {abs(int(diff_year))} 天"
+            data[value[1]]["描述"] = f"距今天已过 {abs(int(diff_year))} 天 ^-^"
         else:
-            result["result"]["holiday"][value[1]] = f"{value[0]}，还有 {diff_year} 天"
+            data[value[1]]["描述"] = f"距今天还要 {diff_year} 天 ^-^"
+    result["result"]["holiday"] = data
     return result
 
 
