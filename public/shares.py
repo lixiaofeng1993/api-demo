@@ -38,7 +38,7 @@ def shares():
     df = ef.stock.get_quote_history(stock_code, klt=freq)
     # 绘制图形
     plt.plot(df["开盘"].values, linewidth=1, color="red")
-    plt.savefig(os.path.join(BASE_PATH, "media", "Chart.png"), bbox_inches='tight')
+    plt.savefig(os.path.join(BASE_PATH, "media", "Chart.jpeg"), bbox_inches='tight')
 
     share_name = df["股票名称"].values[0]
     open_price = df["开盘"].values[0]
