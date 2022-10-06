@@ -73,7 +73,7 @@ def shares():
                     f"> **时间:** <font>{new_time}</font>\n\n"
                     f"> **最新价:** <font color={new_price_color}>{new_price}</font> 元/股\n\n"
                     f"> **状态:** <font>开盘中</font> \n\n"
-                    f"> **折线图:** ![screenshot](http://121.41.54.234/Chart.png) @15235514553 \n\n"
+                    f"> **折线图:** ![screenshot](http://121.41.54.234/27324376dc3ab035576db2af527f39aa.jpeg) @15235514553\n\n"
         },
         "at": {
             "atMobiles": ["15235514553"],
