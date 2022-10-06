@@ -10,8 +10,10 @@
 from datetime import datetime, date
 import efinance as ef
 from chinese_calendar import is_workday
+import matplotlib.pyplot as plt
 
-from public.send_ding import logger, send_ding
+from public.send_ding import send_ding
+from public.log import logger, BASE_PATH, os
 
 
 def shares():
@@ -21,19 +23,23 @@ def shares():
     now_time = datetime.now()
     if not is_workday(date(year, month, day)):
         logger.info(f"当前时间 {now_time} 休市日!!!")
-        return
+        # return
     start_time = datetime(year, month, day, 9, 30, 0)
     end_time = datetime(year, month, day, 15, 00, 0)
     am_time = datetime(year, month, day, 11, 30, 0)
     pm_time = datetime(year, month, day, 13, 00, 0)
     if now_time <= start_time or now_time >= end_time or am_time <= now_time <= pm_time:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
-        return
+        # return
     stock_code = "601069"
     # 数据间隔时间为 1 分钟
     freq = 1
     # 获取最新一个交易日的分钟级别股票行情数据
     df = ef.stock.get_quote_history(stock_code, klt=freq)
+    # 绘制图形
+    plt.plot(df["开盘"].values, linewidth=1, color="red")
+    plt.savefig(os.path.join(BASE_PATH, "media", "Chart.png"), bbox_inches='tight')
+
     share_name = df["股票名称"].values[0]
     open_price = df["开盘"].values[0]
     new_price = df["收盘"].values[-1]
@@ -66,7 +72,8 @@ def shares():
                     f"> **换手率:** <font>{turnover_rate}</font> %\n\n"
                     f"> **时间:** <font>{new_time}</font>\n\n"
                     f"> **最新价:** <font color={new_price_color}>{new_price}</font> 元/股\n\n"
-                    f"> **状态:** <font>开盘中</font> @15235514553 \n\n"
+                    f"> **状态:** <font>开盘中</font> \n\n"
+                    f"> **折线图:** ![screenshot](http://121.41.54.234/Chart.png) @15235514553 \n\n"
         },
         "at": {
             "atMobiles": ["15235514553"],
