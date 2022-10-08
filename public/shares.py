@@ -21,7 +21,8 @@ def shares():
     month = date.today().month
     day = date.today().day
     now_time = datetime.now()
-    if not is_workday(date(year, month, day)):
+    weekday = datetime.date(year, month, day).strftime("%A")
+    if not is_workday(date(year, month, day)) or weekday in ["Saturday", "Sunday"]:
         logger.info(f"当前时间 {now_time} 休市日!!!")
         return
     start_time = datetime(year, month, day, 9, 30, 0)
