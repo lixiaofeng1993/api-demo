@@ -25,7 +25,7 @@ def shares():
     if not is_workday(date(year, month, day)) or weekday in ["Saturday", "Sunday"]:
         logger.info(f"当前时间 {now_time} 休市日!!!")
         return
-    start_time = datetime(year, month, day, 9, 30, 0)
+    start_time = datetime(year, month, day, 9, 15, 0)
     end_time = datetime(year, month, day, 15, 00, 0)
     am_time = datetime(year, month, day, 11, 30, 0)
     pm_time = datetime(year, month, day, 13, 00, 0)
