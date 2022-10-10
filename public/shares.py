@@ -27,7 +27,7 @@ def shares():
         logger.info(f"当前时间 {now_time} 休市日!!!")
         return
     start_time = datetime(year, month, day, 9, 15, 0)
-    end_time = datetime(year, month, day, 15, 05, 0)
+    end_time = datetime(year, month, day, 15, 5, 0)
     am_time = datetime(year, month, day, 11, 35, 0)
     pm_time = datetime(year, month, day, 13, 00, 0)
     if now_time < start_time or now_time > end_time or am_time < now_time < pm_time:
