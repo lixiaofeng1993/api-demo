@@ -37,6 +37,9 @@ def shares():
     freq = 1
     # 获取最新一个交易日的分钟级别股票行情数据
     df = ef.stock.get_quote_history(stock_code, klt=freq)
+    if df.empty:
+        logger.info(f"当前时间 {now_time} 未获取到股票数据!!!")
+        return
     # 绘制图形
     plt.plot(df["开盘"].values, linewidth=1, color="red")
     plt.savefig(os.path.join(BASE_PATH, "media", "Chart.jpeg"), bbox_inches='tight')
