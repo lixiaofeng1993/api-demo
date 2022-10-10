@@ -64,22 +64,3 @@ class Project(Base):
 
     sign = relationship("Sign", back_populates="project")
     users = relationship("User", back_populates="project")
-
-
-class Shares(Base):
-    __tablename__ = "Shares"
-
-    id = Column(String(32), default=get_id, primary_key=True, index=True)
-    name = Column(String(20), index=True)
-    code = Column(String(20), index=True)
-    date = Column(String(20), index=True)
-    open_price = Column(String(20), index=True)
-    close_price = Column(String(20), index=True)
-    down_price = Column(String(20), index=True)
-    high_price = Column(String(20), index=True)
-    amount = Column(String(30), index=True)
-    forehead = Column(String(30), index=True)
-    amplitude = Column(String(30), index=True)
-    rise_fall = Column(String(30), index=True)
-    increase_decrease = Column(String(30), index=True)
-    turnover_rate = Column(String(30), index=True)
