@@ -11,6 +11,7 @@ from datetime import datetime, date
 import efinance as ef
 from chinese_calendar import is_workday
 import matplotlib.pyplot as plt
+import time
 
 from public.send_ding import send_ding
 from public.log import logger, BASE_PATH, os
@@ -26,8 +27,8 @@ def shares():
         logger.info(f"当前时间 {now_time} 休市日!!!")
         return
     start_time = datetime(year, month, day, 9, 15, 0)
-    end_time = datetime(year, month, day, 15, 00, 0)
-    am_time = datetime(year, month, day, 11, 30, 0)
+    end_time = datetime(year, month, day, 15, 05, 0)
+    am_time = datetime(year, month, day, 11, 35, 0)
     pm_time = datetime(year, month, day, 13, 00, 0)
     if now_time < start_time or now_time > end_time or am_time < now_time < pm_time:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
@@ -41,8 +42,10 @@ def shares():
         logger.info(f"当前时间 {now_time} 未获取到股票数据!!!")
         return
     # 绘制图形
+    now_img = int(round(time.time() * 1000))
+    logger.info(f"当前时间戳: {now_img}")
     plt.plot(df["开盘"].values, linewidth=1, color="red")
-    plt.savefig(os.path.join(BASE_PATH, "media", "Chart.jpg"), bbox_inches='tight')
+    plt.savefig(os.path.join(BASE_PATH, "media", f"Chart-{now_img}.jpg"), bbox_inches='tight')
 
     share_name = df["股票名称"].values[0]
     open_price = df["开盘"].values[0]
@@ -77,7 +80,7 @@ def shares():
                     f"> **时间:** <font>{new_time}</font>\n\n"
                     f"> **最新价:** <font color={new_price_color}>{new_price}</font> 元/股\n\n"
                     f"> **状态:** <font>开盘中</font> \n\n"
-                    f"> **折线图:** ![screenshot](http://121.41.54.234/Chart.jpg) @15235514553\n\n"
+                    f"> **折线图:** ![screenshot](http://121.41.54.234/Chart-{now_img}.jpg) @15235514553\n\n"
         },
         "at": {
             "atMobiles": ["15235514553"],
