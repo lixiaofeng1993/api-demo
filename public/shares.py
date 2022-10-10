@@ -42,7 +42,7 @@ def shares():
         return
     # 绘制图形
     plt.plot(df["开盘"].values, linewidth=1, color="red")
-    plt.savefig(os.path.join(BASE_PATH, "media", "Chart.jpeg"), bbox_inches='tight')
+    plt.savefig(os.path.join(BASE_PATH, "media", "Chart.jpg"), bbox_inches='tight')
 
     share_name = df["股票名称"].values[0]
     open_price = df["开盘"].values[0]
@@ -77,7 +77,7 @@ def shares():
                     f"> **时间:** <font>{new_time}</font>\n\n"
                     f"> **最新价:** <font color={new_price_color}>{new_price}</font> 元/股\n\n"
                     f"> **状态:** <font>开盘中</font> \n\n"
-                    f"> **折线图:** ![screenshot](http://121.41.54.234/Chart.jpeg) @15235514553\n\n"
+                    f"> **折线图:** ![screenshot](http://121.41.54.234/Chart.jpg) @15235514553\n\n"
         },
         "at": {
             "atMobiles": ["15235514553"],
