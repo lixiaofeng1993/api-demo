@@ -46,6 +46,7 @@ def shares():
     logger.info(f"当前时间戳: {now_img}")
     plt.plot(df["开盘"].values, linewidth=1, color="red")
     plt.savefig(os.path.join(BASE_PATH, "media", f"Chart-{now_img}.jpg"), bbox_inches='tight')
+    plt.clf()
 
     share_name = df["股票名称"].values[0]
     open_price = df["开盘"].values[0]
