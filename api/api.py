@@ -11,7 +11,6 @@ import random
 import datetime
 import requests
 import efinance as ef
-import hashlib
 from faker import Faker
 from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
@@ -19,7 +18,6 @@ from fastapi.responses import StreamingResponse
 
 from conf.settings import HOST, ASSETS_PATH, os, DEBUG
 from public.custom_code import result
-from public.log import logger
 
 router = APIRouter()
 
@@ -266,23 +264,3 @@ async def shares(stock_code: str = ""):
         })
     result["result"] = data
     return result
-
-
-@router.get("/wx", summary="微信服务器配置验证")
-async def handle_wx(signature, timestamp, nonce, echostr):
-    try:
-        token = "lixiaofeng"
-        temp = [token, timestamp, nonce]
-        temp.sort()
-        hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
-        logger.info(f"加密：{hashcode}，微信返回：{signature}")
-        if hashcode == signature:
-            return int(echostr)
-        else:
-            logger.error("加密字符串 不等于 微信返回字符串，验证失败！！！")
-            result["result"] = {"error": "验证失败！"}
-            return result
-    except Exception as error:
-        logger.error(f"微信服务器配置验证出现异常:{error}")
-        result["result"] = {"error": error}
-        return result
