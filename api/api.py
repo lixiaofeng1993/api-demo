@@ -271,7 +271,7 @@ async def shares(stock_code: str = ""):
 @router.get("/wx", summary="微信服务器配置验证")
 async def handle_wx(signature, timestamp, nonce, echostr):
     try:
-        token = "lixiaofeng1993"
+        token = "lixiaofeng"
         temp = [token, timestamp, nonce]
         temp.sort()
         hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
