@@ -276,15 +276,14 @@ async def handle_wx(signature, timestamp, nonce, echostr):
         temp.sort()
         hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
         logger.info(f"加密：{hashcode}，微信返回：{signature}")
-        logger.info(f"加密：{type(hashcode)}，微信返回：{type(signature)}")
+        logger.info(f"加密字符串：{type(hashcode)}，微信返回字符串：{type(signature)}")
         if hashcode == signature:
-            logger.info(f"加1111111111111111密：{type(hashcode)}，微信返回：{type(signature)}")
             return echostr
         else:
-            logger.info(f"222222222222222222222：{type(hashcode)}，微信返回：{type(signature)}")
+            logger.error("加密字符串 不等于 微信返回字符串，验证失败！！！")
             result["result"] = {"error": "验证失败！"}
             return result
     except Exception as error:
-        logger.info(f"333333333333333333333333")
+        logger.error(f"微信服务器配置验证出现异常:{error}")
         result["result"] = {"error": error}
         return result
