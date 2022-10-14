@@ -272,12 +272,9 @@ async def shares(stock_code: str = ""):
 async def handle_wx(signature, timestamp, nonce, echostr):
     try:
         token = "lixiaofeng1993"
-        list = [token, timestamp, nonce]
-        list.sort()
-        sha1 = hashlib.sha1()
-        map(sha1.update, list)
-        hashcode = sha1.hexdigest()
-        logger.info(f"{signature} ==> {timestamp} ==> {nonce} ==> {echostr}")
+        temp = [token, timestamp, nonce]
+        temp.sort()
+        hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
         logger.info(f"加密：{hashcode}，微信返回：{signature}")
         if hashcode == signature:
             return echostr
