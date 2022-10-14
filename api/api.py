@@ -274,10 +274,10 @@ async def handle_wx(signature, timestamp, nonce, echostr):
         token = "lixiaofeng"
         temp = [token, timestamp, nonce]
         temp.sort()
-        hashcode = hashlib.sha1("".join(temp).encode('utf8')).hexdigest()
+        hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
         logger.info(f"加密：{hashcode}，微信返回：{signature}")
         if hashcode == signature:
-            return echostr
+            return int(echostr)
         else:
             logger.error("加密字符串 不等于 微信返回字符串，验证失败！！！")
             result["result"] = {"error": "验证失败！"}
