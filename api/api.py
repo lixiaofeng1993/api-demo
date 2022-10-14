@@ -19,6 +19,7 @@ from fastapi.responses import StreamingResponse
 
 from conf.settings import HOST, ASSETS_PATH, os, DEBUG
 from public.custom_code import result
+from public.log import logger
 
 router = APIRouter()
 
@@ -276,6 +277,8 @@ async def handle_wx(signature, timestamp, nonce, echostr):
         sha1 = hashlib.sha1()
         map(sha1.update, list)
         hashcode = sha1.hexdigest()
+        logger.info(signature, timestamp, nonce, echostr)
+        logger.info(f"加密：{hashcode}，微信返回：{signature}")
         if hashcode == signature:
             return echostr
         else:
