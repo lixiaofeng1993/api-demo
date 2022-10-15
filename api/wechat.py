@@ -43,8 +43,8 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 
 
 @router.post("/", summary="回复微信消息")
-async def wx_msg(signature, timestamp, nonce, openid, body: Body(...)):
-    logger.info(body)
+async def wx_msg(signature, timestamp, nonce, openid, request: Request):
+    logger.info(request.scope)
     logger.info(f"signature: {signature} ==> {timestamp} == > {nonce} ==> {openid}")
     xml = {
         "xml": {
