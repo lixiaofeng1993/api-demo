@@ -53,7 +53,6 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
     if hashcode == signature:
         try:
             rec_msg = parse_xml(await request.body())
-            logger.info(rec_msg.MsgType)
             if rec_msg.MsgType == 'text':
                 to_user = rec_msg.FromUserName
                 from_user = rec_msg.ToUserName
@@ -65,7 +64,8 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
                 from_user = rec_msg.ToUserName
                 return Response(
                     Message(to_user, from_user, content='欢迎您的关注').send(), media_type="application/xml")
-        except:
+        except Exception as error:
+            logger.error(f"微信回复信息报错：{error}")
             return HTMLResponse('success')
 
 

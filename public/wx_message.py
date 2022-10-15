@@ -10,6 +10,8 @@
 import time
 import xml.etree.ElementTree as Et
 
+from public.log import logger
+
 """
 解析微信XML消息
 """
@@ -61,4 +63,5 @@ class Message:
                         <Content><![CDATA[{self.content}]]></Content>
                         </xml>
                        """
+        logger.info(f"回复微信消息：{message}")
         return message
