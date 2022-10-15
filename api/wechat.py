@@ -57,7 +57,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
                 to_user = rec_msg.FromUserName
                 from_user = rec_msg.ToUserName
                 return Response(
-                    Message(to_user, from_user, content=requests.get(rec_msg.Content).text).send(),
+                    Message(to_user, from_user, content=rec_msg.Content).send(),
                     media_type="application/xml")
             elif rec_msg.MsgType == 'event':
                 to_user = rec_msg.FromUserName
