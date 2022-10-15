@@ -11,8 +11,6 @@
 import hashlib
 import requests
 import aiohttp
-import time
-import xmltodict
 
 from fastapi import Depends, APIRouter, HTTPException, status, Request, Body
 from starlette.responses import HTMLResponse, Response
@@ -21,6 +19,7 @@ from sql_app.database import Base, engine
 from public.custom_code import result
 from conf.settings import TOKEN, AppID, AppSecret, FOLLOW
 from public.wx_message import parse_xml, Message
+from public.shares import shares
 from public.log import logger
 
 Base.metadata.create_all(bind=engine)  # 生成数据库
@@ -59,7 +58,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
                 logger.info(f"文本信息：{rec_msg.Content}")
                 if "股票" in rec_msg.Content:
                     return Response(
-                        Message(to_user, from_user, content=requests.get("http://121.41.54.234/api/shares").text).send(),
+                        Message(to_user, from_user, content=shares(make=True)).send(),
                         media_type="application/xml")
                 else:
                     return Response(

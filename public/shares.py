@@ -17,7 +17,7 @@ from public.send_ding import send_ding
 from public.log import logger, BASE_PATH, os
 
 
-def shares():
+def shares(make=False):
     year = date.today().year
     month = date.today().month
     day = date.today().day
@@ -65,6 +65,11 @@ def shares():
     top_price_color = "#FF0000" if top_price > open_price else "#00FF00"
     down_price_color = "#FF0000" if down_price > open_price else "#00FF00"
 
+    if make:
+        data = f"""
+        {share_name}
+        """
+        return data
     body = {
         "msgtype": "markdown",
         "markdown": {
