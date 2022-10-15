@@ -86,7 +86,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
                 if token:
                     media_id = wx_media(token)
                 else:
-                    media_id = rec_msg.Image.MediaId
+                    media_id = rec_msg.MediaId
                 return Response(
                     Message(to_user, from_user, media_id=media_id, msg_type="image").send(),
                     media_type="application/xml")
