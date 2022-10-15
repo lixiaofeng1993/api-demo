@@ -46,8 +46,8 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 async def wx_msg(request: Request, signature, timestamp, nonce, openid):
     xml = {
         "xml": {
-            "ToUserName": "<![CDATA[fengzi802300]]",
-            "FromUserName": f"<![CDATA[{openid}]]",
+            "ToUserName": "<![CDATA[fengzi802300]]>",
+            "FromUserName": f"<![CDATA[{openid}]]>",
             "CreateTime": timestamp,
             "MsgType": "<![CDATA[text]]>",
             "Content": "<![CDATA[你好]]>"
@@ -61,7 +61,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
   <Content><![CDATA[你好]]></Content>
 </xml>"""
     logger.info(xmltodict.unparse(xml))
-    return "success"
+    return xmltodict.unparse(xml)
 
 
 @router.get("/login", summary="微信登录接口", description="微信登录接口")
