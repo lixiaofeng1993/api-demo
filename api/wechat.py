@@ -47,6 +47,7 @@ async def wx_msg(signature, timestamp, nonce, openid, request: Request):
     logger.info(request.values())
     logger.info(request.get("xml"))
     logger.info(request.json())
+    logger.info(request.form())
     logger.info(f"signature: {signature} ==> {timestamp} == > {nonce} ==> {openid}")
     xml = {
         "xml": {
