@@ -44,24 +44,26 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 
 @router.post("/", summary="回复微信消息")
 async def wx_msg(request: Request, signature, timestamp, nonce, openid):
-    xml = {
-        "xml": {
-            "ToUserName": "<![CDATA[fengzi802300]]>",
-            "FromUserName": f"<![CDATA[{openid}]]>",
-            "CreateTime": timestamp,
-            "MsgType": "<![CDATA[text]]>",
-            "Content": "<![CDATA[你好]]>"
+    temp = [TOKEN, timestamp, nonce]
+    temp.sort()
+    hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
+    logger.info(f"加密：{hashcode}，微信返回：{signature}")
+    if hashcode == signature:
+        logger.info(request.body())
+        xml = {
+            "xml": {
+                "ToUserName": "<![CDATA[fengzi802300]]>",
+                "FromUserName": f"<![CDATA[{openid}]]>",
+                "CreateTime": timestamp,
+                "MsgType": "<![CDATA[text]]>",
+                "Content": "<![CDATA[你好]]>"
+            }
         }
-    }
-    """<xml>
-  <ToUserName><![CDATA[toUser]]></ToUserName>
-  <FromUserName><![CDATA[fromUser]]></FromUserName>
-  <CreateTime>12345678</CreateTime>
-  <MsgType><![CDATA[text]]></MsgType>
-  <Content><![CDATA[你好]]></Content>
-</xml>"""
-    logger.info(xmltodict.unparse(xml))
-    return xmltodict.unparse(xml)
+        logger.info(xmltodict.unparse(xml))
+        return xmltodict.unparse(xml)
+    else:
+        logger.info(222222222222222)
+        return "success"
 
 
 @router.get("/login", summary="微信登录接口", description="微信登录接口")
