@@ -51,14 +51,14 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
     hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
     logger.info(f"加密：{hashcode}，微信返回：{signature}")
     if hashcode == signature:
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get("http://121.41.54.234/wx/login") as resp:
-                    res = await resp.json()
-            token = res["result"]["access_token"]
-        except Exception as error:
-            logger.error(f"获取微信登录token出现异常：{error}")
-            token = ""
+        # try:
+        #     async with aiohttp.ClientSession() as session:
+        #         async with session.get("http://121.41.54.234/wx/login") as resp:
+        #             res = await resp.json()
+        #     token = res["result"]["access_token"]
+        # except Exception as error:
+        #     logger.error(f"获取微信登录token出现异常：{error}")
+        token = ""
         try:
             rec_msg = parse_xml(await request.body())
             to_user = rec_msg.FromUserName
