@@ -23,14 +23,14 @@ def shares(make=False):
     day = date.today().day
     now_time = datetime.now()
     weekday = date(year, month, day).strftime("%A")
-    if not is_workday(date(year, month, day)) or weekday in ["Saturday", "Sunday"]:
+    if (not is_workday(date(year, month, day)) or weekday in ["Saturday", "Sunday"]) and not make:
         logger.info(f"当前时间 {now_time} 休市日!!!")
         return
     start_time = datetime(year, month, day, 9, 15, 0)
     end_time = datetime(year, month, day, 15, 5, 0)
     am_time = datetime(year, month, day, 11, 35, 0)
     pm_time = datetime(year, month, day, 13, 00, 0)
-    if now_time < start_time or now_time > end_time or am_time < now_time < pm_time:
+    if (now_time < start_time or now_time > end_time or am_time < now_time < pm_time) and not make:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
         return
     stock_code = "601069"
@@ -38,7 +38,7 @@ def shares(make=False):
     freq = 1
     # 获取最新一个交易日的分钟级别股票行情数据
     df = ef.stock.get_quote_history(stock_code, klt=freq)
-    if df.empty:
+    if df.empty and not make:
         logger.info(f"当前时间 {now_time} 未获取到股票数据!!!")
         return
     # 绘制图形
@@ -68,6 +68,7 @@ def shares(make=False):
     if make:
         data = f"""
         {share_name}
+        **开盘价:** {open_price} 元/股
         """
         return data
     body = {
