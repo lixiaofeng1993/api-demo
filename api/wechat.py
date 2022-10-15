@@ -57,7 +57,6 @@ async def wx_msg(signature, timestamp, nonce, openid, request: Request):
     logger.info(request.keys())
     logger.info(request.path_params)
     logger.info(request.is_disconnected())
-    logger.info(request.auth)
     logger.info(request.scope)
     logger.info(f"signature: {signature} ==> {timestamp} == > {nonce} ==> {openid}")
     xml = {
