@@ -15,11 +15,12 @@ import time
 import xmltodict
 
 from fastapi import Depends, APIRouter, HTTPException, status, Request, Body
+from starlette.responses import HTMLResponse, Response
 
 from sql_app.database import Base, engine
 from public.custom_code import result
 from conf.settings import TOKEN, AppID, AppSecret
-from public.wx_message import parse_xml
+from public.wx_message import parse_xml, Message
 from public.log import logger
 
 Base.metadata.create_all(bind=engine)  # 生成数据库
@@ -50,23 +51,22 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
     hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
     logger.info(f"加密：{hashcode}，微信返回：{signature}")
     if hashcode == signature:
-
-        rec_msg = parse_xml(await request.body())
-        logger.info(111111111111111)
-        logger.info(rec_msg)
-        xml = {
-            "xml": {
-                "ToUserName": "<![CDATA[fengzi802300]]>",
-                "FromUserName": f"<![CDATA[{openid}]]>",
-                "CreateTime": timestamp,
-                "MsgType": "<![CDATA[text]]>",
-                "Content": "<![CDATA[你好]]>"
-            }
-        }
-        logger.info(xmltodict.unparse(xml))
-        return xmltodict.unparse(xml)
-    else:
-        return "success"
+        try:
+            rec_msg = parse_xml(await request.body())
+            logger.info(rec_msg.MsgType)
+            if rec_msg.MsgType == 'text':
+                to_user = rec_msg.FromUserName
+                from_user = rec_msg.ToUserName
+                return Response(
+                    Message(to_user, from_user, content=requests.get(rec_msg.Content).text).send(),
+                    media_type="application/xml")
+            elif rec_msg.MsgType == 'event':
+                to_user = rec_msg.FromUserName
+                from_user = rec_msg.ToUserName
+                return Response(
+                    Message(to_user, from_user, content='欢迎您的关注').send(), media_type="application/xml")
+        except:
+            return HTMLResponse('success')
 
 
 @router.get("/login", summary="微信登录接口", description="微信登录接口")

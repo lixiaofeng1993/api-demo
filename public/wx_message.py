@@ -61,4 +61,4 @@ class Message:
                         <Content><![CDATA[{self.content}]]></Content>
                         </xml>
                        """
-        return
+        return message
