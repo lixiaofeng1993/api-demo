@@ -42,15 +42,9 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 
 
 @router.post("/", summary="回复微信消息")
-async def handle_wx(msg):
-    logger.info(f"msg: {msg}")
-    return {
-        'xml': {
-            'ToUserName': msg.get('FromUserName'),
-            'FromUserName': msg.get('ToUserName'),
-            'CreateTime': int(time.time()),
-        }
-    }
+async def wx_msg(signature, timestamp, nonce, openid):
+    logger.info(f"signature: {signature} ==> {timestamp} == > {nonce} ==> {openid}")
+    return result
 
 
 @router.get("/login", summary="微信登录接口", description="微信登录接口")
