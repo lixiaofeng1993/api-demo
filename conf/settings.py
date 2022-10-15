@@ -12,10 +12,6 @@ import os
 
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-TOKEN = "lixiaofeng"
-AppID = "wx99e27a845c7d8c52"
-AppSecret = "fff1120327c7297e536c44979a6273d3"
-
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -24,3 +20,14 @@ DEBUG = True if platform.system() == "Windows" else False
 
 HOST = "http://127.0.0.1:8000" if platform.system() == "Windows" else "http://121.41.54.234"
 ASSETS_PATH = os.path.join(BASE_PATH, "media")
+
+# 微信公众号
+TOKEN = "lixiaofeng"
+AppID = "wx99e27a845c7d8c52"
+AppSecret = "fff1120327c7297e536c44979a6273d3"
+
+FOLLOW = """
+这世界怎么那么多人，蹉跎回首，已不再年轻。
+这世界怎么那么多人，兜兜转转，浑噩半生。
+这世界怎么那么多人......
+"""

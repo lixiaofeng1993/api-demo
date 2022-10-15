@@ -19,7 +19,7 @@ from starlette.responses import HTMLResponse, Response
 
 from sql_app.database import Base, engine
 from public.custom_code import result
-from conf.settings import TOKEN, AppID, AppSecret
+from conf.settings import TOKEN, AppID, AppSecret, FOLLOW
 from public.wx_message import parse_xml, Message
 from public.log import logger
 
@@ -56,14 +56,19 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
             if rec_msg.MsgType == 'text':
                 to_user = rec_msg.FromUserName
                 from_user = rec_msg.ToUserName
-                return Response(
-                    Message(to_user, from_user, content=rec_msg.Content).send(),
-                    media_type="application/xml")
+                if "股票" in rec_msg.Content:
+                    return Response(
+                        Message(to_user, from_user, content=requests.get("http://127.0.0.1/api/shares").text).send(),
+                        media_type="application/xml")
+                else:
+                    return Response(
+                        Message(to_user, from_user, content=rec_msg.Content).send(),
+                        media_type="application/xml")
             elif rec_msg.MsgType == 'event':
                 to_user = rec_msg.FromUserName
                 from_user = rec_msg.ToUserName
                 return Response(
-                    Message(to_user, from_user, content='欢迎您的关注').send(), media_type="application/xml")
+                    Message(to_user, from_user, content=FOLLOW).send(), media_type="application/xml")
         except Exception as error:
             logger.error(f"微信回复信息报错：{error}")
             return HTMLResponse('success')
