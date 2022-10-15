@@ -50,7 +50,7 @@ async def wx_msg(signature, timestamp, nonce, openid, request: Request):
         "xml": {
             "ToUserName": "fengzi802300",
             "FromUserName": openid,
-            "CreateTime": time.time(),
+            "CreateTime": round(time.time(), 0),
             "MsgType": "text",
             "Content": "我好帅！",
             "MsgId": "",
