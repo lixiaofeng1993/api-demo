@@ -52,18 +52,21 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
     logger.info(f"加密：{hashcode}，微信返回：{signature}")
     if hashcode == signature:
         try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get("http://121.41.54.234/wx/login") as resp:
+                    res = await resp.json()
+            token = res["result"]["access_token"]
+        except Exception as error:
+            logger.error(f"获取微信登录token出现异常：{error}")
+            token = ""
+        try:
             rec_msg = parse_xml(await request.body())
+            to_user = rec_msg.FromUserName
+            from_user = rec_msg.ToUserName
             if rec_msg.MsgType == 'text':
-                to_user = rec_msg.FromUserName
-                from_user = rec_msg.ToUserName
                 logger.info(f"文本信息：{rec_msg.Content}")
-                if rec_msg.Content in ["图片", "小七"]:
-                    async with aiohttp.ClientSession() as session:
-                        async with session.get("http://121.41.54.234/wx/login") as resp:
-                            res = await resp.json()
-                    token = res["result"]["access_token"]
+                if rec_msg.Content in ["图片", "小七"] and token:
                     media_id = wx_media(token)
-                    logger.info(f"token：{token}，media_id：{media_id}")
                     return Response(
                         Message(to_user, from_user, media_id=media_id, msg_type="image").send(),
                         media_type="application/xml")
@@ -77,10 +80,16 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
                         Message(to_user, from_user, content=rec_msg.Content).send(),
                         media_type="application/xml")
             elif rec_msg.MsgType == 'event':
-                to_user = rec_msg.FromUserName
-                from_user = rec_msg.ToUserName
                 return Response(
                     Message(to_user, from_user, content=FOLLOW).send(), media_type="application/xml")
+            elif rec_msg.MsgType == "image":
+                if token:
+                    media_id = wx_media(token)
+                else:
+                    media_id = rec_msg.Image.MediaId
+                return Response(
+                    Message(to_user, from_user, media_id=media_id, msg_type="image").send(),
+                    media_type="application/xml")
         except Exception as error:
             logger.error(f"微信回复信息报错：{error}")
             return HTMLResponse('success')

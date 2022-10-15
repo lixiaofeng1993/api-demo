@@ -12,6 +12,7 @@ import requests
 import random
 
 from jsonpath import jsonpath
+from public.log import logger
 
 
 def wx_media(token: str):
@@ -21,8 +22,11 @@ def wx_media(token: str):
         "offset": 0,
         "count": 100
     }
-
-    res = requests.post(url=url, json=body).json()
-    media_list = jsonpath(res, "$.item[*].media_id")
-    media_id = media_list[random.randint(0, len(media_list) - 1)]
+    try:
+        res = requests.post(url=url, json=body).json()
+        media_list = jsonpath(res, "$.item[*].media_id")
+        media_id = media_list[random.randint(0, len(media_list) - 1)]
+    except Exception as error:
+        logger.error(f"获取media_id出现异常：{error}")
+        return
     return media_id

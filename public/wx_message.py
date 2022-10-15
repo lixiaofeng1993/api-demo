@@ -79,5 +79,5 @@ class Message:
                       </Image>
                     </xml>
                     """
-        logger.info(f"微信回复消息模板：{self.msg_type}")
+        logger.info(f"微信回复消息模板：{self.message}")
         return self.message
