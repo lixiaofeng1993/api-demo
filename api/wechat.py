@@ -90,11 +90,14 @@ async def login(request: Request):
             return result
 
 
-@router.post("/menu/create", summary="微信登录接口", description="微信登录接口")
-async def menu_create():
+@router.post("/rid", summary="获取rid信息", description="获取rid信息")
+async def menu_create(rid: str):
     async with aiohttp.ClientSession() as session:
         async with session.get("http://127.0.0.1:8000/wx/login") as resp:
             res = await resp.json()
     token = res["result"]["access_token"]
-    requests.post(f" https://api.weixin.qq.com/cgi-bin/menu/create?access_token={token}")
-    return res
+    body = {
+        "rid": rid
+    }
+    res = requests.post(f"https://api.weixin.qq.com/cgi-bin/openapi/rid/get?access_token={token}", json=body)
+    return res.json()
