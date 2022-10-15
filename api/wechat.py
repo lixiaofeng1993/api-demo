@@ -57,8 +57,9 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
                 from_user = rec_msg.ToUserName
                 logger.info(f"文本信息：{rec_msg.Content}")
                 if "股票" in rec_msg.Content:
+                    content = shares(make=True)
                     return Response(
-                        Message(to_user, from_user, content=shares(make=True)).send(),
+                        Message(to_user, from_user, content=content).send(),
                         media_type="application/xml")
                 else:
                     return Response(

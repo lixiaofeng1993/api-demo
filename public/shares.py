@@ -22,6 +22,7 @@ def shares(make=False):
     month = date.today().month
     day = date.today().day
     now_time = datetime.now()
+    now_img = int(round(time.time() * 1000))
     weekday = date(year, month, day).strftime("%A")
     if (not is_workday(date(year, month, day)) or weekday in ["Saturday", "Sunday"]) and not make:
         logger.info(f"当前时间 {now_time} 休市日!!!")
@@ -42,12 +43,12 @@ def shares(make=False):
         msg = f"当前时间 {now_time} 未获取到股票数据!!!"
         logger.info(msg)
         return msg
-    # 绘制图形
-    now_img = int(round(time.time() * 1000))
-    logger.info(f"当前时间戳: {now_img}")
-    plt.plot(df["开盘"].values, linewidth=1, color="red")
-    plt.savefig(os.path.join(BASE_PATH, "media", f"Chart-{now_img}.jpg"), bbox_inches='tight')
-    plt.clf()
+    if not make:
+        # 绘制图形
+        logger.info(f"当前时间戳: {now_img}")
+        plt.plot(df["开盘"].values, linewidth=1, color="red")
+        plt.savefig(os.path.join(BASE_PATH, "media", f"Chart-{now_img}.jpg"), bbox_inches='tight')
+        plt.clf()
 
     share_name = df["股票名称"].values[0]
     open_price = df["开盘"].values[0]
@@ -68,8 +69,8 @@ def shares(make=False):
 
     if make:
         data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元\n最低价：{down_price} 元/股\n" \
-               f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n" \
-               f"成交量：{turnover} 手\n换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股\n"
+               f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n成交量：{turnover} 手\n" \
+               f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股\n"
         return data
     body = {
         "msgtype": "markdown",

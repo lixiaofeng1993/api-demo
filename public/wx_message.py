@@ -55,13 +55,13 @@ class Message:
 
     def send(self):
         message = f"""
-                        <xml>
-                        <ToUserName><![CDATA[{self.to_user}]]></ToUserName>
-                        <FromUserName><![CDATA[{self.from_user}]]></FromUserName>
-                        <CreateTime>{int(time.time())}</CreateTime>
-                        <MsgType><![CDATA[text]]></MsgType>
-                        <Content><![CDATA[{self.content}]]></Content>
-                        </xml>
-                       """
-        logger.info(f"回复微信消息：{message}")
+                    <xml>
+                    <ToUserName><![CDATA[{self.to_user}]]></ToUserName>
+                    <FromUserName><![CDATA[{self.from_user}]]></FromUserName>
+                    <CreateTime>{int(time.time())}</CreateTime>
+                    <MsgType><![CDATA[text]]></MsgType>
+                    <Content><![CDATA[{self.content}]]></Content>
+                    </xml>
+                   """
+        logger.info(f"微信回复消息模板：{message}")
         return message
