@@ -48,7 +48,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
         async with session.get("http://127.0.0.1:8000/wx/login") as resp:
             res = await resp.json()
     token = res["result"]["access_token"]
-    logger.info(f"signature: {signature} ==> {timestamp} == > {nonce} ==> {openid}")
+    logger.info(f"token: {token}")
     xml = {
         "xml": {
             "ToUserName": "fengzi802300",
