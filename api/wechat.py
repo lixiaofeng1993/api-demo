@@ -19,6 +19,7 @@ from fastapi import Depends, APIRouter, HTTPException, status, Request, Body
 from sql_app.database import Base, engine
 from public.custom_code import result
 from conf.settings import TOKEN, AppID, AppSecret
+from public.wx_message import parse_xml
 from public.log import logger
 
 Base.metadata.create_all(bind=engine)  # 生成数据库
@@ -43,13 +44,16 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 
 
 @router.post("/", summary="回复微信消息")
-async def wx_msg(request: Body(...), signature, timestamp, nonce, openid):
+async def wx_msg(request: Request, signature, timestamp, nonce, openid):
     temp = [TOKEN, timestamp, nonce]
     temp.sort()
     hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
     logger.info(f"加密：{hashcode}，微信返回：{signature}")
     if hashcode == signature:
-        logger.info(request.body())
+
+        rec_msg = parse_xml(await request.body())
+        logger.info(111111111111111)
+        logger.info(rec_msg)
         xml = {
             "xml": {
                 "ToUserName": "<![CDATA[fengzi802300]]>",
@@ -62,7 +66,6 @@ async def wx_msg(request: Body(...), signature, timestamp, nonce, openid):
         logger.info(xmltodict.unparse(xml))
         return xmltodict.unparse(xml)
     else:
-        logger.info(222222222222222)
         return "success"
 
 
