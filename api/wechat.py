@@ -12,6 +12,7 @@ import hashlib
 import requests
 import aiohttp
 import time
+import xmltodict
 
 from fastapi import Depends, APIRouter, HTTPException, status, Request, Body
 
@@ -44,7 +45,19 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 @router.post("/", summary="回复微信消息")
 async def wx_msg(signature, timestamp, nonce, openid):
     logger.info(f"signature: {signature} ==> {timestamp} == > {nonce} ==> {openid}")
-    return result
+    xml = {
+        "xml": {
+            "ToUserName": "fengzi802300",
+            "FromUserName": openid,
+            "CreateTime": time.time(),
+            "MsgType": "text",
+            "Content": "我好帅！",
+            "MsgId": "",
+            "MsgDataId": "",
+            "Idx": "",
+        }
+    }
+    return xmltodict.unparse(xml)
 
 
 @router.get("/login", summary="微信登录接口", description="微信登录接口")
