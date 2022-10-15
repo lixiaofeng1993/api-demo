@@ -43,7 +43,7 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 
 
 @router.post("/", summary="回复微信消息")
-async def wx_msg(request: Request, signature, timestamp, nonce, openid):
+async def wx_msg(request: Body(...), signature, timestamp, nonce, openid):
     temp = [TOKEN, timestamp, nonce]
     temp.sort()
     hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
