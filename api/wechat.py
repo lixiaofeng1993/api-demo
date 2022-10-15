@@ -44,7 +44,10 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 
 @router.post("/", summary="回复微信消息")
 async def wx_msg(request: Request, signature, timestamp, nonce, openid):
-    logger.info(request.url.query)
+    async with aiohttp.ClientSession() as session:
+        async with session.get("http://127.0.0.1:8000/wx/login") as resp:
+            res = await resp.json()
+    token = res["result"]["access_token"]
     logger.info(f"signature: {signature} ==> {timestamp} == > {nonce} ==> {openid}")
     xml = {
         "xml": {
@@ -55,6 +58,14 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
             "Content": "我好帅！"
         }
     }
+    url = f"https://api.weixin.qq.com/sns/userinfo" \
+          f"?access_token={token}" \
+          f"&openid={openid}" \
+          f"&lang=zh_CN"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            res = await resp.json()
+    logger.info(res)
     logger.info(xmltodict.unparse(xml))
     return xmltodict.unparse(xml)
 
