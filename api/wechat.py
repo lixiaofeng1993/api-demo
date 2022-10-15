@@ -43,23 +43,23 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 
 
 @router.post("/", summary="回复微信消息")
-async def wx_msg(request: Request):
-    logger.info(request.scope)
-    # logger.info(f"signature: {signature} ==> {timestamp} == > {nonce} ==> {openid}")
-    # xml = {
-    #     "xml": {
-    #         "ToUserName": "fengzi802300",
-    #         "FromUserName": openid,
-    #         "CreateTime": round(time.time(), 0),
-    #         "MsgType": "text",
-    #         "Content": "我好帅！",
-    #         "MsgId": "",
-    #         "MsgDataId": "",
-    #         "Idx": "",
-    #     }
-    # }
-    # logger.info(xmltodict.unparse(xml))
-    return {}
+async def wx_msg(request: Request, signature, timestamp, nonce, openid):
+    logger.info(request.values().__dict__)
+    logger.info(f"signature: {signature} ==> {timestamp} == > {nonce} ==> {openid}")
+    xml = {
+        "xml": {
+            "ToUserName": "fengzi802300",
+            "FromUserName": openid,
+            "CreateTime": round(time.time(), 0),
+            "MsgType": "text",
+            "Content": "我好帅！",
+            "MsgId": "",
+            "MsgDataId": "",
+            "Idx": "",
+        }
+    }
+    logger.info(xmltodict.unparse(xml))
+    return xmltodict.unparse(xml)
 
 
 @router.get("/login", summary="微信登录接口", description="微信登录接口")
