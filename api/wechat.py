@@ -62,10 +62,8 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
           f"?access_token={token}" \
           f"&openid={openid}" \
           f"&lang=zh_CN"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            res = await resp.json()
-    logger.info(res)
+    res = requests.get(url)
+    logger.info(res.json())
     logger.info(xmltodict.unparse(xml))
     return xmltodict.unparse(xml)
 
