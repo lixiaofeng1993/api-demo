@@ -38,9 +38,10 @@ def shares(make=False):
     freq = 1
     # 获取最新一个交易日的分钟级别股票行情数据
     df = ef.stock.get_quote_history(stock_code, klt=freq)
-    if df.empty and not make:
-        logger.info(f"当前时间 {now_time} 未获取到股票数据!!!")
-        return
+    if df.empty:
+        msg = f"当前时间 {now_time} 未获取到股票数据!!!"
+        logger.info(msg)
+        return msg
     # 绘制图形
     now_img = int(round(time.time() * 1000))
     logger.info(f"当前时间戳: {now_img}")
@@ -66,9 +67,9 @@ def shares(make=False):
     down_price_color = "#FF0000" if down_price > open_price else "#00FF00"
 
     if make:
-        data = f"{share_name}\n**开盘价** {open_price} 元/股\n**最高价** {top_price} 元\n**最低价** {down_price} 元/股\n" \
-               f"**最低价** {down_price} 元/股\n**平均价** {average} 元/股\n**涨跌幅** {rise_and_fall} %\n**涨跌额** {rise_and_price} 元\n" \
-               f"**成交量** {turnover} 手\n**换手率** {turnover_rate} %\n**时间** {new_time} \n**最新价** {new_price} 元/股\n"
+        data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元\n最低价：{down_price} 元/股\n" \
+               f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n" \
+               f"成交量：{turnover} 手\n换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股\n"
         return data
     body = {
         "msgtype": "markdown",
