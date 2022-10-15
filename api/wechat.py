@@ -15,6 +15,7 @@ import time
 import xmltodict
 
 from fastapi import Depends, APIRouter, HTTPException, status, Request, Body
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from sql_app.database import Base, engine
 from public.custom_code import result
@@ -43,8 +44,9 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 
 
 @router.post("/", summary="回复微信消息")
-async def wx_msg(signature, timestamp, nonce, openid):
+async def wx_msg(signature, timestamp, nonce, openid, form_data: OAuth2PasswordRequestForm = Depends()):
     logger.info(f"signature: {signature} ==> {timestamp} == > {nonce} ==> {openid}")
+    logger.info(f"{form_data}")
     xml = {
         "xml": {
             "ToUserName": "fengzi802300",
