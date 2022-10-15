@@ -20,6 +20,7 @@ from public.custom_code import result
 from conf.settings import TOKEN, AppID, AppSecret, FOLLOW
 from public.wx_message import parse_xml, Message
 from public.shares import shares
+from public.wx_img import wx_media
 from public.log import logger
 
 Base.metadata.create_all(bind=engine)  # 生成数据库
@@ -56,8 +57,18 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
                 to_user = rec_msg.FromUserName
                 from_user = rec_msg.ToUserName
                 logger.info(f"文本信息：{rec_msg.Content}")
-                if "股票" in rec_msg.Content:
-                    content = shares(make=True)
+                if rec_msg.Content in ["图片", "小七"]:
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get("http://121.41.54.234/wx/login") as resp:
+                            res = await resp.json()
+                    token = res["result"]["access_token"]
+                    media_id = wx_media(token)
+                    logger.info(f"token：{token}，media_id：{media_id}")
+                    return Response(
+                        Message(to_user, from_user, media_id=media_id, msg_type="image").send(),
+                        media_type="application/xml")
+                content = shares(stock_code=rec_msg.Content)
+                if content:
                     return Response(
                         Message(to_user, from_user, content=content).send(),
                         media_type="application/xml")

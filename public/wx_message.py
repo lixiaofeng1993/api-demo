@@ -48,20 +48,36 @@ class EventMsg(Msg):
 
 
 class Message:
-    def __init__(self, to_user, from_user, content):
+    def __init__(self, to_user, from_user, content="", media_id="", msg_type="text"):
         self.to_user = to_user
         self.from_user = from_user
         self.content = content
+        self.media_id = media_id
+        self.msg_type = msg_type
+        self.message = ""
 
     def send(self):
-        message = f"""
-                    <xml>
-                    <ToUserName><![CDATA[{self.to_user}]]></ToUserName>
-                    <FromUserName><![CDATA[{self.from_user}]]></FromUserName>
-                    <CreateTime>{int(time.time())}</CreateTime>
-                    <MsgType><![CDATA[text]]></MsgType>
-                    <Content><![CDATA[{self.content}]]></Content>
-                    </xml>
+        if self.msg_type == "text":
+            self.message = f"""
+                        <xml>
+                        <ToUserName><![CDATA[{self.to_user}]]></ToUserName>
+                        <FromUserName><![CDATA[{self.from_user}]]></FromUserName>
+                        <CreateTime>{int(time.time())}</CreateTime>
+                        <MsgType><![CDATA[text]]></MsgType>
+                        <Content><![CDATA[{self.content}]]></Content>
+                        </xml>
                    """
-        logger.info(f"微信回复消息模板：{message}")
-        return message
+        elif self.msg_type == "image":
+            self.message = f"""
+                    <xml>
+                      <ToUserName><![CDATA[{self.to_user}]]></ToUserName>
+                      <FromUserName><![CDATA[{self.from_user}]]></FromUserName>
+                      <CreateTime>{int(time.time())}</CreateTime>
+                      <MsgType><![CDATA[image]]></MsgType>
+                      <Image>
+                        <MediaId><![CDATA[{self.media_id}]]></MediaId>
+                      </Image>
+                    </xml>
+                    """
+        logger.info(f"微信回复消息模板：{self.msg_type}")
+        return self.message

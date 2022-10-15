@@ -17,7 +17,13 @@ from public.send_ding import send_ding
 from public.log import logger, BASE_PATH, os
 
 
-def shares(make=False):
+def shares(stock_code=""):
+    make = False
+    if not stock_code:
+        stock_code = "601069"
+    else:
+        make = True
+        stock_code = stock_code
     year = date.today().year
     month = date.today().month
     day = date.today().day
@@ -34,15 +40,13 @@ def shares(make=False):
     if (now_time < start_time or now_time > end_time or am_time < now_time < pm_time) and not make:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
         return
-    stock_code = "601069"
     # 数据间隔时间为 1 分钟
     freq = 1
     # 获取最新一个交易日的分钟级别股票行情数据
     df = ef.stock.get_quote_history(stock_code, klt=freq)
     if df.empty:
-        msg = f"当前时间 {now_time} 未获取到股票数据!!!"
-        logger.info(msg)
-        return msg
+        logger.info(f"当前时间 {now_time} 未获取到股票数据!!!")
+        return
     if not make:
         # 绘制图形
         logger.info(f"当前时间戳: {now_img}")
