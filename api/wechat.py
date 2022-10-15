@@ -56,6 +56,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
             if rec_msg.MsgType == 'text':
                 to_user = rec_msg.FromUserName
                 from_user = rec_msg.ToUserName
+                logger.info(f"文本信息：{rec_msg.Content}")
                 if "股票" in rec_msg.Content:
                     return Response(
                         Message(to_user, from_user, content=requests.get("http://121.41.54.234/api/shares").text).send(),
