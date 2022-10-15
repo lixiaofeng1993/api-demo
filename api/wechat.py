@@ -58,6 +58,7 @@ async def wx_msg(signature, timestamp, nonce, openid, request: Request):
             "Idx": "",
         }
     }
+    logger.info(xmltodict.unparse(xml))
     return xmltodict.unparse(xml)
 
 
