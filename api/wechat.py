@@ -46,11 +46,11 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 async def wx_msg(request: Request, signature, timestamp, nonce, openid):
     xml = {
         "xml": {
-            "ToUserName": "fengzi802300",
-            "FromUserName": openid,
+            "ToUserName": "<![CDATA[fengzi802300]]",
+            "FromUserName": f"<![CDATA[{openid}]]",
             "CreateTime": timestamp,
-            "MsgType": "text",
-            "Content": "我好帅！"
+            "MsgType": "<![CDATA[text]]>",
+            "Content": "<![CDATA[你好]]>"
         }
     }
     """<xml>
