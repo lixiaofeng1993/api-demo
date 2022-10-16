@@ -39,7 +39,7 @@ def wx_media(token: str):
     try:
         res = requests.post(url=url, json=body).json()
         media_list = jsonpath(res, "$.item[*].media_id")
-        media_id = media_list[random.randint(0, len(media_list) - 1)
+        media_id = media_list[random.randint(0, len(media_list) - 1)]
         logger.info(f"media_id: {media_id}")
     except Exception as error:
         logger.error(f"获取media_id出现异常：{error}")
