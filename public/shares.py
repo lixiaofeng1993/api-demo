@@ -32,14 +32,14 @@ def shares(stock_code=""):
     weekday = date(year, month, day).strftime("%A")
     if (not is_workday(date(year, month, day)) or weekday in ["Saturday", "Sunday"]) and not make:
         logger.info(f"当前时间 {now_time} 休市日!!!")
-        # return
+        return
     start_time = datetime(year, month, day, 9, 15, 0)
     end_time = datetime(year, month, day, 15, 5, 0)
     am_time = datetime(year, month, day, 11, 35, 0)
     pm_time = datetime(year, month, day, 13, 00, 0)
     if (now_time < start_time or now_time > end_time or am_time < now_time < pm_time) and not make:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
-        # return
+        return
     # 数据间隔时间为 1 分钟
     freq = 1
     # 获取最新一个交易日的分钟级别股票行情数据
