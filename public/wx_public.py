@@ -173,12 +173,12 @@ def send_wx_msg(rec_msg, token):
     content, media_id = "", ""
     if rec_msg.MsgType == 'text':
         logger.info(f"文本信息：{rec_msg.Content}")
-        content = rec_msg.Content
         patt = r"[\d+]{4}.[\d+]{1,2}.[\d+]{1,2}"
-        content = re.findall(patt, content)
+        content = re.findall(patt, rec_msg.Content)
         if content:
             content = age_content(content)
         else:
+            content = rec_msg.Content
             if content in ["图片", "小七"] and token:
                 media_id = wx_media(token)
             elif content in ["今天", "today"]:
