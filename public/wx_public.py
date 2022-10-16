@@ -70,16 +70,17 @@ def age_content(date: list):
     :return:
     """
     year, mouth, day = date[0].split(".")
-    age = datetime.date(int(year), int(mouth), int(day))
-    age_date = datetime.datetime(int(year), int(mouth), int(day))
+    year, mouth, day = int(year), int(mouth), int(day)
+    age = datetime.date(year, mouth, day)
+    age_date = datetime.datetime(year, mouth, day)
     lunar = ZhDate.from_datetime(age_date)
     now = datetime.datetime.now().date()
     age_num = str(now - age).split(" ")[0]
-    age_50 = datetime.date(2043, 2, 9)
-    age_60 = datetime.date(2053, 2, 9)
-    age_70 = datetime.date(2063, 2, 9)
-    age_80 = datetime.date(2073, 2, 9)
-    age_100 = datetime.date(2093, 2, 9)
+    age_50 = datetime.date(year + 50, 2, 9)
+    age_60 = datetime.date(year + 60, 2, 9)
+    age_70 = datetime.date(year + 70, 2, 9)
+    age_80 = datetime.date(year + 80, 2, 9)
+    age_100 = datetime.date(year + 100, 2, 9)
     data = f"阴历：{lunar.chinese()}\n距今天过去了 {age_num} 天\n然后呢：\n到 半百 一共 {str(age_50 - age).split(' ')[0]}" \
            f" 天，还剩 {str(age_50 - now).split(' ')[0]} 天\n到 花甲 一共 {str(age_60 - age).split(' ')[0]} 天， " \
            f"还剩下 {str(age_60 - now).split(' ')[0]} 天\n到 古稀 一共 {str(age_70 - age).split(' ')[0]} 天， 还剩下 " \
@@ -190,11 +191,13 @@ def send_wx_msg(rec_msg, token):
                 if not content:
                     content = rec_msg.Content
     elif rec_msg.MsgType == 'event':
-        content = FOLLOW
+        if rec_msg.Event == "subscribe":
+            content = FOLLOW
+        elif rec_msg.Event == "unsubscribe":
+            logger.info(f"用户 {rec_msg.FromUserName} 取消关注了！！！")
     elif rec_msg.MsgType == "image":
         if token:
             media_id = wx_media(token)
         else:
             media_id = rec_msg.MediaId
-    logger.info(f"{content}===>>>{media_id}===>{token}")
     return content, media_id

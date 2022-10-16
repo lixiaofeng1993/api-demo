@@ -46,7 +46,7 @@ class EventMsg(Msg):
     def __init__(self, xml_data):
         Msg.__init__(self, xml_data)
         self.Content = xml_data.find('EventKey').text
-        self.Enevt = xml_data.find('Event').text
+        self.Event = xml_data.find('Event').text
 
 
 class ImageMsg(Msg):

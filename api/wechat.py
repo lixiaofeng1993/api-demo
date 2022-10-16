@@ -58,7 +58,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
                 return Response(
                     Message(to_user, from_user, content=content).send(),
                     media_type="application/xml")
-            elif rec_msg.MsgType == 'event':
+            elif rec_msg.MsgType == 'event' and content:
                 return Response(
                     Message(to_user, from_user, content=content).send(), media_type="application/xml")
             elif rec_msg.MsgType == "image" or media_id:
