@@ -72,7 +72,7 @@ def shares(stock_code=""):
     down_price_color = "#FF0000" if down_price > open_price else "#00FF00"
 
     if make:
-        data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元\n最低价：{down_price} 元/股\n" \
+        data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：<font color={top_price_color}>{top_price}</font> 元/股\n最低价：{down_price} 元/股\n" \
                f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n成交量：{turnover} 手\n" \
                f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股\n"
         return data
