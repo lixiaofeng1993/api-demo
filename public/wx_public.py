@@ -195,4 +195,5 @@ def send_wx_msg(rec_msg, token):
             media_id = wx_media(token)
         else:
             media_id = rec_msg.MediaId
+    logger.info(f"{content}===>>>{media_id}===>{token}")
     return content, media_id
