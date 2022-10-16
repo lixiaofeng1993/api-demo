@@ -9,16 +9,16 @@
 """
 
 import requests
+import aiohttp
 
 from fastapi import Depends, APIRouter, HTTPException, status, Request, Body
 from starlette.responses import HTMLResponse, Response
 
 from sql_app.database import Base, engine
 from public.custom_code import result
-from conf.settings import TOKEN, AppID, AppSecret, FOLLOW
+from conf.settings import AppID, AppSecret
 from public.wx_message import parse_xml, Message
-from public.shares import shares
-from public.wx_public import wx_media, sign_sha1, get_token, send_wx_msg
+from public.wx_public import sign_sha1, send_wx_msg
 from public.log import logger
 
 Base.metadata.create_all(bind=engine)  # 生成数据库
@@ -41,12 +41,19 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 @router.post("/", summary="回复微信消息")
 async def wx_msg(request: Request, signature, timestamp, nonce, openid):
     if sign_sha1(signature, timestamp, nonce):
-        token = get_token()
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get("http://121.41.54.234/wx/login") as resp:
+                    res = await resp.json()
+            token = res["result"]["access_token"]
+        except Exception as error:
+            logger.error(f"获取微信登录token出现异常：{error}")
+            token = ""
         try:
             rec_msg = parse_xml(await request.body())
             to_user = rec_msg.FromUserName
             from_user = rec_msg.ToUserName
-            content, media_id = send_wx_msg(rec_msg)
+            content, media_id = send_wx_msg(rec_msg, token)
             if rec_msg.MsgType == 'text' and not media_id:
                 return Response(
                     Message(to_user, from_user, content=content).send(),

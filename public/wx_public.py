@@ -62,22 +62,6 @@ def sign_sha1(signature, timestamp, nonce):
         return True
 
 
-def get_token():
-    """
-    返回微信登录token
-    :return:
-    """
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get("http://121.41.54.234/wx/login") as resp:
-                res = await resp.json()
-        token = res["result"]["access_token"]
-    except Exception as error:
-        logger.error(f"获取微信登录token出现异常：{error}")
-        token = ""
-    return token
-
-
 def age_content(date: list):
     """
     年龄相关
@@ -184,8 +168,7 @@ def fishing(make=False):
     return content
 
 
-def send_wx_msg(rec_msg):
-    token = get_token()
+def send_wx_msg(rec_msg, token):
     content, media_id = "", ""
     if rec_msg.MsgType == 'text':
         logger.info(f"文本信息：{rec_msg.Content}")
