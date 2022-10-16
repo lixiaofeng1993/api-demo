@@ -184,6 +184,8 @@ def send_wx_msg(rec_msg, token):
                 media_id = wx_media(token)
             elif content in ["all", "文章"]:
                 content = ArticleUrl
+            elif content in ["follow", "功能"]:
+                content = FOLLOW
             elif content in ["今天", "today"]:
                 content = fishing(make=True)
             elif content == "放假":

@@ -34,6 +34,7 @@ FOLLOW = "这世界怎么那么多人，蹉跎回首，已不再年轻。\n这�
          "回复 【<a href='weixin://bizmsgmenu?msgmenucontent=today&msgmenuid=today'>today</a>】，返回万年历当天信息\n" \
          "回复 【<a href='weixin://bizmsgmenu?msgmenucontent=放假&msgmenuid=放假'>放假</a>】，返回万年历当年放假安排\n" \
          "回复 【<a href='weixin://bizmsgmenu?msgmenucontent=西部黄金&msgmenuid=西部黄金'>股票名称</a>】" \
-         "【<a href='weixin://bizmsgmenu?msgmenucontent=601069&msgmenuid=601069'>股票代码</a>】，返回当天股票走势信息\n"
+         "【<a href='weixin://bizmsgmenu?msgmenucontent=601069&msgmenuid=601069'>股票代码</a>】，返回当天股票走势信息\n" \
+         "回复 【<a href='weixin://bizmsgmenu?msgmenucontent=follow&msgmenuid=follow'>功能</a>】，返回公众号功能信息\n"
 ArticleUrl = "<a href='https://mp.weixin.qq.com/mp/appmsgalbum?__biz=Mzg3NDg2Njc3MQ==&action=getalbum&album_id=" \
              "2622547569440768001#wechat_redirect'>点击查看所有文章</a>"
