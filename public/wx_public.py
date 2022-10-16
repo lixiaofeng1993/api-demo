@@ -20,7 +20,7 @@ from zhdate import ZhDate
 from requests_html import HTMLSession
 
 from public.log import logger
-from conf.settings import TOKEN, FOLLOW
+from conf.settings import TOKEN, FOLLOW, ArticleUrl
 from public.shares import shares
 
 
@@ -182,6 +182,8 @@ def send_wx_msg(rec_msg, token):
             content = rec_msg.Content
             if content in ["图片", "小七"] and token:
                 media_id = wx_media(token)
+            elif content in ["all", "文章"]:
+                content = ArticleUrl
             elif content in ["今天", "today"]:
                 content = fishing(make=True)
             elif content == "放假":
