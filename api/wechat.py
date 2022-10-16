@@ -8,9 +8,7 @@
 # 说   明: 
 """
 
-import hashlib
 import requests
-import aiohttp
 
 from fastapi import Depends, APIRouter, HTTPException, status, Request, Body
 from starlette.responses import HTMLResponse, Response
@@ -20,7 +18,7 @@ from public.custom_code import result
 from conf.settings import TOKEN, AppID, AppSecret, FOLLOW
 from public.wx_message import parse_xml, Message
 from public.shares import shares
-from public.wx_img import wx_media
+from public.wx_public import wx_media, sign_sha1, get_token, send_wx_msg
 from public.log import logger
 
 Base.metadata.create_all(bind=engine)  # 生成数据库
@@ -31,11 +29,7 @@ router = APIRouter()
 @router.get("/", summary="微信服务器配置验证")
 async def handle_wx(signature, timestamp, nonce, echostr):
     try:
-        temp = [TOKEN, timestamp, nonce]
-        temp.sort()
-        hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
-        logger.info(f"加密：{hashcode}，微信返回：{signature}")
-        if hashcode == signature:
+        if sign_sha1(signature, timestamp, nonce):
             return int(echostr)
         else:
             logger.error("加密字符串 不等于 微信返回字符串，验证失败！！！")
@@ -46,47 +40,21 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 
 @router.post("/", summary="回复微信消息")
 async def wx_msg(request: Request, signature, timestamp, nonce, openid):
-    temp = [TOKEN, timestamp, nonce]
-    temp.sort()
-    hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
-    logger.info(f"加密：{hashcode}，微信返回：{signature}")
-    if hashcode == signature:
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get("http://121.41.54.234/wx/login") as resp:
-                    res = await resp.json()
-            token = res["result"]["access_token"]
-        except Exception as error:
-            logger.error(f"获取微信登录token出现异常：{error}")
-            token = ""
+    if sign_sha1(signature, timestamp, nonce):
+        token = get_token()
         try:
             rec_msg = parse_xml(await request.body())
             to_user = rec_msg.FromUserName
             from_user = rec_msg.ToUserName
-            if rec_msg.MsgType == 'text':
-                logger.info(f"文本信息：{rec_msg.Content}")
-                if rec_msg.Content in ["图片", "小七"] and token:
-                    media_id = wx_media(token)
-                    return Response(
-                        Message(to_user, from_user, media_id=media_id, msg_type="image").send(),
-                        media_type="application/xml")
-                content = shares(stock_code=rec_msg.Content)
-                if content:
-                    return Response(
-                        Message(to_user, from_user, content=content).send(),
-                        media_type="application/xml")
-                else:
-                    return Response(
-                        Message(to_user, from_user, content=rec_msg.Content).send(),
-                        media_type="application/xml")
+            content, media_id = send_wx_msg(rec_msg)
+            if rec_msg.MsgType == 'text' and not media_id:
+                return Response(
+                    Message(to_user, from_user, content=content).send(),
+                    media_type="application/xml")
             elif rec_msg.MsgType == 'event':
                 return Response(
-                    Message(to_user, from_user, content=FOLLOW).send(), media_type="application/xml")
-            elif rec_msg.MsgType == "image":
-                if token:
-                    media_id = wx_media(token)
-                else:
-                    media_id = rec_msg.MediaId
+                    Message(to_user, from_user, content=content).send(), media_type="application/xml")
+            elif rec_msg.MsgType == "image" or media_id:
                 return Response(
                     Message(to_user, from_user, media_id=media_id, msg_type="image").send(),
                     media_type="application/xml")
@@ -115,16 +83,3 @@ async def login(request: Request):
         except Exception as error:
             result["result"] = error
             return result
-
-
-@router.post("/rid", summary="获取rid信息", description="获取rid信息")
-async def menu_create(rid: str):
-    async with aiohttp.ClientSession() as session:
-        async with session.get("http://127.0.0.1:8000/wx/login") as resp:
-            res = await resp.json()
-    token = res["result"]["access_token"]
-    body = {
-        "rid": rid
-    }
-    res = requests.post(f"https://api.weixin.qq.com/cgi-bin/openapi/rid/get?access_token={token}", json=body)
-    return res.json()
