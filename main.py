@@ -9,7 +9,7 @@ from pathlib import Path
 
 from tasks import repeat_task
 from public.shares import shares
-from api import users, project, sign, api, wechat
+from api import users, project, sign, api, wechat, poetry
 from dependencies import get_current_user
 from public.custom_code import response_error
 
@@ -91,6 +91,13 @@ app.include_router(
     wechat.router,
     prefix="/wx",
     tags=["wx"],
+    responses=response_error
+)
+
+app.include_router(
+    poetry.router,
+    prefix="/ver",
+    tags=["ver"],
     responses=response_error
 )
 

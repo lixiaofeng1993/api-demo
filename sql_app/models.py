@@ -64,3 +64,36 @@ class Project(Base):
 
     sign = relationship("Sign", back_populates="project")
     users = relationship("User", back_populates="project")
+
+
+class Author(Base):
+    __tablename__ = "author"
+
+    id = Column(String(32), default=get_id, primary_key=True, index=True)
+    name = Column(String(20), index=True)
+    introduce = Column(Text, default=None)  # 介绍
+    is_delete = Column(Boolean, default=False)
+    update_date = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    create_date = Column(DateTime, default=datetime.now)
+
+    poetry = relationship("Poetry", back_populates="author")
+
+
+class Poetry(Base):
+    __tablename__ = "poetry"
+
+    id = Column(String(32), default=get_id, primary_key=True, index=True)
+    type = Column(String(20), index=True)  # 类型
+    phrase = Column(String(200), index=True)  # 名句
+    explain = Column(Text, default=None)  # 解释
+    appreciation = Column(Text, default=None)  # 赏析
+    name = Column(String(200), index=True)
+    original = Column(Text, default=None)  # 原文
+    translation = Column(Text, default=None)  # 译文
+    url = Column(String(200), default=None)  # 地址
+    is_delete = Column(Boolean, default=False)
+    update_date = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    create_date = Column(DateTime, default=datetime.now)
+
+    author_id = Column(String(32), ForeignKey("author.id"), default=None)
+    author = relationship("Author", back_populates="poetry")
