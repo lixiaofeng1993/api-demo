@@ -35,12 +35,14 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                  '警世通言', '幼学琼林', '小窗幽记', '三国演义', '贞观政要']
     # type_list = ["贞观政要"]
     for tstr in type_list:
-        with HTMLSession() as session:
-            res = session.get(f"https://so.gushiwen.cn/mingjus/default.aspx?tstr={tstr}").html
+        for i in range(1, 5):
+            with HTMLSession() as session:
+                base_url = f"https://so.gushiwen.cn/mingjus/default.aspx?page={i}&tstr={tstr}&astr=&cstr=&xstr="
+                res = session.get(base_url).html
             try:
                 links = res.xpath('//*[@id="html"]/body/div[2]/div[1]/div[2]/div[1]/a[1]', first=True).links
             except Exception as error:
-                logger.error(f"错误：{error}")
+                logger.error(f"第一层 url 错误：{base_url} ==> {error}")
                 continue
             details_links = []
             for link in links:
@@ -89,7 +91,7 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                     if name not in introduce:
                         introduce = ""
                 except Exception as error:
-                    logger.error(f"错误：{error}")
+                    logger.error(f"第二层url 错误：{error} ==> {details_link}")
                     poetry = crud_poetry.get_poetry_by_name(db, poetry_name)
                     if not poetry:
                         poetry = crud_poetry.create_poetry1(db, poetry={
