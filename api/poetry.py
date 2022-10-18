@@ -26,7 +26,7 @@ router = APIRouter()
 
 
 @router.get("/", summary="爬取古诗词")
-async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_current_user_info)):
+def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_current_user_info)):
     type_list = ['春天', '夏天', '秋天', '冬天', '爱国', '写雪', '思念', '爱情', '思乡', '离别', '月亮', '梅花', '励志', '荷花', '写雨', '友情', '感恩',
                  '写风', '西湖', '读书', '菊花', '长江', '黄河', '竹子', '哲理', '泰山', '边塞', '柳树', '写鸟', '桃花', '老师', '母亲', '伤感', '田园',
                  '写云', '庐山', '山水', '星星', '荀子', '孟子', '论语', '墨子', '老子', '史记', '中庸', '礼记', '尚书', '晋书', '左传', '论衡', '管子',
@@ -123,4 +123,4 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                     })
                     logger.info(f"古诗：{poetry_name} 爬取成功！作者：{name}")
                     result["result"] += poetry_name + "\n"
-        return result
+    return result
