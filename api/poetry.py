@@ -27,10 +27,7 @@ router = APIRouter()
 
 @router.get("/", summary="爬取古诗词")
 def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_current_user_info)):
-    type_list = ['春天', '夏天', '秋天', '冬天', '爱国', '写雪', '思念', '爱情', '思乡', '离别', '月亮', '梅花', '励志', '荷花', '写雨', '友情', '感恩',
-                 '写风', '西湖', '读书', '菊花', '长江', '黄河', '竹子', '哲理', '泰山', '边塞', '柳树', '写鸟', '桃花', '老师', '母亲', '伤感', '田园',
-                 '写云', '庐山', '山水', '星星', '荀子', '孟子', '论语', '墨子', '老子', '史记', '中庸', '礼记', '尚书', '晋书', '左传', '论衡', '管子',
-                 '说苑', '列子', '国语', '节日', '春节', '元宵节', '寒食节', '清明节', '端午节', '七夕节', '中秋节', '重阳节', '韩非子', '罗织经', '菜根谭',
+    type_list = ['说苑', '列子', '国语', '节日', '春节', '元宵节', '寒食节', '清明节', '端午节', '七夕节', '中秋节', '重阳节', '韩非子', '罗织经', '菜根谭',
                  '红楼梦', '弟子规', '战国策', '后汉书', '淮南子', '商君书', '水浒传', '西游记', '格言联璧', '围炉夜话', '增广贤文', '吕氏春秋', '文心雕龙', '醒世恒言',
                  '警世通言', '幼学琼林', '小窗幽记', '三国演义', '贞观政要']
     # type_list = ["贞观政要"]
@@ -92,7 +89,7 @@ def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_current_u
                         introduce = ""
                 except Exception as error:
                     logger.error(f"第二层url 错误：{error} ==> {details_link}")
-                    poetry = crud_poetry.get_poetry_by_name(db, poetry_name)
+                    poetry = crud_poetry.get_poetry_by_name_and_phrase(db, poetry_name, phrase)
                     if not poetry:
                         poetry = crud_poetry.create_poetry1(db, poetry={
                             "type": tstr,
@@ -102,7 +99,6 @@ def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_current_u
                             "url": details_link,
                         })
                         logger.info(f"古诗：{poetry_name} 爬取成功！作者：无")
-                        result["result"] += poetry_name + "\n"
                     continue
                 author = crud_poetry.get_author_by_name(db, name)
                 if not author:
@@ -122,5 +118,4 @@ def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_current_u
                         "author_id": author_id,
                     })
                     logger.info(f"古诗：{poetry_name} 爬取成功！作者：{name}")
-                    result["result"] += poetry_name + "\n"
     return result
