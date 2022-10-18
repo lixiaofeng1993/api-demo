@@ -141,10 +141,10 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                                 appreciation = text.split("：")[-1]  # 赏析
                             elif "摘自" in text:
                                 poetry_name_patt = "《(.+)》"
-                                poetry_name = re.findall(poetry_name_patt, text)[0]  # 名字
-                            elif "出自" in text:
+                                poetry_name = re.findall(poetry_name_patt, text)[0]  # 古诗名字
+                            elif "出自" in text and "（出自" not in text:
                                 name_patt = "[秦|汉|晋|朝|代](.+?)的《"
-                                name = re.findall(name_patt, text)[0]  #
+                                name = re.findall(name_patt, text)[0]  # 作者名字
                                 if "(" in name and ")" in name:
                                     _name_patt = "(.+)\\("
                                     _name = re.findall(_name_patt, name)[0]
