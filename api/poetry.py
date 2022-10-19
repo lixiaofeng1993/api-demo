@@ -131,7 +131,7 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                 if not detail_data:
                     logger.error(f"第二层 地址：{url}, 未发现 {css_patt}")
                     continue
-                logger.info(f"当前执行的url：{link}")
+                # logger.info(f"当前执行的url：{link}")
                 detail = detail_data.text.split("猜您喜欢")[0]
                 explain, appreciation, poetry_name, original, translation, background, name, dynasty = \
                     "", "", "", "", "", "", "", ""
@@ -178,9 +178,9 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                 background_list = re.findall(background_patt, detail)
                 if background_list:
                     background = background_list[0]  # 创作背景
-                logger.info(
-                    f"第{i}页 ==> 第{j}条 ==>名句：{phrase} ==> 作者：{name} ==> 朝代：{dynasty} ==> 古诗名字：{poetry_name} ==> "
-                    f"古诗类型：{poetry_type}")
+                # logger.info(
+                #     f"第{i}页 ==> 第{j}条 ==>名句：{phrase} ==> 作者：{name} ==> 朝代：{dynasty} ==> 古诗名字：{poetry_name} ==> "
+                #     f"古诗类型：{poetry_type}")
                 if name == "佚名":
                     author = crud_poetry.get_author_by_name(db, name)
                     author_id = author.id
