@@ -35,7 +35,7 @@ app.add_middleware(
 
 
 async def get_redis_pool() -> Redis:
-    redis = await create_redis_pool(f"redis://:@127.0.0.1:6379/0", encoding="utf-8")
+    redis = await create_redis_pool(f"redis://:@127.0.0.1:6379/0", password="123456", encoding="utf-8")
     return redis
 
 

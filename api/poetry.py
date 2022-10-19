@@ -90,14 +90,8 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                  '中秋节': 2, '重阳节': 1, '韩非子': 4, '菜根谭': 2, '红楼梦': 3, '弟子规': 2, '战国策': 2, '后汉书': 2, '淮南子': 2, '商君书': 2,
                  '水浒传': 2, '格言联璧': 5, '围炉夜话': 4, '增广贤文': 5, '吕氏春秋': 2, '文心雕龙': 2, '醒世恒言': 2,
                  '警世通言': 2, '幼学琼林': 2, '小窗幽记': 3, '三国演义': 2, '贞观政要': 2}
-    type_dict = {
-        '冬天': 4, '三国演义': 2, '柳树': 4, '贞观政要': 2, '春天': 9, '夏天': 2, '秋天': 7, '爱国': 6, '写雪': 4, '思念': 10, '爱情': 10,'思乡': 7, '离别': 9, '月亮': 5, '梅花': 4, '励志': 9, '荷花': 2, '写雨': 5, '友情': 7, '感恩': 3,
-    }
-    type_dict = {
-        '思乡': 7, '离别': 9, '月亮': 5, '梅花': 4, '励志': 9, '荷花': 2, '写雨': 5, '友情': 7, '感恩': 3,
-    }
     for key, value in type_dict.items():
-        for i in range(1, value + 1):
+        for i in range(3, value + 1):
             url = f"https://so.gushiwen.cn/mingjus/default.aspx?page={i}&tstr={key}&astr=&cstr=&xstr="
             # url = f"https://so.gushiwen.cn/mingjus/default.aspx?page={i}&tstr=菜根谭&astr=&cstr=&xstr="
             poetry_type = key
@@ -150,14 +144,14 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                         poetry_name_patt = "《(.+)》"
                         poetry_name = re.findall(poetry_name_patt, text)[0]  # 古诗名字
                     elif "出自" in text and "（出自" not in text:
-                        name_patt = "[秦|汉|晋|朝|代](.+?)的《"
+                        name_patt = "[秦|汉|晋|朝|代|知](.+?)的《"
                         name = re.findall(name_patt, text)[0]  # 作者名字
                         if "(" in name and ")" in name:
                             _name_patt = "(.+)\\("
                             _name = re.findall(_name_patt, name)[0]
                             name = _name
                         dynasty_patt = f"出自(.+[秦|汉|晋|朝|代]){name}"
-                        dynasty = re.findall(dynasty_patt, text)[0]  # 作者朝代
+                        dynasty = re.findall(dynasty_patt, text)[0] if name != "佚名" else ""  # 作者朝代
                         poetry_name_patt = "《(.+)》"
                         poetry_name = re.findall(poetry_name_patt, text)[0]  # 古诗名字
                     elif text != "完善":
