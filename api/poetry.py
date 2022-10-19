@@ -91,13 +91,13 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                  '水浒传': 2, '格言联璧': 5, '围炉夜话': 4, '增广贤文': 5, '吕氏春秋': 2, '文心雕龙': 2, '醒世恒言': 2,
                  '警世通言': 2, '幼学琼林': 2, '小窗幽记': 3, '三国演义': 2, '贞观政要': 2}
     type_dict = {
-        '冬天': 4, '三国演义': 2, '柳树': 4, '贞观政要': 2, '春天': 9, '夏天': 2, '秋天': 7, '爱国': 6, '写雪': 4, '思念': 10, '爱情': 10,
+        '冬天': 4, '三国演义': 2, '柳树': 4, '贞观政要': 2, '春天': 9, '夏天': 2, '秋天': 7, '爱国': 6, '写雪': 4, '思念': 10, '爱情': 10,'思乡': 7, '离别': 9, '月亮': 5, '梅花': 4, '励志': 9, '荷花': 2, '写雨': 5, '友情': 7, '感恩': 3,
     }
     type_dict = {
-        '思念': 10, '爱情': 10,
+        '思乡': 7, '离别': 9, '月亮': 5, '梅花': 4, '励志': 9, '荷花': 2, '写雨': 5, '友情': 7, '感恩': 3,
     }
     for key, value in type_dict.items():
-        for i in range(5, value + 1):
+        for i in range(1, value + 1):
             url = f"https://so.gushiwen.cn/mingjus/default.aspx?page={i}&tstr={key}&astr=&cstr=&xstr="
             # url = f"https://so.gushiwen.cn/mingjus/default.aspx?page={i}&tstr=菜根谭&astr=&cstr=&xstr="
             poetry_type = key
