@@ -221,5 +221,5 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                     )
             if poetry_list:
                 crud_poetry.add_all_poetry(db, poetry_list)
-                logger.info(f"批量保存成功！古诗类型：{poetry_type} ==> {len(poetry_list)} 条")
+                logger.info(f"批量保存成功！古诗类型：{poetry_type} ==> 第{i}页 ==> {len(poetry_list)} 条")
     return result

@@ -44,10 +44,10 @@ async def startup_event():
     app.state.redis = await get_redis_pool()
 
 
-@app.on_event('startup')
-@repeat_task(seconds=6000 * 5, wait_first=False)
-def repeat_task_aggregate_request_records() -> None:
-    shares()
+# @app.on_event('startup')
+# @repeat_task(seconds=6000 * 5, wait_first=False)
+# def repeat_task_aggregate_request_records() -> None:
+#     shares()
 
 
 @app.on_event("shutdown")
