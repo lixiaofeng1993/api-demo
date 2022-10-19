@@ -97,7 +97,7 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
         '夏天': 2, '秋天': 7,
     }
     for key, value in type_dict.items():
-        for i in range(8, value + 1):
+        for i in range(1, value + 1):
             url = f"https://so.gushiwen.cn/mingjus/default.aspx?page={i}&tstr={key}&astr=&cstr=&xstr="
             # url = f"https://so.gushiwen.cn/mingjus/default.aspx?page={i}&tstr=菜根谭&astr=&cstr=&xstr="
             poetry_type = key
