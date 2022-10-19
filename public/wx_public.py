@@ -182,11 +182,11 @@ def handle_wx_text(data_list: list):
 def poetry_content(db: Session, text: str, content: str = ""):
     if text in DYNASTY.keys():
         data_list = crud_poetry.get_author_by_dynasty(db, text)
-        content = f"朝代：{text}\n诗人： "
+        content = f"朝代：{text}\n诗人：\n"
         content += handle_wx_text(data_list)
         content += ">>> 点击诗人名字获取更多..."
     elif text in POETRY_TYPE.keys():
-        content = f"古诗类型：{text}\n古诗名字： "
+        content = f"古诗类型：{text}\n古诗名字：\n"
         data_list = crud_poetry.get_poetry_by_type(db, text)
         content += handle_wx_text(data_list)
         content += ">>> 点击古诗名字获取更多..."
@@ -207,6 +207,12 @@ def poetry_content(db: Session, text: str, content: str = ""):
                     content = "名句：\n" + data.phrase
                     if data.explain:
                         content += "\n赏析：\n" + data.explain
+            else:
+                if len(text) > 5:
+                    content = f"古诗名字：\n"
+                    data_list = crud_poetry.get_poetry_by_phrase(db, text)
+                    content += handle_wx_text(data_list)
+                    content += ">>> 点击古诗名字获取更多..."
     return content
 
 
