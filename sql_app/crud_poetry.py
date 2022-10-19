@@ -98,8 +98,8 @@ def add_all_poetry(db: Session, poetry_list: list):
             author_id=poetry["author_id"],
         )
         case.append(db_poetry)
-    db.session.add_all(case)
-    db.session.commit()
+    db.add_all(case)
+    db.commit()
 
 
 def create_author(db: Session, author: dict):

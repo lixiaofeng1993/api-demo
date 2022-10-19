@@ -94,7 +94,7 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
         '冬天': 4, '三国演义': 2, '柳树': 4, '贞观政要': 2, '春天': 9, '夏天': 2, '秋天': 7,
     }
     type_dict = {
-        '夏天': 2, '秋天': 7,
+    
     }
     for key, value in type_dict.items():
         for i in range(1, value + 1):
