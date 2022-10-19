@@ -29,8 +29,8 @@ AppSecret = "fff1120327c7297e536c44979a6273d3"
 FOLLOW = "这世界怎么那么多人，蹉跎回首，已不再年轻。\n这世界怎么那么多人，兜兜转转，浑噩半生。\n这世界怎么那么多人......\n\n" \
          "回复 <a href='weixin://bizmsgmenu?msgmenucontent=李白&msgmenuid=李白'>诗人</a> >>> 诗人简介\n" \
          "回复 <a href='weixin://bizmsgmenu?msgmenucontent=蜀道难&msgmenuid=蜀道难'>诗名</a> >>> 古诗信息\n" \
-         "回复 <a href='weixin://bizmsgmenu?msgmenucontent=西部黄金&msgmenuid=西部黄金'>股票名称</a> " \
-         "<a href='weixin://bizmsgmenu?msgmenucontent=601069&msgmenuid=601069'>股票代码</a> >>> 当天股票走势信息\n"
+         "回复股票 <a href='weixin://bizmsgmenu?msgmenucontent=西部黄金&msgmenuid=西部黄金'>名称</a> " \
+         "<a href='weixin://bizmsgmenu?msgmenucontent=601069&msgmenuid=601069'>代码</a> >>> 股票走势信息\n"
 # "回复 【<a href='weixin://bizmsgmenu?msgmenucontent=1993.05.16&msgmenuid=1993.05.16'>1993.05.16</a>】，" \
 #          "返回已经走过的天数信息\n" \
 # "回复 【<a href='weixin://bizmsgmenu?msgmenucontent=小七&msgmenuid=小七'>小七</a>】，返回小七美照\n" \
