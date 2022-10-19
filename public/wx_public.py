@@ -208,11 +208,10 @@ def poetry_content(db: Session, text: str, content: str = ""):
                     if data.explain:
                         content += "\n赏析：\n" + data.explain
             else:
-                if len(text) > 5:
-                    content = f"古诗名字：\n"
-                    data_list = crud_poetry.get_poetry_by_phrase(db, text)
-                    content += handle_wx_text(data_list)
-                    content += ">>> 点击古诗名字获取更多..."
+                data = crud_poetry.get_poetry_by_phrase(db, text)
+                if data:
+                    content = f"古诗名字：\n" + f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&" \
+                                           f"msgmenuid={data.name}'>{data.name}</a> >>> 点击古诗名字获取更多..."
     return content
 
 

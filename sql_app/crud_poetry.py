@@ -67,8 +67,8 @@ def get_poetry_by_name(db: Session, name: str):
     return db.query(Poetry).filter(Poetry.name == name, Poetry.is_delete == 0).first()
 
 
-def get_poetry_by_phrase(db: Session, phrase: str, skip: int = 0, limit: int = 10):
-    return db.query(Poetry).filter(phrase in Poetry.phrase, Poetry.is_delete == 0).offset(skip).limit(limit).all()
+def get_poetry_by_phrase(db: Session, phrase: str):
+    return db.query(Poetry).filter(Poetry.phrase == phrase, Poetry.is_delete == 0).first()
 
 
 def create_poetry(db: Session, poetry: dict):
