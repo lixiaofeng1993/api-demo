@@ -28,9 +28,10 @@ def get_poetry_by_name_and_author_id(db: Session, name: str, author_id: str):
     return db.query(Poetry).filter(Poetry.name == name, Poetry.author_id == author_id, Poetry.is_delete == 0).first()
 
 
-def get_poetry_by_type_and_name_and_author_and_phrase(db: Session, poetry_type: str, name: str, author_id: str, phrase: str):
+def get_poetry_by_type_and_name_and_author_and_phrase(db: Session, poetry_type: str, name: str, author_id: str,
+                                                      phrase: str):
     return db.query(Poetry).filter(Poetry.type == poetry_type, Poetry.name == name, Poetry.author_id == author_id,
-                                                   Poetry.phrase == phrase, Poetry.is_delete == 0).first()
+                                   Poetry.phrase == phrase, Poetry.is_delete == 0).first()
 
 
 def get_poetry_by_author_name(db: Session, author_name: str):
@@ -79,6 +80,26 @@ def create_poetry(db: Session, poetry: dict):
     db.commit()
     db.refresh(db_poetry)
     return db_poetry
+
+
+def add_all_poetry(db: Session, poetry_list: list):
+    case = []
+    for poetry in poetry_list:
+        db_poetry = Poetry(
+            type=poetry["type"],
+            phrase=poetry["phrase"],
+            explain=poetry["explain"],
+            name=poetry["name"],
+            appreciation=poetry["appreciation"],
+            original=poetry["original"],
+            translation=poetry["translation"],
+            background=poetry["background"],
+            url=poetry["url"],
+            author_id=poetry["author_id"],
+        )
+        case.append(db_poetry)
+    db.session.add_all(case)
+    db.session.commit()
 
 
 def create_author(db: Session, author: dict):
