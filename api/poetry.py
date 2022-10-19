@@ -17,7 +17,8 @@ from sql_app.schemas_users import User
 from sql_app import crud_poetry
 from public.custom_code import result
 from dependencies import get_current_user_info
-from public.public import get_db, json_format
+from public.public import get_db
+from conf.settings import DYNASTY, POETRY_TYPE
 from public.log import logger
 
 router = APIRouter()
@@ -28,7 +29,7 @@ def not_empty(s):
     return s and s.strip()
 
 
-@router.get("/author", summary="爬取作者信息接口")
+@router.get("/author", summary="爬取作者信息接口", include_in_schema=False)
 async def get_author(db: Session = Depends(get_db), user: User = Depends(get_current_user_info)):
     author = crud_poetry.get_author_by_name(db, "佚名")
     if not author:
@@ -37,9 +38,8 @@ async def get_author(db: Session = Depends(get_db), user: User = Depends(get_cur
             "dynasty": "",
             "introduce": "亦称无名氏，是指身份不明或者尚未了解姓名的人。源于古代或民间、不知由谁创作的文学、音乐作品会以佚名为作者名称。",
         })
-    dynasty_dict = {"先秦": 4, "两汉": 10, "魏晋": 10, "南北朝": 10, "隋代": 5, "唐代": 10, "五代": 7, "宋代": 10, "金朝": 10, "元代": 10,
-                    "明代": 10, "清代": 10}
-    for key, value in dynasty_dict.items():
+
+    for key, value in DYNASTY.items():
         for i in range(1, value + 1):
             url = f"https://so.gushiwen.cn/authors/Default.aspx?p={i}&c={key}"
             # url = f"https://so.gushiwen.cn/authors/Default.aspx?p={i}&c=唐代"
@@ -78,24 +78,12 @@ async def get_author(db: Session = Depends(get_db), user: User = Depends(get_cur
     return result
 
 
-@router.get("/poetry", summary="爬取古诗词接口")
+@router.get("/poetry", summary="爬取古诗词接口", include_in_schema=False)
 async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_current_user_info)):
-    type_dict = {'春天': 9, '夏天': 2, '秋天': 7, '冬天': 4, '爱国': 6, '写雪': 4,
-                 '思念': 10, '爱情': 10, '思乡': 7, '离别': 9, '月亮': 5, '梅花': 4, '励志': 9, '荷花': 2, '写雨': 5, '友情': 7, '感恩': 3,
-                 '写风': 4, '西湖': 2, '读书': 3, '菊花': 3, '长江': 2, '黄河': 2, '竹子': 2, '哲理': 10, '泰山': 1,
-                 '边塞': 5, '柳树': 4, '写鸟': 9, '桃花': 2, '老师': 1, '母亲': 2, '伤感': 10, '田园': 3,
-                 '写云': 2, '庐山': 2, '山水': 8, '星星': 2, '荀子': 5, '孟子': 4, '论语': 4,
-                 '墨子': 3, '老子': 3, '史记': 3, '中庸': 2, '礼记': 2, '尚书': 3, '晋书': 1, '左传': 2, '论衡': 1, '管子': 2,
-                 '说苑': 2, '列子': 1, '国语': 1, '节日': 6, '春节': 2, '元宵节': 2, '寒食节': 1, '清明节': 2, '端午节': 1, '七夕节': 3,
-                 '中秋节': 2, '重阳节': 1, '韩非子': 4, '菜根谭': 2, '红楼梦': 3, '弟子规': 2, '战国策': 2, '后汉书': 2, '淮南子': 2, '商君书': 2,
-                 '水浒传': 2, '格言联璧': 5, '围炉夜话': 4, '增广贤文': 5, '吕氏春秋': 2, '文心雕龙': 2, '醒世恒言': 2,
-                 '警世通言': 2, '幼学琼林': 2, '小窗幽记': 3, '三国演义': 2, '贞观政要': 2}
-    for key, value in type_dict.items():
-        for i in range(3, value + 1):
+    for key, value in POETRY_TYPE.items():
+        for i in range(1, value + 1):
             url = f"https://so.gushiwen.cn/mingjus/default.aspx?page={i}&tstr={key}&astr=&cstr=&xstr="
-            # url = f"https://so.gushiwen.cn/mingjus/default.aspx?page={i}&tstr=菜根谭&astr=&cstr=&xstr="
             poetry_type = key
-            # poetry_type = "菜根谭"
             with HTMLSession() as session:
                 headers = {
                     "user-agent": faker.user_agent()
@@ -123,9 +111,9 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                 j += 1
                 detail_data = detail_res.find(css_patt, first=True)
                 if not detail_data:
-                    logger.error(f"第二层 地址：{url}, 未发现 {css_patt}")
+                    logger.error(f"第二层 地址：{link}, 未发现 {css_patt}")
                     continue
-                # logger.info(f"当前执行的url：{link}")
+                logger.info(f"当前执行的url：{link}")
                 detail = detail_data.text.split("猜您喜欢")[0]
                 explain, appreciation, poetry_name, original, translation, background, name, dynasty = \
                     "", "", "", "", "", "", "", ""
@@ -172,9 +160,9 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                 background_list = re.findall(background_patt, detail)
                 if background_list:
                     background = background_list[0]  # 创作背景
-                # logger.info(
-                #     f"第{i}页 ==> 第{j}条 ==>名句：{phrase} ==> 作者：{name} ==> 朝代：{dynasty} ==> 古诗名字：{poetry_name} ==> "
-                #     f"古诗类型：{poetry_type}")
+                logger.info(
+                    f"第{i}页 ==> 第{j}条 ==>名句：{phrase} ==> 作者：{name} ==> 朝代：{dynasty} ==> 古诗名字：{poetry_name} ==> "
+                    f"古诗类型：{poetry_type}")
                 if name == "佚名":
                     author = crud_poetry.get_author_by_name(db, name)
                     author_id = author.id

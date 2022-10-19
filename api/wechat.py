@@ -13,8 +13,10 @@ import aiohttp
 
 from fastapi import Depends, APIRouter, HTTPException, status, Request, Body
 from starlette.responses import HTMLResponse, Response
+from sqlalchemy.orm import Session
 
 from sql_app.database import Base, engine
+from public.public import get_db
 from public.custom_code import result
 from conf.settings import AppID, AppSecret
 from public.wx_message import parse_xml, Message
@@ -39,7 +41,7 @@ async def handle_wx(signature, timestamp, nonce, echostr):
 
 
 @router.post("/", summary="回复微信消息")
-async def wx_msg(request: Request, signature, timestamp, nonce, openid):
+async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Session = Depends(get_db)):
     if sign_sha1(signature, timestamp, nonce):
         try:
             async with aiohttp.ClientSession() as session:
@@ -53,7 +55,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid):
             rec_msg = parse_xml(await request.body())
             to_user = rec_msg.FromUserName
             from_user = rec_msg.ToUserName
-            content, media_id = send_wx_msg(rec_msg, token)
+            content, media_id = send_wx_msg(db, rec_msg, token)
             if rec_msg.MsgType == 'text' and not media_id:
                 return Response(
                     Message(to_user, from_user, content=content).send(),
@@ -90,3 +92,12 @@ async def login(request: Request):
         except Exception as error:
             result["result"] = error
             return result
+
+
+@router.get("/test", summary="测试微信接口信息")
+async def wx_test(text: str, db: Session = Depends(get_db)):
+    from public.wx_public import poetry_content
+
+    data = poetry_content(db, text)
+    print(data)
+    return result

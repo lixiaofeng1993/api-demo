@@ -16,12 +16,14 @@ import datetime
 import re
 
 from jsonpath import jsonpath
+from sqlalchemy.orm import Session
 from zhdate import ZhDate
 from requests_html import HTMLSession
 
-from public.log import logger
-from conf.settings import TOKEN, FOLLOW, ArticleUrl
+from sql_app import crud_poetry
+from conf.settings import TOKEN, FOLLOW, ArticleUrl, DYNASTY, POETRY_TYPE
 from public.shares import shares
+from public.log import logger
 
 
 def wx_media(token: str):
@@ -170,30 +172,68 @@ def fishing(make=False):
     return content
 
 
-def send_wx_msg(rec_msg, token):
+def handle_wx_text(data_list: list):
+    content = ""
+    for data in data_list:
+        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&msgmenuid={data.name}'>{data.name}</a> "
+    return content
+
+
+def poetry_content(db: Session, text: str, content: str = ""):
+    if text in DYNASTY.keys():
+        data_list = crud_poetry.get_author_by_dynasty(db, text)
+        content = f"朝代：{text}\n诗人： "
+        content += handle_wx_text(data_list)
+        content += ">>> 点击诗人名字获取更多..."
+    elif text in POETRY_TYPE.keys():
+        content = f"古诗类型：{text}\n古诗名字： "
+        data_list = crud_poetry.get_poetry_by_type(db, text)
+        content += handle_wx_text(data_list)
+        content += ">>> 点击古诗名字获取更多..."
+    else:
+        data = crud_poetry.get_author_by_name(db, text)
+        if data:
+            content = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
+            if not content:
+                content = "朝代：" + data.dynasty
+        else:
+            data = crud_poetry.get_poetry_by_name(db, text)
+            if data:
+                if data.original:
+                    content = "原文：\n" + data.original
+                    if data.translation:
+                        content += "译文：\n" + data.translation
+                elif data.phrase:
+                    content = "名句：\n" + data.phrase
+                    if data.explain:
+                        content += "\n赏析：\n" + data.explain
+    return content
+
+
+def send_wx_msg(db: Session, rec_msg, token):
     content, media_id = "", ""
     if rec_msg.MsgType == 'text':
         logger.info(f"文本信息：{rec_msg.Content}")
-        patt = r"[\d+]{4}.[\d+]{1,2}.[\d+]{1,2}"
-        content = re.findall(patt, rec_msg.Content)
-        if content:
-            content = age_content(content)
-        else:
-            content = rec_msg.Content
-            if content in ["图片", "小七"] and token:
-                media_id = wx_media(token)
-            elif content in ["all", "文章"]:
-                content = ArticleUrl
-            elif content in ["follow", "功能"]:
-                content = FOLLOW
-            elif content in ["今天", "today"]:
-                content = fishing(make=True)
-            elif content == "放假":
-                content = fishing()
-            else:
-                content = shares(stock_code=rec_msg.Content)
-                if not content:
-                    content = rec_msg.Content
+        content = poetry_content(db, rec_msg.Content, content)
+        if not content:
+            # patt = r"[\d+]{4}.[\d+]{1,2}.[\d+]{1,2}"
+            # content = re.findall(patt, rec_msg.Content)
+            # if content:
+            #     content = age_content(content)
+            # else:
+            content = shares(stock_code=rec_msg.Content)
+            if not content:
+                content = rec_msg.Content
+                if content in ["图片", "小七"] and token:
+                    media_id = wx_media(token)
+                elif content in ["all", "文章"]:
+                    content = ArticleUrl
+                elif content in ["follow", "功能"]:
+                    content = FOLLOW
+                elif content in ["今天", "today"]:
+                    content = fishing(make=True)
+                elif content == "放假":
+                    content = fishing()
     elif rec_msg.MsgType == 'event':
         if rec_msg.Event == "subscribe":
             content = FOLLOW
