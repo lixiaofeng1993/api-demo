@@ -189,7 +189,7 @@ def send_more(db: Session, request, text: str, content: str = ""):
             content += handle_wx_text(data_list)
             more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent={text}>DYNASTY&msgmenuid=更多'>更多</a> "
             content += ">>> 点击诗人名字 "
-            content += "或者查看" + more_text if len(data_list) == 50 else ""
+            content += "或者查看" + more_text if len(data_list) == 10 else ""
             request.app.state.redis.setex(key=f"{text}>DYNASTY", value=skip + 1, seconds=5 * 60)
         elif "POETRY_TYPE" in text:
             data_list = crud_poetry.get_poetry_by_type(db, text, skip=skip + 1)
@@ -197,7 +197,7 @@ def send_more(db: Session, request, text: str, content: str = ""):
             content += handle_wx_text(data_list)
             content += ">>> 点击古诗名字 "
             more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent={text}>POETRY_TYPE&msgmenuid=更多'>更多</a> "
-            content += "或者查看" + more_text if len(data_list) == 50 else ""
+            content += "或者查看" + more_text if len(data_list) == 10 else ""
             request.app.state.redis.setex(key=f"{text}>POETRY_TYPE", value=skip + 1, seconds=5 * 60)
     return content
 
