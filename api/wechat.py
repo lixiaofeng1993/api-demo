@@ -55,7 +55,8 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
             rec_msg = parse_xml(await request.body())
             to_user = rec_msg.FromUserName
             from_user = rec_msg.ToUserName
-            content, media_id = send_wx_msg(db, request, rec_msg, token)
+            skip = request.app.state.redis.get(rec_msg.Content)
+            content, media_id = send_wx_msg(db, request, rec_msg, token, skip)
             if rec_msg.MsgType == 'text' and not media_id:
                 return Response(
                     Message(to_user, from_user, content=content).send(),
@@ -95,9 +96,9 @@ async def login(request: Request):
 
 
 @router.get("/test", summary="测试微信接口信息")
-async def wx_test(text: str, db: Session = Depends(get_db)):
+async def wx_test(text: str, request: Request, db: Session = Depends(get_db)):
     from public.wx_public import poetry_content
 
-    data = poetry_content(db, text)
+    data = poetry_content(db, request, text)
     print(data)
     return result

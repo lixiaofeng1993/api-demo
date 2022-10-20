@@ -16,6 +16,7 @@ import datetime
 import re
 
 from jsonpath import jsonpath
+from fastapi import Request
 from sqlalchemy.orm import Session
 from zhdate import ZhDate
 from requests_html import HTMLSession
@@ -179,10 +180,11 @@ def handle_wx_text(data_list: list):
     return content
 
 
-def send_more(db: Session, request, text: str, content: str = ""):
+def send_more(db: Session, request: Request, text: str, skip: str):
+    content = ""
     if "DYNASTY-" in text or "POETRY_TYPE-" in text:
-        logger.info(f"===================={request.app.state.redis.get(text)}, {text.split('-')[-1]}")
-        skip = int(request.app.state.redis.get(text))
+        logger.info(f"===================={skip}, {text.split('-')[-1]}")
+        skip = int(skip)
         val = int(text.split("-")[-1])
         if "DYNASTY" in text:
             for key, value in DYNASTY.items():
@@ -209,9 +211,11 @@ def send_more(db: Session, request, text: str, content: str = ""):
     return content
 
 
-def poetry_content(db: Session, request, text: str):
-    content = send_more(db, request, text)
-    if not content:
+def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
+    content = ""
+    if skip:
+        content = send_more(db, request, text, skip)
+    else:
         for key, value in DYNASTY.items():
             if text == key:
                 request.app.state.redis.setex(key=f"DYNASTY-{value}", value="0", seconds=5 * 60)
@@ -256,11 +260,11 @@ def poetry_content(db: Session, request, text: str):
     return content
 
 
-def send_wx_msg(db: Session, request, rec_msg, token):
+def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str):
     content, media_id = "", ""
     if rec_msg.MsgType == 'text':
         logger.info(f"文本信息：{rec_msg.Content}")
-        content = poetry_content(db, request, rec_msg.Content)
+        content = poetry_content(db, request, rec_msg.Content, skip)
         if not content:
             # patt = r"[\d+]{4}.[\d+]{1,2}.[\d+]{1,2}"
             # content = re.findall(patt, rec_msg.Content)
