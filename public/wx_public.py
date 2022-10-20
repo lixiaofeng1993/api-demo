@@ -189,24 +189,24 @@ def send_more(db: Session, request: Request, text: str, skip: str):
             for key, value in DYNASTY.items():
                 if val == value:
                     text = key
-            data_list = crud_poetry.get_author_by_dynasty(db, text, skip=skip + 1)
+            data_list = crud_poetry.get_author_by_dynasty(db, text, skip=skip + 10)
             content = f"朝代：{text}\n诗人：\n"
             content += handle_wx_text(data_list)
             more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=DYNASTY-{val}&msgmenuid=DYNASTY-{val}'>更多</a> "
             content += ">>> 点击诗人名字 "
             content += "或者查看" + more_text if len(data_list) == 10 else ""
-            request.app.state.redis.setex(key=f"DYNASTY-{val}", value=str(skip + 1), seconds=5 * 60)
+            request.app.state.redis.setex(key=f"DYNASTY-{val}", value=str(skip + 10), seconds=5 * 60)
         elif "POETRY_TYPE" in text:
             for key, value in POETRY_TYPE.items():
                 if val == value:
                     text = key
-            data_list = crud_poetry.get_poetry_by_type(db, text, skip=skip + 1)
+            data_list = crud_poetry.get_poetry_by_type(db, text, skip=skip + 10)
             content = f"古诗类型：{text}\n古诗名字：\n"
             content += handle_wx_text(data_list)
             content += ">>> 点击古诗名字 "
             more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{val}&msgmenuid=POETRY_TYPE-{val}'>更多</a> "
             content += "或者查看" + more_text if len(data_list) == 10 else ""
-            request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=str(skip + 1), seconds=5 * 60)
+            request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=str(skip + 10), seconds=5 * 60)
     return content
 
 
