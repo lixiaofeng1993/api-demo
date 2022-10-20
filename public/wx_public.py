@@ -211,7 +211,6 @@ def send_more(db: Session, request: Request, text: str, skip: str):
 
 
 def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
-    logger.info(f"===========>{text}, {skip}")
     content = ""
     if skip:
         content = send_more(db, request, text, skip)
