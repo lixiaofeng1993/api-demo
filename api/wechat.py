@@ -55,9 +55,9 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
             rec_msg = parse_xml(await request.body())
             to_user = rec_msg.FromUserName
             from_user = rec_msg.ToUserName
-
             skip = await request.app.state.redis.get(
-                rec_msg.Content) if rec_msg.Content and "DYNASTY" in rec_msg.Content or "POETRY_TYPE" in rec_msg.Content else ""
+                rec_msg.Content) if rec_msg.Content and (
+                    "DYNASTY" in rec_msg.Content or "POETRY_TYPE" in rec_msg.Content) else ""
             content, media_id = send_wx_msg(db, request, rec_msg, token, skip)
             if rec_msg.MsgType == 'text' and not media_id:
                 return Response(
