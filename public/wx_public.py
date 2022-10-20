@@ -181,8 +181,9 @@ def handle_wx_text(data_list: list):
 
 def send_more(db: Session, request, text: str, content: str = ""):
     if "DYNASTY-" in text or "POETRY_TYPE-" in text:
+        logger.info(f" skip ====>>> {request.app.state.redis.get(text)}")
         skip = int(request.app.state.redis.get(text))
-        val = text.split("-")[-1]
+        val = int(text.split("-")[-1])
         if "DYNASTY" in text:
             for key, value in DYNASTY.items():
                 if val == value:
@@ -194,7 +195,6 @@ def send_more(db: Session, request, text: str, content: str = ""):
             content += ">>> 点击诗人名字 "
             content += "或者查看" + more_text if len(data_list) == 10 else ""
             request.app.state.redis.setex(key=f"DYNASTY-{val}", value=str(skip + 1), seconds=5 * 60)
-            return content
         elif "POETRY_TYPE" in text:
             for key, value in POETRY_TYPE.items():
                 if val == value:
@@ -206,7 +206,6 @@ def send_more(db: Session, request, text: str, content: str = ""):
             more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{text}&msgmenuid=POETRY_TYPE-{text}'>更多</a> "
             content += "或者查看" + more_text if len(data_list) == 10 else ""
             request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=str(skip + 1), seconds=5 * 60)
-            return content
     return content
 
 
@@ -233,28 +232,27 @@ def poetry_content(db: Session, request, text: str):
                 more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{text}&msgmenuid=POETRY_TYPE-{text}'>更多</a> "
                 content += "或者查看" + more_text if len(data_list) == 10 else ""
                 return content
+        data = crud_poetry.get_author_by_name(db, text)
+        if data:
+            content = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
+            if not content:
+                content = "朝代：" + data.dynasty
         else:
-            data = crud_poetry.get_author_by_name(db, text)
+            data = crud_poetry.get_poetry_by_name(db, text)
             if data:
-                content = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
-                if not content:
-                    content = "朝代：" + data.dynasty
+                if data.original:
+                    content = "原文：\n" + data.original
+                    if data.translation:
+                        content += "译文：\n" + data.translation
+                elif data.phrase:
+                    content = "名句：\n" + data.phrase
+                    if data.explain:
+                        content += "\n赏析：\n" + data.explain
             else:
-                data = crud_poetry.get_poetry_by_name(db, text)
+                data = crud_poetry.get_poetry_by_phrase(db, text)
                 if data:
-                    if data.original:
-                        content = "原文：\n" + data.original
-                        if data.translation:
-                            content += "译文：\n" + data.translation
-                    elif data.phrase:
-                        content = "名句：\n" + data.phrase
-                        if data.explain:
-                            content += "\n赏析：\n" + data.explain
-                else:
-                    data = crud_poetry.get_poetry_by_phrase(db, text)
-                    if data:
-                        content = f"古诗名字：\n" + f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&" \
-                                               f"msgmenuid={data.name}'>{data.name}</a> >>> 点击古诗名字获取更多..."
+                    content = f"古诗名字：\n" + f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&" \
+                                           f"msgmenuid={data.name}'>{data.name}</a> >>> 点击古诗名字获取更多..."
     return content
 
 
