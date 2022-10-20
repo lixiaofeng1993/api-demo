@@ -181,9 +181,9 @@ def handle_wx_text(data_list: list):
 
 def send_more(db: Session, request, text: str, content: str = ""):
     if "DYNASTY-" in text or "POETRY_TYPE-" in text:
+        logger.info(f"===================={request.app.state.redis.get(text)}, {text.split('-')[-1]}")
         skip = int(request.app.state.redis.get(text))
         val = int(text.split("-")[-1])
-        logger.info(f"===================={skip}, {val}")
         if "DYNASTY" in text:
             for key, value in DYNASTY.items():
                 if val == value:
