@@ -209,7 +209,7 @@ def send_more(db: Session, request: Request, text: str, skip: str):
             request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=str(skip + 10), seconds=5 * 60)
         elif "AUTHOR" in text:
             data_list = crud_poetry.get_poetry_by_author_id(db, val)
-            content += "\n诗词推荐：\n"
+            content += "诗词推荐：\n"
             content += handle_wx_text(data_list)
             content += ">>> 点击古诗名字 "
             more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=AUTHOR-{val}&msgmenuid=POETRY_TYPE-{val}'>更多</a> "
