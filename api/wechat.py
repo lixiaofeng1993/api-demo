@@ -66,7 +66,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
             if not content:
                 content, media_id = send_wx_msg(db, request, rec_msg, token, skip)
             if rec_msg.MsgType == 'text' and not media_id:
-                content = content[:295] + "..." if len(content) >= 300 else content
+                content = content[:995] + "..." if len(content) >= 1000 else content
                 return Response(
                     Message(to_user, from_user, content=content).send(),
                     media_type="application/xml")
