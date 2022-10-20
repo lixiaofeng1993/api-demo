@@ -245,6 +245,7 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
                 return content
         data = crud_poetry.get_author_by_name(db, text)
         if data:
+            request.app.state.redis.setex(key=f"AUTHOR-{data.id}", value="0", seconds=5 * 60)
             introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
             if not introduce:
                 content = "作者朝代：\n" + data.dynasty
