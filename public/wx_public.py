@@ -212,7 +212,7 @@ def poetry_content(db: Session, request, text: str):
             content += handle_wx_text(data_list)
             content += ">>> 点击诗人名字 "
             more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent={text}>DYNASTY&msgmenuid=更多'>更多</a> "
-            content += "或者查看" + more_text if len(data_list) == 50 else ""
+            content += "或者查看" + more_text if len(data_list) == 10 else ""
         elif text in POETRY_TYPE.keys():
             request.app.state.redis.setex(key=f"{text}>POETRY_TYPE", value=0, seconds=5 * 60)
             data_list = crud_poetry.get_poetry_by_type(db, text)
@@ -220,7 +220,7 @@ def poetry_content(db: Session, request, text: str):
             content += handle_wx_text(data_list)
             content += ">>> 点击古诗名字 "
             more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent={text}>POETRY_TYPE&msgmenuid=更多'>更多</a> "
-            content += "或者查看" + more_text if len(data_list) == 50 else ""
+            content += "或者查看" + more_text if len(data_list) == 10 else ""
         else:
             data = crud_poetry.get_author_by_name(db, text)
             if data:
