@@ -250,7 +250,7 @@ def send_wx_msg(db: Session, request, rec_msg, token):
     content, media_id = "", ""
     if rec_msg.MsgType == 'text':
         logger.info(f"文本信息：{rec_msg.Content}")
-        content = poetry_content(db, request, rec_msg.Content, content)
+        content = poetry_content(db, request, rec_msg.Content)
         if not content:
             # patt = r"[\d+]{4}.[\d+]{1,2}.[\d+]{1,2}"
             # content = re.findall(patt, rec_msg.Content)
