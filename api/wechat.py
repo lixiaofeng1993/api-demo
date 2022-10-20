@@ -55,7 +55,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
             rec_msg = parse_xml(await request.body())
             to_user = rec_msg.FromUserName
             from_user = rec_msg.ToUserName
-            skip = request.app.state.redis.get(rec_msg.Content)
+            skip = await request.app.state.redis.get(rec_msg.Content)
             content, media_id = send_wx_msg(db, request, rec_msg, token, skip)
             if rec_msg.MsgType == 'text' and not media_id:
                 return Response(
