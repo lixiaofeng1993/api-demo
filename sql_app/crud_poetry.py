@@ -16,7 +16,7 @@ def get_author_by_name(db: Session, name: str):
     return db.query(Author).filter(Author.name == name, Author.is_delete == 0).first()
 
 
-def get_author_by_dynasty(db: Session, dynasty: str, skip: int = 0, limit: int = 10):
+def get_author_by_dynasty(db: Session, dynasty: str, skip: int = 0, limit: int = 50):
     return db.query(Author).filter(Author.dynasty == dynasty, Author.is_delete == 0).offset(skip).limit(limit).all()
 
 
@@ -38,7 +38,7 @@ def get_poetry_by_type_and_name_and_author_and_phrase(db: Session, poetry_type: 
                                    Poetry.phrase == phrase, Poetry.is_delete == 0).first()
 
 
-def get_poetry_by_type(db: Session, poetry_type: str, skip: int = 0, limit: int = 10):
+def get_poetry_by_type(db: Session, poetry_type: str, skip: int = 0, limit: int = 50):
     return db.query(Poetry).filter(Poetry.type == poetry_type, Poetry.is_delete == 0).offset(skip).limit(limit).all()
 
 
@@ -46,7 +46,7 @@ def get_poetry_by_author_name(db: Session, author_name: str):
     return db.query(Poetry).filter(Poetry.author.name == author_name, Poetry.is_delete == 0).first()
 
 
-def get_poetry_by_author_name_all(db: Session, author_name: str, skip: int = 0, limit: int = 100):
+def get_poetry_by_author_name_all(db: Session, author_name: str, skip: int = 0, limit: int = 50):
     return db.query(Poetry).filter(Poetry.author.name == author_name, Poetry.is_delete == 0).offset(skip).limit(
         limit).all()
 
@@ -55,7 +55,7 @@ def get_poetry_by_name_and_phrase(db: Session, name: str, phrase: str):
     return db.query(Poetry).filter(Poetry.name == name, Poetry.phrase == phrase, Poetry.is_delete == 0).first()
 
 
-def get_poetry(db: Session, skip: int = 0, limit: int = 100):
+def get_poetry(db: Session, skip: int = 0, limit: int = 50):
     return db.query(Poetry).filter(Poetry.is_delete == 0).offset(skip).limit(limit).all()
 
 

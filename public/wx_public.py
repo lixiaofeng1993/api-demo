@@ -179,47 +179,78 @@ def handle_wx_text(data_list: list):
     return content
 
 
-def poetry_content(db: Session, text: str, content: str = ""):
-    if text in DYNASTY.keys():
-        data_list = crud_poetry.get_author_by_dynasty(db, text)
-        content = f"朝代：{text}\n诗人：\n"
-        content += handle_wx_text(data_list)
-        content += ">>> 点击诗人名字获取更多..."
-    elif text in POETRY_TYPE.keys():
-        content = f"古诗类型：{text}\n古诗名字：\n"
-        data_list = crud_poetry.get_poetry_by_type(db, text)
-        content += handle_wx_text(data_list)
-        content += ">>> 点击古诗名字获取更多..."
-    else:
-        data = crud_poetry.get_author_by_name(db, text)
-        if data:
-            content = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
-            if not content:
-                content = "朝代：" + data.dynasty
-        else:
-            data = crud_poetry.get_poetry_by_name(db, text)
-            if data:
-                if data.original:
-                    content = "原文：\n" + data.original
-                    if data.translation:
-                        content += "译文：\n" + data.translation
-                elif data.phrase:
-                    content = "名句：\n" + data.phrase
-                    if data.explain:
-                        content += "\n赏析：\n" + data.explain
-            else:
-                data = crud_poetry.get_poetry_by_phrase(db, text)
-                if data:
-                    content = f"古诗名字：\n" + f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&" \
-                                           f"msgmenuid={data.name}'>{data.name}</a> >>> 点击古诗名字获取更多..."
+def send_more(db: Session, request, text: str, content: str = ""):
+    if ">DYNASTY" in text or ">POETRY_TYPE" in text:
+        skip = await request.app.state.redis.get(text)
+        text = text.split(">")[0]
+        if "DYNASTY" in text:
+            data_list = crud_poetry.get_author_by_dynasty(db, text, skip=skip + 1)
+            content = f"朝代：{text}\n诗人：\n"
+            content += handle_wx_text(data_list)
+            more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent={text}>DYNASTY&msgmenuid=更多'>更多</a> "
+            content += ">>> 点击诗人名字 "
+            content += "或者查看" + more_text if len(data_list) == 50 else ""
+            await request.app.state.redis.setex(key=f"{text}>DYNASTY", value=skip + 1, seconds=5 * 60)
+        elif "POETRY_TYPE" in text:
+            data_list = crud_poetry.get_poetry_by_type(db, text, skip=skip + 1)
+            content = f"古诗类型：{text}\n古诗名字：\n"
+            content += handle_wx_text(data_list)
+            content += ">>> 点击古诗名字 "
+            more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent={text}>POETRY_TYPE&msgmenuid=更多'>更多</a> "
+            content += "或者查看" + more_text if len(data_list) == 50 else ""
+            await request.app.state.redis.setex(key=f"{text}>POETRY_TYPE", value=skip + 1, seconds=5 * 60)
     return content
 
 
-def send_wx_msg(db: Session, rec_msg, token):
+def poetry_content(db: Session, request, text: str):
+    content = send_more(db, request, text)
+    if not content:
+        if text in DYNASTY.keys():
+            await request.app.state.redis.setex(key=f"{text}>DYNASTY", value=0, seconds=5 * 60)
+            data_list = crud_poetry.get_author_by_dynasty(db, text)
+            content = f"朝代：{text}\n诗人：\n"
+            content += handle_wx_text(data_list)
+            content += ">>> 点击诗人名字 "
+            more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent={text}>DYNASTY&msgmenuid=更多'>更多</a> "
+            content += "或者查看" + more_text if len(data_list) == 50 else ""
+        elif text in POETRY_TYPE.keys():
+            await request.app.state.redis.setex(key=f"{text}>POETRY_TYPE", value=0, seconds=5 * 60)
+            data_list = crud_poetry.get_poetry_by_type(db, text)
+            content = f"古诗类型：{text}\n古诗名字：\n"
+            content += handle_wx_text(data_list)
+            content += ">>> 点击古诗名字 "
+            more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent={text}>POETRY_TYPE&msgmenuid=更多'>更多</a> "
+            content += "或者查看" + more_text if len(data_list) == 50 else ""
+        else:
+            data = crud_poetry.get_author_by_name(db, text)
+            if data:
+                content = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
+                if not content:
+                    content = "朝代：" + data.dynasty
+            else:
+                data = crud_poetry.get_poetry_by_name(db, text)
+                if data:
+                    if data.original:
+                        content = "原文：\n" + data.original
+                        if data.translation:
+                            content += "译文：\n" + data.translation
+                    elif data.phrase:
+                        content = "名句：\n" + data.phrase
+                        if data.explain:
+                            content += "\n赏析：\n" + data.explain
+                else:
+                    data = crud_poetry.get_poetry_by_phrase(db, text)
+                    if data:
+                        content = f"古诗名字：\n" + f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&" \
+                                               f"msgmenuid={data.name}'>{data.name}</a> >>> 点击古诗名字获取更多..."
+    return content
+
+
+def send_wx_msg(db: Session, request, rec_msg, token):
     content, media_id = "", ""
     if rec_msg.MsgType == 'text':
         logger.info(f"文本信息：{rec_msg.Content}")
-        content = poetry_content(db, rec_msg.Content, content)
+        content = poetry_content(db, request, rec_msg.Content, content)
         if not content:
             # patt = r"[\d+]{4}.[\d+]{1,2}.[\d+]{1,2}"
             # content = re.findall(patt, rec_msg.Content)
