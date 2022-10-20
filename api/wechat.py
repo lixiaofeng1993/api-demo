@@ -69,7 +69,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
                 if len(content) >= 2000 and "</a>" in content:
                     content = content[len(content) - 2000:] + "..."
                 elif len(content) >= 300:
-                    content = content[:301]
+                    content = content[:500]
                 return Response(
                     Message(to_user, from_user, content=content).send(),
                     media_type="application/xml")
