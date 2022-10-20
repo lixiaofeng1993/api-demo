@@ -99,3 +99,26 @@ class Poetry(Base):
 
     author_id = Column(String(32), ForeignKey("author.id"), default=None)
     author = relationship("Author", back_populates="poetry")
+
+
+class Shares(Base):
+    __tablename__ = "shares"
+
+    id = Column(String(32), default=get_id, primary_key=True, index=True)
+    name = Column(String(200), index=True)  # 股票名称
+    code = Column(String(200), index=True)  # 股票代码
+    date_time = Column(DateTime, index=True)  # 日期
+    open_price = Column(String(200), index=True)  # 开盘
+    new_price = Column(String(200), index=True)  # 收盘
+    top_price = Column(String(200), index=True)  # 最高
+    down_price = Column(String(200), index=True)  # 最低
+    turnover = Column(String(200), index=True)  # 成交量
+    business_volume = Column(String(200), index=True)  # 成交额
+    amplitude = Column(String(200), index=True)  # 振幅
+    rise_and_fall = Column(String(200), index=True)  # 涨跌幅
+    rise_and_price = Column(String(200), index=True)  # 涨跌额
+    turnover_rate = Column(String(200), index=True)  # 换手率
+
+    is_delete = Column(Boolean, default=False)
+    update_date = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    create_date = Column(DateTime, default=datetime.now)

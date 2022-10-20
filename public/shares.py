@@ -7,14 +7,19 @@
 # 版   本：V 0.1
 # 说   明: 
 """
-from datetime import datetime, date
-import efinance as ef
-from chinese_calendar import is_workday
-import matplotlib.pyplot as plt
 import time
+import matplotlib.pyplot as plt
+import efinance as ef
+from datetime import datetime, date
+from chinese_calendar import is_workday
 
+from sql_app.database import SessionLocal
 from public.send_ding import send_ding
+from sql_app import crud_shares
+from conf.settings import SHARES
 from public.log import logger, BASE_PATH, os
+
+db = SessionLocal()
 
 
 def shares(stock_code=""):
@@ -37,9 +42,10 @@ def shares(stock_code=""):
     end_time = datetime(year, month, day, 15, 5, 0)
     am_time = datetime(year, month, day, 11, 35, 0)
     pm_time = datetime(year, month, day, 13, 00, 0)
+    save_time = datetime(year, month, day, 15, 0, 0)
     if (now_time < start_time or now_time > end_time or am_time < now_time < pm_time) and not make:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
-        return
+        # return
     # 数据间隔时间为 1 分钟
     freq = 1
     # 获取最新一个交易日的分钟级别股票行情数据
@@ -55,6 +61,11 @@ def shares(stock_code=""):
         plt.clf()
 
     share_name = df["股票名称"].values[0]
+    data = crud_shares.get_shares_by_name(db, share_name, flag=True)
+    max_price, min_price, avg_price, so_day = "", "", "", ""
+    if data:
+        so_day = (now_time - data.date_time).days
+        max_price, min_price, avg_price = crud_shares.get_shares_avg(db, share_name)
     open_price = df["开盘"].values[0]
     new_price = df["收盘"].values[-1]
     new_time = df["日期"].values[-1]
@@ -74,8 +85,11 @@ def shares(stock_code=""):
     if make:
         data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元/股\n最低价：{down_price} 元/股\n" \
                f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n成交量：{turnover} 手\n" \
-               f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股\n"
+               f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股\n\n" \
+               f"过去{so_day}天最高价：{max_price} 元/股\n过去{so_day}天平均价：{avg_price} 元/股\n" \
+               f"过去{so_day}天最低价：{min_price} 元/股\n"
         return data
+    # f"> **状态** <font>开盘中</font> \n\n"
     body = {
         "msgtype": "markdown",
         "markdown": {
@@ -91,11 +105,32 @@ def shares(stock_code=""):
                     f"> **换手率** <font>{turnover_rate}</font> %\n\n"
                     f"> **时间** <font>{new_time}</font>\n\n"
                     f"> **最新价** <font color={new_price_color}>{new_price}</font> 元/股\n\n"
-                    f"> **状态** <font>开盘中</font> \n\n"
-                    f"> **折线图:** ![screenshot](http://121.41.54.234/Chart-{now_img}.jpg) @15235514553\n\n"
+                    f"> **折线图:** ![screenshot](http://121.41.54.234/Chart-{now_img}.jpg)\n\n"
+                    f"> **过去{so_day}天最高价** <font color={top_price_color}>{max_price}</font> 元/股\n\n"
+                    f"> **过去{so_day}天平均价** <font color=''>{avg_price}</font> 元/股\n\n"
+                    f"> **过去{so_day}天最低价** <font color={down_price_color}>{min_price}</font> 元/股 @15235514553\n\n"
         },
         "at": {
             "atMobiles": ["15235514553"],
             "isAtAll": False,
         }}
-    send_ding(body)
+
+    data = crud_shares.get_shares_by_name(db, share_name)
+    if not data:
+        save = True
+    elif data and (now_time - data.date_time).days and now_time > save_time:
+        save = True
+    else:
+        save = False
+    if save:
+        df_list = df.to_dict(orient="records")
+        shares_list = []
+        for data in df_list:
+            shares_dict = dict()
+            for key, value in SHARES.items():
+                shares_dict.update({
+                    key: data[value]
+                })
+            shares_list.append(shares_dict)
+        crud_shares.add_all_shares(db, shares_list)
+    # send_ding(body)

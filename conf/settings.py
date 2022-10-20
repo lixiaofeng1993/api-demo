@@ -75,3 +75,20 @@ POETRY_TYPE = {
 #     '水浒传': 2, '格言联璧': 5, '围炉夜话': 4, '增广贤文': 5, '吕氏春秋': 2, '文心雕龙': 2, '醒世恒言': 2,
 #     '警世通言': 2, '幼学琼林': 2, '小窗幽记': 3, '三国演义': 2, '贞观政要': 2
 # }
+
+# 股票
+SHARES = {
+    "name": "股票名称",
+    "code": "股票代码",
+    "date_time": "日期",
+    "open_price": "开盘",
+    "new_price": "收盘",
+    "top_price": "最高",
+    "down_price": "最低",
+    "turnover": "成交量",
+    "business_volume": "成交额",
+    "amplitude": "振幅",
+    "rise_and_fall": "涨跌幅",
+    "rise_and_price": "涨跌额",
+    "turnover_rate": "换手率"
+}
