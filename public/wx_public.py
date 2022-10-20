@@ -175,13 +175,13 @@ def fishing(make=False):
 def handle_wx_text(data_list: list):
     content = ""
     for data in data_list:
-        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&msgmenuid={data.name}'>{data.name}</a> "
+        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&msgmenuid={data.name}'>{data.name}</a>\n"
     return content
 
 
 def send_more(db: Session, request, text: str, content: str = ""):
     if "DYNASTY-" in text or "POETRY_TYPE-" in text:
-        skip = request.app.state.redis.get(text)
+        skip = int(request.app.state.redis.get(text))
         val = text.split("-")[-1]
         if "DYNASTY" in text:
             for key, value in DYNASTY.items():
@@ -190,10 +190,11 @@ def send_more(db: Session, request, text: str, content: str = ""):
             data_list = crud_poetry.get_author_by_dynasty(db, text, skip=skip + 1)
             content = f"朝代：{text}\n诗人：\n"
             content += handle_wx_text(data_list)
-            more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=DYNASTY-{text}&msgmenuid=更多'>更多</a> "
+            more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=DYNASTY-{text}&msgmenuid=DYNASTY-{text}'>更多</a> "
             content += ">>> 点击诗人名字 "
             content += "或者查看" + more_text if len(data_list) == 10 else ""
-            request.app.state.redis.setex(key=f"DYNASTY-{val}", value=skip + 1, seconds=5 * 60)
+            request.app.state.redis.setex(key=f"DYNASTY-{val}", value=str(skip + 1), seconds=5 * 60)
+            return content
         elif "POETRY_TYPE" in text:
             for key, value in POETRY_TYPE.items():
                 if val == value:
@@ -202,9 +203,10 @@ def send_more(db: Session, request, text: str, content: str = ""):
             content = f"古诗类型：{text}\n古诗名字：\n"
             content += handle_wx_text(data_list)
             content += ">>> 点击古诗名字 "
-            more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{text}&msgmenuid=更多'>更多</a> "
+            more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{text}&msgmenuid=POETRY_TYPE-{text}'>更多</a> "
             content += "或者查看" + more_text if len(data_list) == 10 else ""
-            request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=skip + 1, seconds=5 * 60)
+            request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=str(skip + 1), seconds=5 * 60)
+            return content
     return content
 
 
@@ -213,22 +215,22 @@ def poetry_content(db: Session, request, text: str):
     if not content:
         for key, value in DYNASTY.items():
             if text == key:
-                request.app.state.redis.setex(key=f"DYNASTY-{value}", value=0, seconds=5 * 60)
+                request.app.state.redis.setex(key=f"DYNASTY-{value}", value="0", seconds=5 * 60)
                 data_list = crud_poetry.get_author_by_dynasty(db, text)
                 content = f"朝代：{text}\n诗人：\n"
                 content += handle_wx_text(data_list)
                 content += ">>> 点击诗人名字 "
-                more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=DYNASTY-{text}&msgmenuid=更多'>更多</a> "
+                more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=DYNASTY-{text}&msgmenuid=DYNASTY-{text}'>更多</a> "
                 content += "或者查看" + more_text if len(data_list) == 10 else ""
                 return content
         for key, value in POETRY_TYPE.items():
             if text == key:
-                request.app.state.redis.setex(key=f"POETRY_TYPE-{value}", value=0, seconds=5 * 60)
+                request.app.state.redis.setex(key=f"POETRY_TYPE-{value}", value="0", seconds=5 * 60)
                 data_list = crud_poetry.get_poetry_by_type(db, text)
                 content = f"古诗类型：{text}\n古诗名字：\n"
                 content += handle_wx_text(data_list)
                 content += ">>> 点击古诗名字 "
-                more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{text}&msgmenuid=更多'>更多</a> "
+                more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{text}&msgmenuid=POETRY_TYPE-{text}'>更多</a> "
                 content += "或者查看" + more_text if len(data_list) == 10 else ""
                 return content
         else:
