@@ -208,7 +208,7 @@ def send_more(db: Session, request: Request, text: str, skip: str):
             content += "或者查看" + more_text if len(data_list) == 10 else ""
             request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=str(skip + 10), seconds=5 * 60)
         elif "AUTHOR" in text:
-            data_list = crud_poetry.get_poetry_by_author_id(db, val)
+            data_list = crud_poetry.get_poetry_by_author_id(db, val, skip=skip + 10)
             content += "诗词推荐：\n"
             content += handle_wx_text(data_list)
             content += ">>> 点击古诗名字 "
@@ -279,27 +279,29 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
 def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str):
     content, media_id = "", ""
     if rec_msg.MsgType == 'text':
-        logger.info(f"文本信息：{rec_msg.Content}")
-        content = poetry_content(db, request, rec_msg.Content, skip)
+        text = rec_msg.Content
+        logger.info(f"文本信息：{text}")
+        content = poetry_content(db, request, text, skip)
         if not content:
             # patt = r"[\d+]{4}.[\d+]{1,2}.[\d+]{1,2}"
             # content = re.findall(patt, rec_msg.Content)
             # if content:
             #     content = age_content(content)
             # else:
-            content = shares(stock_code=rec_msg.Content)
-            if not content:
-                content = rec_msg.Content
-                if content in ["图片", "小七"] and token:
-                    media_id = wx_media(token)
-                elif content in ["all", "文章"]:
-                    content = ArticleUrl
-                elif content in ["follow", "功能"]:
-                    content = FOLLOW
-                elif content in ["今天", "today"]:
-                    content = fishing(make=True)
-                elif content == "放假":
-                    content = fishing()
+            if text in ["图片", "小七"] and token:
+                media_id = wx_media(token)
+            elif text in ["all", "文章"]:
+                content = ArticleUrl
+            elif text in ["follow", "功能"]:
+                content = FOLLOW
+            elif text in ["今天", "today"]:
+                content = fishing(make=True)
+            elif text == "放假":
+                content = fishing()
+            else:
+                content = shares(stock_code=text)
+                if not content:
+                    content = text
     elif rec_msg.MsgType == 'event':
         if rec_msg.Event == "subscribe":
             content = FOLLOW

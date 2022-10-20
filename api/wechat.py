@@ -56,9 +56,15 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
             to_user = rec_msg.FromUserName
             from_user = rec_msg.ToUserName
             text = rec_msg.Content
-            skip = await request.app.state.redis.get(text) if text and (
-                    "DYNASTY" in text or "POETRY_TYPE" in text or "AUTHOR" in text) else ""
-            content, media_id = send_wx_msg(db, request, rec_msg, token, skip)
+            content, media_id = "", ""
+            if text and ("DYNASTY" in text or "POETRY_TYPE" in text or "AUTHOR" in text):
+                skip = await request.app.state.redis.get(text)
+                if not skip:
+                    content = "会话只有30分钟，想了解更多，请重新发起~"
+            else:
+                skip = ""
+            if not content:
+                content, media_id = send_wx_msg(db, request, rec_msg, token, skip)
             if rec_msg.MsgType == 'text' and not media_id:
                 return Response(
                     Message(to_user, from_user, content=content).send(),
