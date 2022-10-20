@@ -133,4 +133,5 @@ def shares(stock_code=""):
                 })
             shares_list.append(shares_dict)
         crud_shares.add_all_shares(db, shares_list)
-    # send_ding(body)
+        logger.info(f"股票 {share_name} 批量保存成功！")
+    send_ding(body)
