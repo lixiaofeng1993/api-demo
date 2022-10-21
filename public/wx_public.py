@@ -177,7 +177,7 @@ def fishing(make=False):
 def handle_wx_text(data_list: list):
     content = ""
     for data in data_list:
-        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data.id}&msgmenuid={data.id}'>{data.name}</a>\n"
+        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data.id}&msgmenuid=9528'>{data.name}</a>\n"
     return content
 
 
