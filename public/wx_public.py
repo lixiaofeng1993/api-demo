@@ -188,7 +188,7 @@ def send_author(db: Session, request: Request, data):
     content = data.name
     introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
     if data.dynasty:
-        content += "\n朝代：\n" + data.dynasty.strip("\n")
+        content += "\n朝代：" + data.dynasty.strip("\n")
     if introduce:
         content += "\n介绍：\n" + introduce.strip("\n")
     data_list = crud_poetry.get_poetry_by_author_id(db, data.id)
@@ -211,7 +211,7 @@ def send_poetry(data, content: str = ""):
     if data.explain:
         content += "\n赏析：\n" + data.explain.strip("\n")
     if data.original:
-        content += "\n原文：" + data.original.strip("\n")
+        content += "\n原文：\n" + data.original.strip("\n")
     if data.translation:
         content += "\n译文：\n" + data.translation.strip("\n")
     if data.background:
