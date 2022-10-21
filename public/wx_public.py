@@ -225,11 +225,11 @@ def send_author(db: Session, request: Request, data):
     输入作者，返回作者简介及古诗词推荐
     """
     content = ""
-    # if data.dynasty:
-    #     content += data.dynasty.strip("\n") + data.name
-    if data.introduce:
-        introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
-        content += "\n介绍：\n" + introduce.strip("\n")
+    if data.dynasty:
+        content += data.dynasty.strip("\n") + data.name
+    # if data.introduce:
+    #     introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
+    #     content += "\n介绍：\n" + introduce.strip("\n")
     content += poetry_by_author_id(db, request, data.id, 0)
     return content
 
