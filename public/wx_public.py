@@ -191,7 +191,7 @@ def poetry_by_author_id(db: Session, request: Request, author_id: str, skip: int
         content += "\n诗词推荐：\n"
         content += handle_wx_text(data_list)
         content += ">>> 点击古诗名字 "
-        more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=AUTHOR-{author_id}&msgmenuid=9527'>更多</a> "
+        more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=AUTHOR-{author_id}&msgmenuid=9527'>更多</a>"
         content += "或者查看" + more_text if len(data_list) == 10 else ""
         request.app.state.redis.setex(key=f"AUTHOR-{author_id}", value=str(skip), seconds=30 * 60)
     return content
