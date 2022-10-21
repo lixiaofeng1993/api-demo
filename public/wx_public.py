@@ -183,7 +183,7 @@ def handle_wx_text(data_list: list):
 
 def send_more(db: Session, request: Request, text: str, skip: str, content=""):
     if "DYNASTY-" in text or "POETRY_TYPE-" in text or "AUTHOR-" in text or "RECOMMEND-" in text:
-        skip = int(skip)
+        skip = int(skip) if skip.isdigit() else skip
         val = text.split("-")[-1]
         if "RECOMMEND" in text:
             data = crud_poetry.get_poetry_by_id(db, val)
@@ -192,7 +192,7 @@ def send_more(db: Session, request: Request, text: str, skip: str, content=""):
             if data.translation:
                 content += "译文：\n" + data.translation
             if data.background:
-                content += "创作背景：\n" + data.background
+                content += "\n创作背景：\n" + data.background
         elif "DYNASTY" in text:
             for key, value in DYNASTY.items():
                 if int(val) == value:
@@ -235,10 +235,10 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
             season = now_season()
             poetry = crud_poetry.get_poetry_by_type_random(db, season)
             request.app.state.redis.setex(key=f"RECOMMEND-{poetry.id}", value=poetry.id, seconds=30 * 60)
-            content = f"今天推荐：\n出自{poetry.author.dynasty}{poetry.author.name}的《{poetry.name}》\n名句：\n{poetry.phrase}"
+            content = f"今天推荐：\n出自{poetry.author.dynasty}{poetry.author.name}的《{poetry.name}》\n\n{poetry.phrase}\n"
             if poetry.explain:
-                content += f"赏析：\n{poetry.explain}"
-            content += "点击查看 " \
+                content += f"\n赏析：\n{poetry.explain}"
+            content += "\n>>>点击查看 " \
                        f"<a href='weixin://bizmsgmenu?msgmenucontent=RECOMMEND-{poetry.id}&msgmenuid=RECOMMEND-{poetry.id}'>更多</a>"
             return content
         for key, value in DYNASTY.items():
@@ -281,9 +281,9 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
                 if data.phrase:
                     content += "名句：\n" + data.phrase
                 if data.explain:
-                    content += "赏析：\n" + data.explain
+                    content += "\n赏析：\n" + data.explain
                 if data.original:
-                    content += "原文：\n" + data.original
+                    content += "\n原文：" + data.original
                 if data.translation:
                     content += "译文：\n" + data.translation
                 if data.background:

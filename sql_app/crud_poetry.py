@@ -48,8 +48,7 @@ def get_poetry_by_id(db: Session, poetry_id: str):
 
 
 def get_poetry_by_type_random(db: Session, poetry_type: str):
-    return db.query(func.random(Poetry.phrase)).filter(Poetry.type == poetry_type, Poetry.is_delete == 0).scalar()
-
+    return db.query(Poetry).filter(Poetry.type == poetry_type, Poetry.is_delete == 0).order_by(func.random()).first()
 
 def get_poetry_by_author_name(db: Session, author_name: str):
     return db.query(Poetry).filter(Poetry.author.name == author_name, Poetry.is_delete == 0).first()
