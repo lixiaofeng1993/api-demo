@@ -177,7 +177,44 @@ def fishing(make=False):
 def handle_wx_text(data_list: list):
     content = ""
     for data in data_list:
-        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&msgmenuid={data.name}'>{data.name}</a>\n"
+        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data.id}&msgmenuid={data.name}'>{data.name}</a>\n"
+    return content
+
+
+def send_author(db: Session, request: Request, data):
+    """
+    输入作者，返回作者简介及古诗词推荐
+    """
+    introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
+    if not introduce:
+        content = "作者朝代：\n" + data.dynasty.strip("\n")
+    else:
+        content = "作者介绍：\n" + introduce.strip("\n")
+    data_list = crud_poetry.get_poetry_by_author_id(db, data.id)
+    if data_list:
+        content += "\n诗词推荐：\n"
+        content += handle_wx_text(data_list)
+        content += ">>> 点击古诗名字 "
+        more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=AUTHOR-{data.id}&msgmenuid=POETRY_TYPE-{data.id}'>更多</a> "
+        content += "或者查看" + more_text if len(data_list) == 10 else ""
+        request.app.state.redis.setex(key=f"AUTHOR-{data.id}", value="0", seconds=30 * 60)
+    return content
+
+
+def send_poetry(data, content: str = ""):
+    """
+    输入古诗词名称，返回名句、赏析等数据
+    """
+    if data.phrase:
+        content += "名句：\n" + data.phrase.strip("\n")
+    if data.explain:
+        content += "\n赏析：\n" + data.explain.strip("\n")
+    if data.original:
+        content += "\n原文：" + data.original.strip("\n")
+    if data.translation:
+        content += "\n译文：\n" + data.translation.strip("\n")
+    if data.background:
+        content += "\n创作背景：\n" + data.background.strip("\n")
     return content
 
 
@@ -230,6 +267,16 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
     content = ""
     if skip:
         content = send_more(db, request, text, skip)
+    elif len(text) == 32:
+        author = crud_poetry.get_author_by_id(db, text)
+        if author:
+            content = send_author(db, request, author)
+            return content
+        else:
+            poetry = crud_poetry.get_poetry_by_id(db, text)
+            if poetry:
+                content = send_poetry(poetry, "")
+                return content
     else:
         if text == "推荐":
             poetry_type = recommend_handle()
@@ -268,36 +315,16 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
                 return content
         data = crud_poetry.get_author_by_name(db, text)
         if data:
-            request.app.state.redis.setex(key=f"AUTHOR-{data.id}", value="0", seconds=30 * 60)
-            introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
-            if not introduce:
-                content = "作者朝代：\n" + data.dynasty.strip("\n")
-            else:
-                content = "作者介绍：\n" + introduce.strip("\n")
-            data_list = crud_poetry.get_poetry_by_author_id(db, data.id)
-            content += "\n诗词推荐：\n"
-            content += handle_wx_text(data_list)
-            content += ">>> 点击古诗名字 "
-            more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=AUTHOR-{data.id}&msgmenuid=POETRY_TYPE-{data.id}'>更多</a> "
-            content += "或者查看" + more_text if len(data_list) == 10 else ""
+            content = send_author(db, request, data)
         else:
             data = crud_poetry.get_poetry_by_name(db, text)
             if data:
-                if data.phrase:
-                    content += "名句：\n" + data.phrase.strip("\n")
-                if data.explain:
-                    content += "\n赏析：\n" + data.explain.strip("\n")
-                if data.original:
-                    content += "\n原文：" + data.original.strip("\n")
-                if data.translation:
-                    content += "\n译文：\n" + data.translation.strip("\n")
-                if data.background:
-                    content += "\n创作背景：\n" + data.background.strip("\n")
+                content = send_poetry(data, "")
             else:
                 data = crud_poetry.get_poetry_by_phrase(db, text)
                 if data:
-                    content = f"古诗名字：\n" + f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&" \
-                                           f"msgmenuid={data.name}'>{data.name}</a>\n>>> 点击古诗名字获取更多..."
+                    content = f"古诗名字：\n" + f"<a href='weixin://bizmsgmenu?msgmenucontent={data.id}&" \
+                                           f"msgmenuid={data.id}'>{data.name}</a>\n>>> 点击古诗名字获取更多..."
     return content
 
 
