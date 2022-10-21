@@ -185,11 +185,12 @@ def send_author(db: Session, request: Request, data):
     """
     输入作者，返回作者简介及古诗词推荐
     """
+    content = data.name
     introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
-    if not introduce:
-        content = "作者朝代：\n" + data.dynasty.strip("\n")
-    else:
-        content = "作者介绍：\n" + introduce.strip("\n")
+    if data.dynasty:
+        content += "\n朝代：\n" + data.dynasty.strip("\n")
+    if introduce:
+        content += "\n介绍：\n" + introduce.strip("\n")
     data_list = crud_poetry.get_poetry_by_author_id(db, data.id)
     if data_list:
         content += "\n诗词推荐：\n"
