@@ -20,7 +20,6 @@ from conf.settings import SHARES
 from public.log import logger, BASE_PATH, os
 
 
-
 def shares(stock_code=""):
     make = False
     if not stock_code:
@@ -59,12 +58,13 @@ def shares(stock_code=""):
         plt.savefig(os.path.join(BASE_PATH, "media", f"Chart-{now_img}.jpg"), bbox_inches='tight')
         plt.clf()
 
-    share_name = df["股票名称"].values[0]
-    db = SessionLocal()
-    data = crud_shares.get_shares_by_name(db, share_name, flag=True)
     max_price, min_price, avg_price, so_day = "", "", "", ""
-    if data:
-        so_day = (now_time - data.date_time).days
+    share_name = df["股票名称"].values[0]
+    with SessionLocal() as db:
+        asc_data = crud_shares.get_shares_by_name(db, share_name, flag=True)
+        desc_data = crud_shares.get_shares_by_name(db, share_name)
+    if asc_data:
+        so_day = (now_time - asc_data.date_time).days
         max_price, min_price, avg_price = crud_shares.get_shares_avg(db, share_name)
     open_price = df["开盘"].values[0]
     new_price = df["收盘"].values[-1]
@@ -83,7 +83,6 @@ def shares(stock_code=""):
     down_price_color = "#FF0000" if down_price > open_price else "#00FF00"
 
     if make:
-        db.close()
         data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元/股\n最低价：{down_price} 元/股\n" \
                f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n成交量：{turnover} 手\n" \
                f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股\n\n" \
@@ -116,10 +115,9 @@ def shares(stock_code=""):
             "isAtAll": False,
         }}
 
-    data = crud_shares.get_shares_by_name(db, share_name)
-    if not data:
+    if not desc_data:
         save = True
-    elif data and (now_time - data.date_time).days and now_time > save_time:
+    elif desc_data and (now_time - desc_data.date_time).days and now_time > save_time:
         save = True
     else:
         save = False
@@ -134,6 +132,5 @@ def shares(stock_code=""):
                 })
             shares_list.append(shares_dict)
         crud_shares.add_all_shares(db, shares_list)
-        logger.info(f"股票 {share_name} 批量保存成功！")
-    db.close()
+        logger.info(f"股票： {share_name} 日期：{now_time} ==> 批量保存成功！")
     send_ding(body)

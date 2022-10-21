@@ -87,5 +87,5 @@ class Message:
                       </Image>
                     </xml>
                     """
-        logger.info(f"微信回复消息模板：{self.message}")
+        logger.info(f"微信回复消息文案长度 {len(self.content)} ==> 消息文案 {self.content}")
         return self.message

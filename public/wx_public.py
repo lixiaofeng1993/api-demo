@@ -61,7 +61,7 @@ def sign_sha1(signature, timestamp, nonce):
     temp = [TOKEN, timestamp, nonce]
     temp.sort()
     hashcode = hashlib.sha1("".join(temp).encode('utf-8')).hexdigest()
-    logger.info(f"加密：{hashcode}，微信返回：{signature}")
+    # logger.info(f"加密：{hashcode}，微信返回：{signature}")
     if hashcode == signature:
         return True
 
