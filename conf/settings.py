@@ -92,3 +92,14 @@ SHARES = {
     "rise_and_price": "涨跌额",
     "turnover_rate": "换手率"
 }
+
+# 万年历KEY
+CALENDAR_KEY = "197557d5fc1f3a26fa772bc694ea4c2d"
+# 高德地图KEY
+GAO_KEY = "b5b15bbd3252eb0cbb01877ae53a34d7"
+# 北京 110000
+# 顺义 110113
+# 屯留 140405
+# 长治 140400
+# 太原 140100
+CITY_CODE = 110113

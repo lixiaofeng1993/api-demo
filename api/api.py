@@ -16,7 +16,7 @@ from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
 from fastapi.responses import StreamingResponse
 
-from conf.settings import HOST, ASSETS_PATH, os, DEBUG
+from conf.settings import HOST, ASSETS_PATH, os, DEBUG, CALENDAR_KEY
 from public.custom_code import result
 
 router = APIRouter()
@@ -125,7 +125,7 @@ def get_calendar_api():
     }
     now = str(datetime.datetime.now().date()).split("-")
     date = str(int(now[0])) + "-" + str(int(now[1])) + "-" + str(int(now[2]))
-    res = requests.get(f"http://v.juhe.cn/calendar/day?date={date}&key=197557d5fc1f3a26fa772bc694ea4c2d").json()
+    res = requests.get(f"http://v.juhe.cn/calendar/day?date={date}&key={CALENDAR_KEY}").json()
     result = {
         "公告": "【摸鱼办宣】",
         "今天": {}

@@ -22,7 +22,7 @@ from zhdate import ZhDate
 from requests_html import HTMLSession
 
 from sql_app import crud_poetry
-from public.recommend import now_season
+from public.recommend import recommend_handle
 from conf.settings import TOKEN, FOLLOW, ArticleUrl, DYNASTY, POETRY_TYPE
 from public.shares import shares
 from public.log import logger
@@ -188,11 +188,11 @@ def send_more(db: Session, request: Request, text: str, skip: str, content=""):
         if "RECOMMEND" in text:
             data = crud_poetry.get_poetry_by_id(db, val)
             if data.original:
-                content += "原文：\n" + data.original
+                content += "原文：\n" + data.original.strip("\n")
             if data.translation:
-                content += "译文：\n" + data.translation
+                content += "\n译文：\n" + data.translation.strip("\n")
             if data.background:
-                content += "\n创作背景：\n" + data.background
+                content += "\n创作背景：\n" + data.background.strip("\n")
         elif "DYNASTY" in text:
             for key, value in DYNASTY.items():
                 if int(val) == value:
@@ -232,12 +232,17 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
         content = send_more(db, request, text, skip)
     else:
         if text == "推荐":
-            season = now_season()
-            poetry = crud_poetry.get_poetry_by_type_random(db, season)
+            poetry_type = recommend_handle()
+            poetry = crud_poetry.get_poetry_by_type_random(db, poetry_type)
+            phrase = poetry.phrase.strip('\n')
+            explain = poetry.explain.strip('\n')
             request.app.state.redis.setex(key=f"RECOMMEND-{poetry.id}", value=poetry.id, seconds=30 * 60)
-            content = f"今天推荐：\n出自{poetry.author.dynasty}{poetry.author.name}的《{poetry.name}》\n\n{poetry.phrase}\n"
+            if poetry.author_id:
+                content = f"今天推荐：\n出自{poetry.author.dynasty}{poetry.author.name}的《{poetry.name}》\n\n{phrase}\n"
+            else:
+                content = f"今天推荐：\n摘自《{poetry.name}》\n\n{phrase}\n"
             if poetry.explain:
-                content += f"\n赏析：\n{poetry.explain}"
+                content += f"\n赏析：\n{explain}"
             content += "\n>>>点击查看 " \
                        f"<a href='weixin://bizmsgmenu?msgmenucontent=RECOMMEND-{poetry.id}&msgmenuid=RECOMMEND-{poetry.id}'>更多</a>"
             return content
@@ -266,9 +271,9 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
             request.app.state.redis.setex(key=f"AUTHOR-{data.id}", value="0", seconds=30 * 60)
             introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
             if not introduce:
-                content = "作者朝代：\n" + data.dynasty
+                content = "作者朝代：\n" + data.dynasty.strip("\n")
             else:
-                content = "作者介绍：\n" + introduce
+                content = "作者介绍：\n" + introduce.strip("\n")
             data_list = crud_poetry.get_poetry_by_author_id(db, data.id)
             content += "\n诗词推荐：\n"
             content += handle_wx_text(data_list)
@@ -279,20 +284,20 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
             data = crud_poetry.get_poetry_by_name(db, text)
             if data:
                 if data.phrase:
-                    content += "名句：\n" + data.phrase
+                    content += "名句：\n" + data.phrase.strip("\n")
                 if data.explain:
-                    content += "\n赏析：\n" + data.explain
+                    content += "\n赏析：\n" + data.explain.strip("\n")
                 if data.original:
-                    content += "\n原文：" + data.original
+                    content += "\n原文：" + data.original.strip("\n")
                 if data.translation:
-                    content += "译文：\n" + data.translation
+                    content += "\n译文：\n" + data.translation.strip("\n")
                 if data.background:
-                    content += "创作背景：\n" + data.background
+                    content += "\n创作背景：\n" + data.background.strip("\n")
             else:
                 data = crud_poetry.get_poetry_by_phrase(db, text)
                 if data:
                     content = f"古诗名字：\n" + f"<a href='weixin://bizmsgmenu?msgmenucontent={data.name}&" \
-                                           f"msgmenuid={data.name}'>{data.name}</a> >>> 点击古诗名字获取更多..."
+                                           f"msgmenuid={data.name}'>{data.name}</a>\n>>> 点击古诗名字获取更多..."
     return content
 
 
@@ -303,11 +308,6 @@ def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str):
         logger.info(f"文本信息：{text}")
         content = poetry_content(db, request, text, skip)
         if not content:
-            # patt = r"[\d+]{4}.[\d+]{1,2}.[\d+]{1,2}"
-            # content = re.findall(patt, rec_msg.Content)
-            # if content:
-            #     content = age_content(content)
-            # else:
             if text in ["图片", "小七"] and token:
                 media_id = wx_media(token)
             elif text in ["all", "文章"]:
