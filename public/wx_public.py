@@ -229,7 +229,7 @@ def send_author(db: Session, request: Request, data):
     if data.introduce:
         introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
         content += "\n介绍：\n" + introduce.strip("\n")
-    # content += poetry_by_author_id(db, request, data.id, 0)
+    content += poetry_by_author_id(db, request, data.id, 0)
     return content
 
 
