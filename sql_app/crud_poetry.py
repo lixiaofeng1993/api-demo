@@ -8,6 +8,7 @@
 # 说   明: 
 """
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from sql_app.models import Author, Poetry
 
@@ -40,6 +41,14 @@ def get_poetry_by_type_and_name_and_author_and_phrase(db: Session, poetry_type: 
 
 def get_poetry_by_type(db: Session, poetry_type: str, skip: int = 0, limit: int = 10):
     return db.query(Poetry).filter(Poetry.type == poetry_type, Poetry.is_delete == 0).offset(skip).limit(limit).all()
+
+
+def get_poetry_by_id(db: Session, poetry_id: str):
+    return db.query(Poetry).filter(Poetry.id == poetry_id, Poetry.is_delete == 0).first()
+
+
+def get_poetry_by_type_random(db: Session, poetry_type: str):
+    return db.query(func.random(Poetry.phrase)).filter(Poetry.type == poetry_type, Poetry.is_delete == 0).scalar()
 
 
 def get_poetry_by_author_name(db: Session, author_name: str):

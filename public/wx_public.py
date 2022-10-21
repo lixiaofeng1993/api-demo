@@ -22,6 +22,7 @@ from zhdate import ZhDate
 from requests_html import HTMLSession
 
 from sql_app import crud_poetry
+from public.recommend import now_season
 from conf.settings import TOKEN, FOLLOW, ArticleUrl, DYNASTY, POETRY_TYPE
 from public.shares import shares
 from public.log import logger
@@ -180,12 +181,19 @@ def handle_wx_text(data_list: list):
     return content
 
 
-def send_more(db: Session, request: Request, text: str, skip: str):
-    content = ""
-    if "DYNASTY-" in text or "POETRY_TYPE-" in text or "AUTHOR-" in text:
+def send_more(db: Session, request: Request, text: str, skip: str, content=""):
+    if "DYNASTY-" in text or "POETRY_TYPE-" in text or "AUTHOR-" in text or "RECOMMEND-" in text:
         skip = int(skip)
         val = text.split("-")[-1]
-        if "DYNASTY" in text:
+        if "RECOMMEND" in text:
+            data = crud_poetry.get_poetry_by_id(db, val)
+            if data.original:
+                content += "原文：\n" + data.original
+            if data.translation:
+                content += "译文：\n" + data.translation
+            if data.background:
+                content += "创作背景：\n" + data.background
+        elif "DYNASTY" in text:
             for key, value in DYNASTY.items():
                 if int(val) == value:
                     text = key
@@ -223,6 +231,16 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
     if skip:
         content = send_more(db, request, text, skip)
     else:
+        if text == "推荐":
+            season = now_season()
+            poetry = crud_poetry.get_poetry_by_type_random(db, season)
+            request.app.state.redis.setex(key=f"RECOMMEND-{poetry.id}", value=poetry.id, seconds=30 * 60)
+            content = f"今天推荐：\n出自{poetry.author.dynasty}{poetry.author.name}的《{poetry.name}》\n名句：\n{poetry.phrase}"
+            if poetry.explain:
+                content += f"赏析：\n{poetry.explain}"
+            content += "点击查看 " \
+                       f"<a href='weixin://bizmsgmenu?msgmenucontent=RECOMMEND-{poetry.id}&msgmenuid=RECOMMEND-{poetry.id}'>更多</a>"
+            return content
         for key, value in DYNASTY.items():
             if text == key:
                 request.app.state.redis.setex(key=f"DYNASTY-{value}", value="0", seconds=30 * 60)
@@ -260,14 +278,16 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
         else:
             data = crud_poetry.get_poetry_by_name(db, text)
             if data:
+                if data.phrase:
+                    content += "名句：\n" + data.phrase
+                if data.explain:
+                    content += "赏析：\n" + data.explain
                 if data.original:
-                    content = "原文：\n" + data.original
-                    if data.translation:
-                        content += "译文：\n" + data.translation
-                elif data.phrase:
-                    content = "名句：\n" + data.phrase
-                    if data.explain:
-                        content += "\n赏析：\n" + data.explain
+                    content += "原文：\n" + data.original
+                if data.translation:
+                    content += "译文：\n" + data.translation
+                if data.background:
+                    content += "创作背景：\n" + data.background
             else:
                 data = crud_poetry.get_poetry_by_phrase(db, text)
                 if data:
