@@ -181,11 +181,11 @@ def handle_wx_text(data_list: list):
     return content
 
 
-def poetry_by_author_id(db: Session, request: Request, author_id: str, skip: int, content: str = ""):
-    if not content:
+def poetry_by_author_id(db: Session, request: Request, author_id: str, skip: int, flag: bool = False):
+    content = ""
+    if flag:
         author = crud_poetry.get_author_by_id(db, author_id)
         content = author.name
-    logger.info(f"111111111111111111111111111 ============={author_id}")
     data_list = crud_poetry.get_poetry_by_author_id(db, author_id, skip=skip)
     if data_list:
         content += "\n诗词推荐：\n"
@@ -231,7 +231,7 @@ def send_author(db: Session, request: Request, data):
     if data.introduce:
         introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
         content += "\n介绍：\n" + introduce.strip("\n")
-    # content += poetry_by_author_id(db, request, data.id, 0, content)
+    content += poetry_by_author_id(db, request, data.id, 0)
     return content
 
 
@@ -276,7 +276,7 @@ def send_more(db: Session, request: Request, text: str, skip: str, content: str 
                     text = key
             content = poetry_by_type(db, request, text, skip + 10, val)
         elif "AUTHOR" in text:
-            content = poetry_by_author_id(db, request, val, skip + 10)
+            content = poetry_by_author_id(db, request, val, skip + 10, flag=True)
     return content
 
 
@@ -288,7 +288,7 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
     elif len(text) == 32:
         author = crud_poetry.get_author_by_id(db, text)
         if author:
-            logger.info("*"*100)
+            logger.info("*" * 100)
             content = send_author(db, request, author)
             return content
         else:
