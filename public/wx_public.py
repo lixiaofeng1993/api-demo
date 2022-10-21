@@ -186,7 +186,7 @@ def poetry_by_author_id(db: Session, request: Request, author_id: str, skip: int
     if flag:
         author = crud_poetry.get_author_by_id(db, author_id)
         content = author.dynasty.strip("\n") + author.name
-    data_list = crud_poetry.get_poetry_by_author_id(db, author_id, skip=skip)
+    data_list = crud_poetry.get_poetry_by_author_id(db, author_id, skip=skip, limit=1)
     if data_list:
         content += "\n诗词推荐：\n"
         content += handle_wx_text(data_list)
