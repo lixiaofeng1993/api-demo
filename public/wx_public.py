@@ -305,7 +305,7 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
             if poetry.explain:
                 content += f"\n赏析：\n{explain}"
             content += "\n>>>点击查看 " \
-                       f"<a href='weixin://bizmsgmenu?msgmenucontent=RECOMMEND-{poetry.id}'>更多</a>"
+                       f"<a href='weixin://bizmsgmenu?msgmenucontent=RECOMMEND-{poetry.id}&msgmenuid=1'>更多</a>"
             return content
         for key, value in DYNASTY.items():
             if text == key:
