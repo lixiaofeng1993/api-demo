@@ -282,6 +282,7 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
     content = ""
     if skip:
         content = send_more(db, request, text, skip)
+        return content
     elif len(text) == 32:
         author = crud_poetry.get_author_by_id(db, text)
         if author:
