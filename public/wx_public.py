@@ -185,6 +185,7 @@ def poetry_by_author_id(db: Session, request: Request, author_id: str, skip: int
     if not content:
         author = crud_poetry.get_author_by_id(db, author_id)
         content = author.name
+    logger.info(f"111111111111111111111111111 ============={author_id}")
     data_list = crud_poetry.get_poetry_by_author_id(db, author_id, skip=skip)
     if data_list:
         content += "\n诗词推荐：\n"
