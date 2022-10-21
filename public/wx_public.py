@@ -228,9 +228,9 @@ def send_author(db: Session, request: Request, data):
     logger.info(f"=================>>>>{content}")
     if data.dynasty:
         content += "\n朝代：" + data.dynasty.strip("\n")
-    # if data.introduce:
-    #     introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
-    #     content += "\n介绍：\n" + introduce.strip("\n")
+    if data.introduce:
+        introduce = data.introduce.split("►")[0] if "►" in data.introduce else data.introduce
+        content += "\n介绍：\n" + introduce.strip("\n")
     # content += poetry_by_author_id(db, request, data.id, 0, content)
     return content
 
