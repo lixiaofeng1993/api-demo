@@ -88,7 +88,7 @@ def poetry_by_author_id(db: Session, request: Request, author_id: str, skip: int
         content += handle_wx_text(data_list)
         content += ">>> 点击古诗名字 "
         more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=AUTHOR-{author_id}&msgmenuid=9527'>更多</a>"
-        content += "或者查看" + more_text if len(data_list) == 5 else ""
+        content += "或者查看 " + more_text if len(data_list) == 5 else ""
         request.app.state.redis.setex(key=f"AUTHOR-{author_id}", value=str(skip), seconds=30 * 60)
     return content
 
@@ -101,8 +101,8 @@ def poetry_by_type(db: Session, request: Request, text: str, skip: int, val):
     data_list = crud_poetry.get_poetry_by_type(db, text, skip=skip)
     content += handle_wx_text(data_list)
     content += ">>> 点击古诗名字 "
-    more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{val}&msgmenuid=9559'>更多</a> "
-    content += "或者查看" + more_text if len(data_list) == 10 else ""
+    more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{val}&msgmenuid=9559'>更多</a> "
+    content += "或者查看 " + more_text if len(data_list) == 10 else ""
     request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=str(skip), seconds=30 * 60)
     return content
 
@@ -115,8 +115,8 @@ def author_by_dynasty(db: Session, request: Request, text: str, skip: int, val):
     data_list = crud_poetry.get_author_by_dynasty(db, text, skip=skip)
     content += handle_wx_text(data_list)
     content += ">>> 点击诗人名字 "
-    more_text = f" <a href='weixin://bizmsgmenu?msgmenucontent=DYNASTY-{val}&msgmenuid=9526'>更多</a> "
-    content += "或者查看" + more_text if len(data_list) == 10 else ""
+    more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=DYNASTY-{val}&msgmenuid=9526'>更多</a> "
+    content += "或者查看 " + more_text if len(data_list) == 10 else ""
     request.app.state.redis.setex(key=f"DYNASTY-{val}", value=str(skip), seconds=30 * 60)
     return content
 
