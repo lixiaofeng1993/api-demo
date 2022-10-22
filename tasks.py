@@ -66,22 +66,30 @@ def repeat_task(
                                                                  password="123456", encoding="utf-8")
                 if wait_first:
                     await asyncio.sleep(seconds)
+                logger.info(f"---------->333333333333333333{repetitions}")
+                flag = 0
                 while max_repetitions is None or repetitions < max_repetitions:
-                    if repetitions > 1:
+                    if repetitions == 0:
                         repetitions = 0
                         logger.info(f"---------->222222222222222222{repetitions}")
                         return
+                    if flag:
+                        logger.info(f"---------->444444444444---------->{flag}")
+                        return
+                    flag += 1
                     try:
                         if is_coroutine:
                             # 以协程方式执行
                             await func()  # type: ignore
                         else:
-                            lock = redis_session.setex(key="LOCK", value="lock", seconds=5)
+                            lock = redis_session.get(key="LOCK")
                             logger.info(f"---------->11111111111111{repetitions}")
-                            if lock:
+                            if not lock:
                                 # 以线程方式执行
                                 await run_in_threadpool(func)
                                 logger.info(f"---------->{repetitions}")
+                                redis_session.setex(key="LOCK", value="lock", seconds=5)
+                                logger.info(f"---------->11111111111111{repetitions}")
                         repetitions += 1
                     except Exception as exc:
                         logger.error(f'执行重复任务异常: {exc}')
