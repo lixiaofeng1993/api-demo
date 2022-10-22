@@ -61,15 +61,16 @@ def repeat_task(
 
             async def loop() -> None:
                 nonlocal repetitions
-                logger.info(f"============>>> {repetitions}")
+                logger.info(f"1============>>> {repetitions}")
                 if repetitions > 1:
-                    logger.warning(f"2>>> 避免多线程同一时间多次运行定时任务")
+                    logger.warning(f"1>>> 避免多线程同一时间多次运行定时任务")
                     return
                 if wait_first:
                     await asyncio.sleep(seconds)
                 while max_repetitions is None or repetitions < max_repetitions:
+                    logger.info(f"2============>>> {repetitions}")
                     if repetitions > 1:
-                        logger.warning(f"1>>> 避免多线程同一时间多次运行定时任务")
+                        logger.warning(f"2>>> 避免多线程同一时间多次运行定时任务")
                         return
                     try:
                         if is_coroutine:
