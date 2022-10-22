@@ -12,6 +12,7 @@ from functools import wraps
 from asyncio import ensure_future
 from starlette.concurrency import run_in_threadpool
 from typing import Any, Callable, Coroutine, Optional, Union
+import aioredis
 
 from public.log import logger
 
@@ -61,29 +62,25 @@ def repeat_task(
 
             async def loop() -> None:
                 nonlocal repetitions
-                logger.info(f"1============>>> {repetitions}")
-                if repetitions > 1:
-                    logger.warning(f"1>>> 避免多线程同一时间多次运行定时任务")
-                    return
+                redis_session = await aioredis.create_redis_pool(address="redis://:@127.0.0.1:6379/0",
+                                                                 password="123456", encoding="utf-8")
                 if wait_first:
                     await asyncio.sleep(seconds)
                 while max_repetitions is None or repetitions < max_repetitions:
-                    logger.info(f"2============>>> {repetitions}")
-                    if repetitions > 1:
-                        logger.warning(f"2>>> 避免多线程同一时间多次运行定时任务")
-                        return
                     try:
                         if is_coroutine:
                             # 以协程方式执行
-                            logger.info(f"3============>>> {repetitions}")
                             await func()  # type: ignore
                         else:
-                            # 以线程方式执行
-                            logger.info(f"4============>>> {repetitions}")
-                            await run_in_threadpool(func)
+                            lock = redis_session.setex(key="LOCK", value="lock", seconds=5)
+                            logger.info(f"---------->11111111111111{repetitions}")
+                            if lock:
+                                # 以线程方式执行
+                                await run_in_threadpool(func)
+                                logger.info(f"---------->{repetitions}")
                         repetitions += 1
                     except Exception as exc:
-                        logger.error(f'执行定时任务出现异常: {exc}')
+                        logger.error(f'执行重复任务异常: {exc}')
                         if raise_exceptions:
                             raise exc
                     await asyncio.sleep(seconds)
