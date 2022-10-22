@@ -183,8 +183,7 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
                         logger.info(f"{name} {dynasty} 保存成功！")
                 else:
                     author_id = None
-                poetry = crud_poetry.get_poetry_by_type_and_name_and_author_and_phrase(db, poetry_type,
-                                                                                       poetry_name,
+                poetry = crud_poetry.get_poetry_by_type_and_name_and_author_and_phrase(db, poetry_type, poetry_name,
                                                                                        author_id, phrase)
                 if not poetry:
                     poetry_list.append(
@@ -207,7 +206,7 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
     return result
 
 
-@router.get("/v1/poetry", summary="爬取全部古诗词接口")
+@router.get("/v1/poetry", summary="爬取全部古诗词接口", include_in_schema=False)
 async def get_all_poetry(db: Session = Depends(get_db)):
     for key, value in POETRY_URL.items():
         poetry_type = key
@@ -275,9 +274,9 @@ async def get_all_poetry(db: Session = Depends(get_db)):
             background_list = re.findall(background_patt, detail)
             if background_list:
                 background = background_list[0]  # 创作背景
-            # logger.info(
-            #     f"第{j}条 ==> 作者：{name} ==> 朝代：{dynasty} ==> 古诗名字：{poetry_name} ==>原文:{original} "
-            #     f"古诗类型：{poetry_type} ==>译文: {translation} ==>创作背景: {background}")
+            logger.info(
+                f"第{j}条 ==> 作者：{name} ==> 朝代：{dynasty} ==> 古诗名字：{poetry_name} ==>原文:{original} "
+                f"古诗类型：{poetry_type} ==>译文: {translation} ==>创作背景: {background}")
             if name == "佚名":
                 author = crud_poetry.get_author_by_name(db, name)
                 author_id = author.id
