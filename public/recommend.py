@@ -1,4 +1,5 @@
 import requests
+import time
 from datetime import date
 from jsonpath import jsonpath
 from random import randint
@@ -56,5 +57,13 @@ def recommend_handle():
     return poetry_type
 
 
+def surplus_second():
+    today = date.today()
+    today_end = f"{str(today)} 23:59:59"
+    end_second = int(time.mktime(time.strptime(today_end, "%Y-%m-%d %H:%M:%S")))
+    now_second = int(time.time())
+    return end_second - now_second
+
+
 if __name__ == '__main__':
-    print(recommend_handle())
+    print(surplus_second())
