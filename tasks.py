@@ -61,6 +61,9 @@ def repeat_task(
 
             async def loop() -> None:
                 nonlocal repetitions
+                if repetitions > 1:
+                    logger.warning(f">>> 避免多线程同一时间多次运行定时任务")
+                    return
                 if wait_first:
                     await asyncio.sleep(seconds)
                 while max_repetitions is None or repetitions < max_repetitions:
@@ -73,7 +76,7 @@ def repeat_task(
                             await run_in_threadpool(func)
                         repetitions += 1
                     except Exception as exc:
-                        logger.error(f'执行重复任务异常: {exc}')
+                        logger.error(f'执行定时任务出现异常: {exc}')
                         if raise_exceptions:
                             raise exc
                     await asyncio.sleep(seconds)
