@@ -69,12 +69,9 @@ def repeat_task(
                 logger.info(f"---------->333333333333333333{repetitions}")
                 flag = 0
                 while max_repetitions is None or repetitions < max_repetitions:
-                    if repetitions == 0:
-                        repetitions = 0
-                        logger.info(f"---------->222222222222222222{repetitions}")
-                        return
                     if flag:
                         logger.info(f"---------->444444444444---------->{flag}")
+                        await asyncio.sleep(seconds)
                         return
                     flag += 1
                     try:
