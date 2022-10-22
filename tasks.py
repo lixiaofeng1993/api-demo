@@ -12,7 +12,7 @@ from functools import wraps
 from asyncio import ensure_future
 from starlette.concurrency import run_in_threadpool
 from typing import Any, Callable, Coroutine, Optional, Union
-from aioredis import Redis
+from aioredis import Redis, create_redis_pool
 
 from public.log import logger
 
@@ -30,7 +30,6 @@ def repeat_task(
         wait_first: bool = False,
         raise_exceptions: bool = False,
         max_repetitions: Optional[int] = None,
-        redis: Redis = None,
 ) -> NoArgsNoReturnDecorator:
     """
     返回一个修饰器, 该修饰器修改函数, 使其在首次调用后定期重复执行.
@@ -55,6 +54,7 @@ def repeat_task(
         @wraps(func)
         async def wrapped() -> None:
             repetitions = 0  # 限制定时任务执行次数
+            redis = await create_redis_pool(f"redis://:@127.0.0.1:6379/0", password="123456", encoding="utf-8")
 
             async def loop() -> None:
                 nonlocal repetitions
@@ -69,6 +69,7 @@ def repeat_task(
                             lock = await redis.get(key="LOCK")
                             if lock:
                                 logger.info(f"多个进程同一时间多次执行定时任务的限制")
+                                await redis.wait_closed()
                             else:
                                 # 以线程方式执行
                                 await redis.setex(key="LOCK", value="lock", seconds=10)
