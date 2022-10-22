@@ -71,7 +71,7 @@ def repeat_task(
                                 logger.info(f"多个进程同一时间多次执行定时任务的限制")
                             else:
                                 # 以线程方式执行
-                                await redis.setex(key="LOCK", value="lock", seconds=seconds)
+                                await redis.setex(key="LOCK", value="lock", seconds=10)
                                 await run_in_threadpool(func)
                         repetitions += 1
                     except Exception as exc:
