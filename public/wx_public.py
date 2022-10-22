@@ -202,9 +202,10 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
             phrase = poetry.phrase.strip('\n')
             explain = poetry.explain.strip('\n')
             if poetry.author_id:
-                content = f"今天推荐：\n出自{poetry.author.dynasty}{poetry.author.name}的《{poetry.name}》\n\n{phrase}\n"
+                content = f"今天推荐：\n出自{poetry.author.dynasty}{poetry.author.name}的《{poetry.name}》" \
+                          f"\n类型：{poetry_type}\n\n{phrase}\n"
             else:
-                content = f"今天推荐：\n摘自《{poetry.name}》\n\n{phrase}\n"
+                content = f"今天推荐：\n摘自《{poetry.name}》\n类型：{poetry_type}\n\n{phrase}\n"
             if poetry.explain:
                 content += f"\n赏析：\n{explain}"
             content += "\n>>> 点击查看 " \
