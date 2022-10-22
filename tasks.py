@@ -57,7 +57,7 @@ def repeat_task(
             redis = await create_redis_pool(f"redis://:@127.0.0.1:6379/0", password="123456", encoding="utf-8")
 
             async def loop() -> None:
-                nonlocal repetitions
+                nonlocal repetitions, redis
                 if wait_first:
                     await asyncio.sleep(seconds)
                 while max_repetitions is None or repetitions < max_repetitions:
