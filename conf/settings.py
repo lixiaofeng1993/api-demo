@@ -92,8 +92,7 @@ POETRY_URL = {
     # "励志": "/lizhi.aspx", "哲理": "/zheli.aspx", "闺怨": "/guiyuan.aspx", "悼亡": "/daowang.aspx", "写人": "/xieren.aspx",
     # "老师": "/laoshi.aspx", "母亲": "/muqin.aspx", "友情": "/youqing.aspx", "战争": "/zhanzheng.aspx",
     # "读书": "/dushu.aspx", "惜时": "/xishi.aspx", "忧民": "/youguo.aspx", "婉约": "/wanyue.aspx", "豪放": "/haofang.aspx",
-    # "民谣": "/minyao.aspx",
-    "长江": "/changjiang.aspx",
+    "民谣": "/minyao.aspx",
 }
 
 # 股票
