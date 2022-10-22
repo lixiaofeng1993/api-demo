@@ -75,9 +75,11 @@ def repeat_task(
                     try:
                         if is_coroutine:
                             # 以协程方式执行
+                            logger.info(f"3============>>> {repetitions}")
                             await func()  # type: ignore
                         else:
                             # 以线程方式执行
+                            logger.info(f"4============>>> {repetitions}")
                             await run_in_threadpool(func)
                         repetitions += 1
                     except Exception as exc:
