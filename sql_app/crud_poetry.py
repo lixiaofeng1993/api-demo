@@ -29,7 +29,7 @@ def get_author_by_name_and_dynasty(db: Session, name: str, dynasty: str):
     return db.query(Author).filter(Author.name == name, Author.dynasty == dynasty, Author.is_delete == 0).first()
 
 
-def get_poetry_by_author_id(db: Session, author_id: str, skip: int = 0, limit: int = 10):
+def get_poetry_by_author_id(db: Session, author_id: str, skip: int = 0, limit: int = 5):
     return db.query(Poetry).filter(Poetry.author_id == author_id, Poetry.is_delete == 0).offset(skip).limit(limit).all()
 
 

@@ -192,7 +192,7 @@ def poetry_by_author_id(db: Session, request: Request, author_id: str, skip: int
         content += handle_wx_text(data_list)
         content += ">>> 点击古诗名字 "
         more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=AUTHOR-{author_id}&msgmenuid=9527'>更多</a>"
-        content += "或者查看" + more_text if len(data_list) == 10 else ""
+        content += "或者查看" + more_text if len(data_list) == 5 else ""
         request.app.state.redis.setex(key=f"AUTHOR-{author_id}", value=str(skip), seconds=30 * 60)
     return content
 
@@ -274,7 +274,7 @@ def send_more(db: Session, request: Request, text: str, skip: str, content: str 
                     text = key
             content = poetry_by_type(db, request, text, skip + 10, val)
         elif "AUTHOR" in text:
-            content = poetry_by_author_id(db, request, val, skip + 10, flag=True)
+            content = poetry_by_author_id(db, request, val, skip + 5, flag=True)
     return content
 
 
