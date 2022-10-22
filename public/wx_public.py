@@ -237,7 +237,7 @@ def send_poetry(data):
     """
     输入古诗词名称，返回名句、赏析等数据
     """
-    content = f"《{data.name}》"
+    content = f"《{data.name}》\n类型：{data.type}"
     if data.phrase:
         content += "\n名句：\n" + data.phrase.strip("\n")
     if data.explain:
@@ -274,7 +274,7 @@ def send_more(db: Session, request: Request, text: str, skip: str, content: str 
                     text = key
             content = poetry_by_type(db, request, text, skip + 10, val)
         elif "AUTHOR" in text:
-            content = poetry_by_author_id(db, request, val, skip + 5, flag=True)
+            content = poetry_by_author_id(db, request, val, skip + 10, flag=True)
     return content
 
 
