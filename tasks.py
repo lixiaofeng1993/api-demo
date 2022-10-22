@@ -69,7 +69,7 @@ def repeat_task(
                             lock = await redis.get(key="LOCK")
                             if lock:
                                 logger.info(f"多个进程同一时间多次执行定时任务的限制")
-                                await redis.wait_closed()
+                                # await redis.wait_closed()
                             else:
                                 # 以线程方式执行
                                 await redis.setex(key="LOCK", value="lock", seconds=10)
