@@ -12,7 +12,7 @@ from functools import wraps
 from asyncio import ensure_future
 from starlette.concurrency import run_in_threadpool
 from typing import Any, Callable, Coroutine, Optional, Union
-import aioredis
+from aioredis import Redis
 
 from public.log import logger
 
@@ -30,6 +30,7 @@ def repeat_task(
         wait_first: bool = False,
         raise_exceptions: bool = False,
         max_repetitions: Optional[int] = None,
+        redis: Redis = None,
 ) -> NoArgsNoReturnDecorator:
     """
     返回一个修饰器, 该修饰器修改函数, 使其在首次调用后定期重复执行.
@@ -50,20 +51,13 @@ def repeat_task(
         将修饰函数转换为自身重复且定期调用的版本.
         """
         is_coroutine = asyncio.iscoroutinefunction(func)
-        had_run = False
 
         @wraps(func)
         async def wrapped() -> None:
-            nonlocal had_run
-            if had_run:
-                return
-            had_run = True
-            repetitions = 0
+            repetitions = 0  # 限制定时任务执行次数
 
             async def loop() -> None:
                 nonlocal repetitions
-                redis_session = await aioredis.create_redis_pool(address="redis://:@127.0.0.1:6379/0",
-                                                                 password="123456", encoding="utf-8")
                 if wait_first:
                     await asyncio.sleep(seconds)
                 while max_repetitions is None or repetitions < max_repetitions:
@@ -72,12 +66,12 @@ def repeat_task(
                             # 以协程方式执行
                             await func()  # type: ignore
                         else:
-                            lock = await redis_session.get(key="LOCK")
+                            lock = await redis.get(key="LOCK")
                             if lock:
                                 logger.info(f"多个进程同一时间多次执行定时任务的限制")
                             else:
                                 # 以线程方式执行
-                                await redis_session.setex(key="LOCK", value="lock", seconds=seconds)
+                                await redis.setex(key="LOCK", value="lock", seconds=seconds)
                                 await run_in_threadpool(func)
                         repetitions += 1
                     except Exception as exc:
