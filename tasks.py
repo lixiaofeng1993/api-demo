@@ -73,12 +73,10 @@ def repeat_task(
                             await func()  # type: ignore
                         else:
                             lock = await redis_session.get(key="LOCK")
-                            logger.info(f"1---------->{lock}")
                             if not lock:
                                 # 以线程方式执行
                                 await run_in_threadpool(func)
                                 await redis_session.setex(key="LOCK", value="lock", seconds=seconds)
-                                logger.info(f"2---------->{lock}")
                         repetitions += 1
                     except Exception as exc:
                         logger.error(f'执行重复任务异常: {exc}')
