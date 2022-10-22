@@ -253,11 +253,6 @@ async def get_all_poetry(db: Session = Depends(get_db)):
             original_list = original_str.split("\n")
             if "document" in original_list[0]:
                 original_list = original_list[1:]
-            for text in original_list:
-                if "完善" in text:
-                    continue
-                else:
-                    original += text + "\n"
             poetry_name = original_list[0]
             name_str = original_list[1]
             name_list = name_str.split(" ")
@@ -267,6 +262,11 @@ async def get_all_poetry(db: Session = Depends(get_db)):
                 dynasty_patt = "〔(.+)〕"
                 dynasty_list = re.findall(dynasty_patt, dynasty_str)
                 dynasty = dynasty_list[0] if dynasty_list else ""
+            for text in original_list:
+                if "完善" in text or poetry_name in text or name_str in text:
+                    continue
+                else:
+                    original += text + "\n"
             translation_patt = "译文\\s([\\s\\S]+?)\\s注释"
             translation_list = re.findall(translation_patt, detail)
             if translation_list:
@@ -275,9 +275,9 @@ async def get_all_poetry(db: Session = Depends(get_db)):
             background_list = re.findall(background_patt, detail)
             if background_list:
                 background = background_list[0]  # 创作背景
-            logger.info(
-                f"第{j}条 ==> 作者：{name} ==> 朝代：{dynasty} ==> 古诗名字：{poetry_name} ==>原文:{original} "
-                f"古诗类型：{poetry_type} ==>译文: {translation} ==>创作背景: {background}")
+            # logger.info(
+            #     f"第{j}条 ==> 作者：{name} ==> 朝代：{dynasty} ==> 古诗名字：{poetry_name} ==>原文:{original} "
+            #     f"古诗类型：{poetry_type} ==>译文: {translation} ==>创作背景: {background}")
             if name == "佚名":
                 author = crud_poetry.get_author_by_name(db, name)
                 author_id = author.id
