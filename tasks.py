@@ -67,6 +67,10 @@ def repeat_task(
                 if wait_first:
                     await asyncio.sleep(seconds)
                 while max_repetitions is None or repetitions < max_repetitions:
+                    if repetitions > 1:
+                        repetitions = 0
+                        logger.info(f"---------->222222222222222222{repetitions}")
+                        return
                     try:
                         if is_coroutine:
                             # 以协程方式执行
