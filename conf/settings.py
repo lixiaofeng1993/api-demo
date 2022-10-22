@@ -75,6 +75,26 @@ POETRY_TYPE = {
 #     '水浒传': 2, '格言联璧': 5, '围炉夜话': 4, '增广贤文': 5, '吕氏春秋': 2, '文心雕龙': 2, '醒世恒言': 2,
 #     '警世通言': 2, '幼学琼林': 2, '小窗幽记': 3, '三国演义': 2, '贞观政要': 2
 # }
+# 古诗类型网址
+POETRY_URL = {
+    # "唐诗三百首": "/tangshi.aspx", "古诗三百首": "/sanbai.aspx", "宋词三百首": "/songsan.aspx", "小学古诗文": "/xiaoxue.aspx",
+    # "初中古诗文": "/chuzhong.aspx", "高中古诗文": "/gaozhong.aspx", "宋词精选": "/songci.aspx", "古诗十九首": "/shijiu.aspx",
+    # "诗经": "/shijing.aspx", "楚辞": "/chuci.aspx", "乐府诗集精选": "/yuefu.aspx", "写景": "/xiejing.aspx",
+    # "咏物": "/yongwu.aspx", "春天": "/chuntian.aspx", "夏天": "/xiatian.aspx", "秋天": "/qiutian.aspx",
+    # "冬天": "/dongtian.aspx", "写雨": "/yu.aspx", "写雪": "/xue.aspx", "写风": "/feng.aspx", "写花": "/hua.aspx",
+    # "梅花": "/meihua.aspx", "荷花": "/hehua.aspx", "菊花": "/juhua.aspx", "柳树": "/liushu.aspx", "月亮": "/yueliang.aspx",
+    # "山水": "/shanshui.aspx", "写山": "/shan.aspx", "写水": "/shui.aspx", "长江": "/changjiang.aspx", "黄河": "/huanghe.aspx",
+    # "儿童": "/ertong.aspx", "写鸟": "/niao.aspx", "写马": "/ma.aspx", "田园": "/tianyuan.aspx", "边塞": "/biansai.aspx",
+    # "地名": "/diming.aspx", "节日": "/jieri.aspx", "春节": "/chunjie.aspx", "元宵节": "/yuanxiao.aspx", "寒食节": "/hanshi.aspx",
+    # "清明节": "/qingming.aspx", "端午节": "/duanwu.aspx", "七夕节": "/qixi.aspx", "中秋节": "/zhongqiu.aspx",
+    # "重阳节": "/chongyang.aspx", "怀古": "/huaigu.aspx", "抒情": "/shuqing.aspx", "爱国": "/aiguo.aspx", "离别": "/libie.aspx",
+    # "送别": "/songbie.aspx", "思乡": "/sixiang.aspx", "思念": "/sinian.aspx", "爱情": "/aiqing.aspx",
+    # "励志": "/lizhi.aspx", "哲理": "/zheli.aspx", "闺怨": "/guiyuan.aspx", "悼亡": "/daowang.aspx", "写人": "/xieren.aspx",
+    # "老师": "/laoshi.aspx", "母亲": "/muqin.aspx", "友情": "/youqing.aspx", "战争": "/zhanzheng.aspx",
+    # "读书": "/dushu.aspx", "惜时": "/xishi.aspx", "忧民": "/youguo.aspx", "婉约": "/wanyue.aspx", "豪放": "/haofang.aspx",
+    # "民谣": "/minyao.aspx",
+    "长江": "/changjiang.aspx",
+}
 
 # 股票
 SHARES = {

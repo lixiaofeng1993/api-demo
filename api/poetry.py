@@ -18,7 +18,7 @@ from sql_app import crud_poetry
 from public.custom_code import result
 from dependencies import get_current_user_info
 from public.public import get_db
-from conf.settings import DYNASTY, POETRY_TYPE
+from conf.settings import DYNASTY, POETRY_TYPE, POETRY_URL
 from public.log import logger
 
 router = APIRouter()
@@ -78,7 +78,7 @@ async def get_author(db: Session = Depends(get_db), user: User = Depends(get_cur
     return result
 
 
-@router.get("/poetry", summary="爬取古诗词接口", include_in_schema=False)
+@router.get("/poetry", summary="爬取名句古诗词接口", include_in_schema=False)
 async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_current_user_info)):
     for key, value in POETRY_TYPE.items():
         for i in range(1, value + 1):
@@ -204,4 +204,120 @@ async def get_poetry(db: Session = Depends(get_db), user: User = Depends(get_cur
             if poetry_list:
                 crud_poetry.add_all_poetry(db, poetry_list)
                 logger.info(f"批量保存成功！古诗类型：{poetry_type} ==> 第{i}页 ==> {len(poetry_list)} 条")
+    return result
+
+
+@router.get("/v1/poetry", summary="爬取全部古诗词接口")
+async def get_all_poetry(db: Session = Depends(get_db)):
+    for key, value in POETRY_URL.items():
+        poetry_type = key
+        url = "https://so.gushiwen.cn/gushi" + value
+        with HTMLSession() as session:
+            headers = {
+                "user-agent": faker.user_agent()
+            }
+            res = session.get(url, headers=headers).html
+        css_patt = ".left > .sons"
+        data = res.find(css_patt, first=True)
+        if not data:
+            logger.error(f"第一层 地址：{url} 没有发现 {css_patt}！！！")
+            continue
+        links = data.links
+        details_links = []
+        for link in links:
+            if "/shiwenv_" in link and "https" in link:
+                details_links.append(link)
+            elif "/shiwenv_" in link and "https" not in link:
+                link = "https://so.gushiwen.cn/" + link
+                details_links.append(link)
+        j = 0
+        poetry_list = []
+        for link in details_links:
+            with HTMLSession() as session:
+                headers = {
+                    "user-agent": faker.user_agent()
+                }
+                # link = "https://so.gushiwen.cn/shiwenv_221828a8f12d.aspx"
+                detail_res = session.get(link, headers=headers).html
+            j += 1
+            detail_data = detail_res.find(css_patt, first=True)
+            if not detail_data:
+                logger.error(f"第二层 地址：{link}, 未发现 {css_patt}")
+                continue
+            logger.info(f"当前执行的url：{link}")
+            detail = detail_data.text.split("猜您喜欢")[0]
+            explain, appreciation, poetry_name, original, translation, background, name, dynasty = \
+                "", "", "", "", "", "", "", ""
+            original_patt = "([\\s\\S]*?)完善"
+            original_str = re.search(original_patt, detail).group()
+            original_list = original_str.split("\n")
+            if "document" in original_list[0]:
+                original_list = original_list[1:]
+            for text in original_list:
+                if "完善" in text:
+                    continue
+                else:
+                    original += text + "\n"
+            poetry_name = original_list[0]
+            name_str = original_list[1]
+            name_list = name_str.split(" ")
+            name = name_list[0]
+            dynasty_str = name_list[1] if name != "佚名" else ""
+            if dynasty_str:
+                dynasty_patt = "〔(.+)〕"
+                dynasty_list = re.findall(dynasty_patt, dynasty_str)
+                dynasty = dynasty_list[0] if dynasty_list else ""
+            translation_patt = "译文\\s([\\s\\S]+?)\\s注释"
+            translation_list = re.findall(translation_patt, detail)
+            if translation_list:
+                translation = translation_list[0]  # 译文
+            background_patt = "创作背景\\s([\\s\\S]+?)\\s[参考资料|本节内容]"
+            background_list = re.findall(background_patt, detail)
+            if background_list:
+                background = background_list[0]  # 创作背景
+            logger.info(
+                f"第{j}条 ==> 作者：{name} ==> 朝代：{dynasty} ==> 古诗名字：{poetry_name} ==>原文:{original} "
+                f"古诗类型：{poetry_type} ==>译文: {translation} ==>创作背景: {background}")
+            if name == "佚名":
+                author = crud_poetry.get_author_by_name(db, name)
+                author_id = author.id
+            elif name and name != "佚名" and dynasty:
+                author = crud_poetry.get_author_by_name_and_dynasty(db, name, dynasty)
+                introduce_patt = f"{name}\\s(.+)\\s完善"
+                introduce_list = re.findall(introduce_patt, detail)
+                introduce = introduce_list[0] if introduce_list else ""
+                if author:
+                    author_id = author.id
+                else:
+                    author = crud_poetry.create_author(db, {
+                        "name": name,
+                        "dynasty": dynasty,
+                        "introduce": introduce,
+                    })
+                    author_id = author.id
+                    logger.info(f"{name} {dynasty} 保存成功！")
+                if not author.introduce and introduce:
+                    crud_poetry.update_author(db, author_id, introduce)
+                    logger.info(f"{name} 更新介绍成功！")
+            else:
+                author_id = None
+            poetry = crud_poetry.get_poetry_by_type_and_name_and_author(db, poetry_type, poetry_name, author_id)
+            if not poetry:
+                poetry_list.append(
+                    {
+                        "type": poetry_type,
+                        "phrase": "",
+                        "explain": explain,
+                        "name": poetry_name,
+                        "appreciation": appreciation,
+                        "original": original,
+                        "translation": translation,
+                        "background": background,
+                        "url": link,
+                        "author_id": author_id,
+                    }
+                )
+        if poetry_list:
+            crud_poetry.add_all_poetry(db, poetry_list)
+            logger.info(f"批量保存成功！古诗类型：{poetry_type} ==> {len(poetry_list)} 条")
     return result
