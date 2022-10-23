@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # _*_ coding: utf-8 _*_
-"""
 # 创 建 人: 李先生
 # 文 件 名: crud_poetry.py
 # 创建时间: 2022/10/17 0017 19:42
-# 版   本：V 0.1
-# 说   明: 
-"""
+# @Version：V 0.1
+# @desc :
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 

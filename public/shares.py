@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # _*_ coding: utf-8 _*_
-"""
 # 创 建 人: 李先生
 # 文 件 名: shares.py
 # 创建时间: 2022/9/30 0030 18:35
-# 版   本：V 0.1
-# 说   明: 
-"""
+# @Version：V 0.1
+# @desc :
 import time
 import matplotlib.pyplot as plt
 import efinance as ef

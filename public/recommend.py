@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# _*_ coding: utf-8 _*_
+# 创 建 人: 李先生
+# 文 件 名: recommend.py
+# 创建时间: 2022/10/14 0014 21:52
+# @Version：V 0.1
+# @desc :
 import requests
 import time
 from datetime import date

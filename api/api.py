@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Time    : 2022/7/29 19:23
-# @Author  : lixiaofeng
-# @Site    : 
-# @File    : api.py
-# @Software: PyCharm
-
+# _*_ coding: utf-8 _*_
+# 创 建 人: 李先生
+# 文 件 名: api.py
+# 创建时间: 2022/7/29 19:23
+# @Version：V 0.1
+# @desc :
 import re
 import random
 import datetime

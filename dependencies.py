@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# _*_ coding: utf-8 _*_
+# 创 建 人: 李先生
+# 文 件 名: dependencies.py
+# 创建时间: 2022/10/20 0020 19:20
+# @Version：V 0.1
+# @desc :
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt

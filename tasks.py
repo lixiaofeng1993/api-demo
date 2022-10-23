@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # _*_ coding: utf-8 _*_
-"""
 # 创 建 人: 李先生
 # 文 件 名: tasks.py
 # 创建时间: 2022/9/29 0029 20:32
-# 版   本：V 0.1
-# 说   明: 
-"""
+# @Version：V 0.1
+# @desc :
 import asyncio
 from functools import wraps
 from asyncio import ensure_future

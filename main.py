@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# _*_ coding: utf-8 _*_
+# 创 建 人: 李先生
+# 文 件 名: main.py
+# 创建时间: 2022/10/20 19:20
+# @Version：V 0.1
+# @desc :
 import uvicorn
 from fastapi import FastAPI, Depends
 from aioredis import Redis, create_redis_pool

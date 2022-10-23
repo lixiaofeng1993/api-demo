@@ -1,20 +1,14 @@
 #!/usr/bin/env python
 # _*_ coding: utf-8 _*_
-"""
 # 创 建 人: 李先生
 # 文 件 名: wx_message.py
 # 创建时间: 2022/10/15 0015 17:39
-# 版   本：V 0.1
-# 说   明: 
-"""
+# @Version：V 0.1
+# @desc : 解析微信XML消息
 import time
 import xml.etree.ElementTree as Et
 
 from public.log import logger
-
-"""
-解析微信XML消息
-"""
 
 
 def parse_xml(web_data):
