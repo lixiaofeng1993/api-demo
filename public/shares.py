@@ -18,7 +18,7 @@ from conf.settings import SHARES
 from public.log import logger, BASE_PATH, os
 
 
-def shares(stock_code=""):
+def shares(stock_code: str = ""):
     make = False
     if not stock_code:
         stock_code = "601069"
