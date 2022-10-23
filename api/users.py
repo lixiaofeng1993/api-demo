@@ -19,7 +19,7 @@ from sql_app import crud_users
 from sql_app.database import Base, engine
 from dependencies import get_current_user, verify_password
 from public.jwt_sign import create_access_token
-from public.public import get_db, json_format, page
+from public.common import get_db, json_format, page
 from conf.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from public import exception
 from public import field_check

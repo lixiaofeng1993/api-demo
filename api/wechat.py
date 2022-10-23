@@ -16,7 +16,7 @@ from starlette.responses import HTMLResponse, Response
 from sqlalchemy.orm import Session
 
 from sql_app.database import Base, engine
-from public.public import get_db
+from public.common import get_db
 from public.custom_code import result
 from conf.settings import AppID, AppSecret
 from public.wx_message import parse_xml, Message

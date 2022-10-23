@@ -17,7 +17,7 @@ from sql_app.schemas_users import User
 from sql_app import crud_poetry
 from public.custom_code import result
 from dependencies import get_current_user_info
-from public.public import get_db
+from public.common import get_db
 from conf.settings import DYNASTY, POETRY_TYPE, POETRY_URL
 from public.log import logger
 

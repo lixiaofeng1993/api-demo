@@ -11,7 +11,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 
 from sql_app.database import Base
-from public.public import get_id
+from public.common import get_id
 
 
 class User(Base):

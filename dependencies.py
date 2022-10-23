@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from conf.settings import SECRET_KEY, ALGORITHM
 from sql_app.crud_users import get_user_by_name
-from public.public import get_db
+from public.common import get_db
 from public.exception import TokenException, InactiveException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

@@ -4,7 +4,8 @@ from datetime import date
 from jsonpath import jsonpath
 from random import randint
 
-from conf.settings import GAO_KEY, CITY_CODE, IDIOM_KEY
+from conf.settings import GAO_KEY, CITY_CODE, IDIOM_KEY, IDIOM_INFO
+from public.log import logger
 
 
 def get_weather():
@@ -76,6 +77,10 @@ def idiom_solitaire(text: str):
         "is_rand": 1,  # 是否随机返回结果，1:是 2:否。默认2
     }
     res = requests.get(url, params=params, verify=False).json()
+    if res["error_code"] != 0:
+        logger.error(f"成语接龙api ===>>> {res['reason']} ===>>> res['error_code']")
+        content = f"emmm，成语接龙出现异常了嘿，我跑着去看看因为啥 >>> {res['error_code']}"
+        return content
     data_list = res["result"]["data"]
     last_word = res["result"]["last_word"]
     content = "成语接龙开始咯！\n"
@@ -85,9 +90,50 @@ def idiom_solitaire(text: str):
     content += f'最后一个字：{last_word}\n'
     for data in res["result"]["data"]:
         content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data}&msgmenuid=9523'>{data}</a>\n"
-    content += ">>> 点击成语"
+    content += f">>> 点击成语 或者查看 <a href='weixin://bizmsgmenu?msgmenucontent={text}-#INFO#&msgmenuid=9522'>{text}</a>"
+    return content
+
+
+def idiom_info(text: str):
+    url = "http://apis.juhe.cn/idioms/query"
+    params = {
+        "key": IDIOM_INFO,
+        "wd": text,
+    }
+    res = requests.get(url, params=params, verify=False).json()
+    if res["error_code"] == 2015702:
+        content = f"emmm，么有查询到 【{text}】 的信息~"
+        return content
+    elif res["error_code"] != 0:
+        logger.error(f"成语大全api ===>>> {res['reason']} ===>>> {res['error_code']}")
+        content = f"emmm，成语大全出现异常了嘿，我跑着去看看因为啥 >>> {res['error_code']}"
+        return content
+    name = res["result"]["name"]  # 成语
+    pinyin = res["result"]["pinyin"]  # 拼音
+    jbsy = res["result"]["jbsy"]  # 基本释义
+    xxsy = res["result"]["xxsy"]  # 详细释义
+    chuchu = res["result"]["chuchu"]  # 出处
+    liju = res["result"]["liju"]  # 例句
+    # jyc = res["result"]["jyc"]  # 近义词
+    # fyc = res["result"]["fyc"]  # 反义词
+    content = f"成语：{name}\n"
+    if pinyin:
+        content += f"拼音：{pinyin}\n"
+    if xxsy:
+        content += "详细释义：\n"
+        for data in xxsy:
+            content += data + "\n"
+    else:
+        if jbsy:
+            content += "基本释义：\n"
+            for data in jbsy:
+                content += data + "\n"
+        elif chuchu:
+            content += f"出处：\n{chuchu}\n"
+    if liju:
+        content += f"例句：\n{liju}"
     return content
 
 
 if __name__ == '__main__':
-    print(recommend_handle())
+    print(idiom_info("野有饿莩"))

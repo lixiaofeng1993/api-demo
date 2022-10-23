@@ -120,6 +120,8 @@ SHARES = {
 CALENDAR_KEY = "197557d5fc1f3a26fa772bc694ea4c2d"
 # 万年历成语接龙
 IDIOM_KEY = "3b46a1f367b46094fcb766e56f76170f"
+# 成语大全
+IDIOM_INFO = "2f8b9617804af8aaedbc264b37c116aa"
 # 高德地图KEY
 GAO_KEY = "b5b15bbd3252eb0cbb01877ae53a34d7"
 # 北京 110000

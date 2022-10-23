@@ -11,18 +11,13 @@
 import requests
 import random
 import hashlib
-import aiohttp
-import datetime
-import re
 
 from jsonpath import jsonpath
 from fastapi import Request
 from sqlalchemy.orm import Session
-from zhdate import ZhDate
-from requests_html import HTMLSession
 
 from sql_app import crud_poetry
-from public.recommend import recommend_handle, surplus_second, idiom_solitaire
+from public.recommend import recommend_handle, surplus_second, idiom_solitaire, idiom_info
 from conf.settings import TOKEN, FOLLOW, ArticleUrl, DYNASTY, POETRY_TYPE
 from public.shares import shares
 from public.log import logger
@@ -258,6 +253,9 @@ def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str, i
         if not content:
             if text in ["图片", "小七"] and token:
                 media_id = wx_media(token)
+            elif "#INFO#" in text:
+                idiom_name = text.split("-")[0]
+                content = idiom_info(idiom_name)
             elif text in ["all", "文章"]:
                 content = ArticleUrl
             elif text in ["follow", "功能"]:

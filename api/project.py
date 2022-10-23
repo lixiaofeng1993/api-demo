@@ -17,7 +17,7 @@ from public import exception
 from public import field_check
 from dependencies import get_current_user_info
 
-from public.public import get_db, json_format
+from public.common import get_db, json_format
 
 router = APIRouter()
 
