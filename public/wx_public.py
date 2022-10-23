@@ -22,7 +22,7 @@ from zhdate import ZhDate
 from requests_html import HTMLSession
 
 from sql_app import crud_poetry
-from public.recommend import recommend_handle, surplus_second
+from public.recommend import recommend_handle, surplus_second, idiom_solitaire
 from conf.settings import TOKEN, FOLLOW, ArticleUrl, DYNASTY, POETRY_TYPE
 from public.shares import shares
 from public.log import logger
@@ -101,7 +101,7 @@ def poetry_by_type(db: Session, request: Request, text: str, skip: int, val):
     data_list = crud_poetry.get_poetry_by_type(db, text, skip=skip)
     content += handle_wx_text(data_list)
     content += ">>> 点击古诗名字 "
-    more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{val}&msgmenuid=9559'>更多</a> "
+    more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{val}&msgmenuid=9529'>更多</a> "
     content += "或者查看 " + more_text if len(data_list) == 10 else ""
     request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=str(skip), seconds=30 * 60)
     return content
@@ -237,20 +237,24 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
     return content
 
 
-def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str):
+def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str, idiom: str = ""):
     """
     :param db:
     :param request:
-    :param rec_msg:
-    :param token:
-    :param skip:
+    :param rec_msg: 微信返回文案
+    :param token: 微信登录token
+    :param skip: 更多跳转页数
+    :param idiom: 成语接龙
     :return 回复文案和图片id
     """
     content, media_id = "", ""
     if rec_msg.MsgType == 'text':
         text = rec_msg.Content
         logger.info(f"文本信息：{text}")
-        content = poetry_content(db, request, text, skip)  # 古诗词返回判断
+        if idiom:
+            content = idiom_solitaire(text)
+        else:
+            content = poetry_content(db, request, text, skip)  # 古诗词返回判断
         if not content:
             if text in ["图片", "小七"] and token:
                 media_id = wx_media(token)
