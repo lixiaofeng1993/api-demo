@@ -80,7 +80,7 @@ def idiom_solitaire(text: str):
     last_word = res["result"]["last_word"]
     content = "成语接龙开始咯！\n"
     if not data_list:
-        content += f"你家成语的最后一个字是 {last_word} ?"
+        content += f"emmm，结束了嘿，么有找到 {last_word} 开头的成语。"
         return content
     content += f'最后一个字：{last_word}\n'
     for data in res["result"]["data"]:
