@@ -84,8 +84,12 @@ def idiom_solitaire(text: str):
         "is_rand": 1,  # 是否随机返回结果，1:是 2:否。默认2
     }
     res = requests.get(url, params=params, verify=False).json()
-    if res["error_code"] != 0:
-        logger.error(f"成语接龙api ===>>> {res['reason']} ===>>> res['error_code']")
+    if res["error_code"] == 10012:
+        logger.error(f"成语接龙api ===>>> {res['reason']} ===>>> {res['error_code']}")
+        content = "emmm，api每天只能请求50次，明天再来吧！"
+        return content
+    elif res["error_code"] != 0:
+        logger.error(f"成语接龙api ===>>> {res['reason']} ===>>> {res['error_code']}")
         content = f"emmm，成语接龙出现异常了嘿，我跑着去看看因为啥 >>> {res['error_code']}"
         return content
     data_list = res["result"]["data"]
@@ -110,6 +114,10 @@ def idiom_info(text: str):
     res = requests.get(url, params=params, verify=False).json()
     if res["error_code"] == 2015702:
         content = f"emmm，么有查询到 【{text}】 的信息，要不试试 #{text} ？"
+        return content
+    elif res["error_code"] == 10012:
+        logger.error(f"成语大全api ===>>> {res['reason']} ===>>> {res['error_code']}")
+        content = "emmm，api每天只能请求50次，明天再来吧！"
         return content
     elif res["error_code"] != 0:
         logger.error(f"成语大全api ===>>> {res['reason']} ===>>> {res['error_code']}")

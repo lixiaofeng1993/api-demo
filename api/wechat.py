@@ -53,7 +53,8 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
             to_user = rec_msg.FromUserName
             from_user = rec_msg.ToUserName
             text = rec_msg.Content
-            content, media_id, skip, idiom = "", "", "", ""
+            content, media_id, skip = "", "", ""
+            idiom = await request.app.state.redis.get("IDIOM")
             if text:
                 if text == "推荐":
                     content = await request.app.state.redis.get("recommended-today")
@@ -70,7 +71,6 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
                     await request.app.state.redis.delete("IDIOM")
                     content = "See you later..."
             if not content:
-                idiom = await request.app.state.redis.get("IDIOM")
                 content, media_id = send_wx_msg(db, request, rec_msg, token, skip, idiom)
             if rec_msg.MsgType == 'text' and not media_id:
                 if "</a>" in content and len(content) >= 2000:
