@@ -83,9 +83,10 @@ def shares(stock_code=""):
     if make:
         data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元/股\n最低价：{down_price} 元/股\n" \
                f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n成交量：{turnover} 手\n" \
-               f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股\n\n" \
-               f"过去{so_day}天最高价：{max_price} 元/股\n过去{so_day}天平均价：{avg_price} 元/股\n" \
-               f"过去{so_day}天最低价：{min_price} 元/股\n"
+               f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股"
+        if so_day:
+            data += f"\n\n过去{so_day}天最高价：{max_price} 元/股\n过去{so_day}天平均价：{avg_price} 元/股\n" \
+                    f"过去{so_day}天最低价：{min_price} 元/股"
         return data
     # f"> **状态** <font>开盘中</font> \n\n"
     body = {
