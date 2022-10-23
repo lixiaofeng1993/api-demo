@@ -23,6 +23,8 @@ NoArgsNoReturnDecorator = Callable[
     NoArgsNoReturnAsyncFuncT
 ]
 
+redis = None
+
 
 def repeat_task(
         *,
@@ -54,10 +56,12 @@ def repeat_task(
         @wraps(func)
         async def wrapped() -> None:
             repetitions = 0  # 限制定时任务执行次数
-            redis = await create_redis_pool(f"redis://:@127.0.0.1:6379/0", password="123456", encoding="utf-8")
+            global redis
+            if not redis:
+                redis = await create_redis_pool(f"redis://:@127.0.0.1:6379/0", password="123456", encoding="utf-8")
 
             async def loop() -> None:
-                nonlocal repetitions, redis
+                nonlocal repetitions
                 if wait_first:
                     await asyncio.sleep(seconds)
                 while max_repetitions is None or repetitions < max_repetitions:
@@ -68,11 +72,11 @@ def repeat_task(
                         else:
                             lock = await redis.get(key="LOCK")
                             if lock:
-                                logger.info(f"多个进程同一时间多次执行定时任务的限制")
-                                # await redis.wait_closed()
+                                logger.info(f"多个进程同一时间多次执行定时任务的限制==>{lock}")
                             else:
                                 # 以线程方式执行
-                                await redis.setex(key="LOCK", value="lock", seconds=10)
+                                logger.info(f"=========>{lock}")
+                                await redis.setex(key="LOCK", value="lock", seconds=seconds)
                                 await run_in_threadpool(func)
                         repetitions += 1
                     except Exception as exc:
