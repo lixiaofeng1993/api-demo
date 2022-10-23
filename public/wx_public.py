@@ -244,15 +244,16 @@ def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str, i
         text = rec_msg.Content
         logger.info(f"文本信息：{text}")
         if idiom:
-            content = idiom_solitaire(text)
+            if "#INFO#" in text:
+                idiom_name = text.split("-")[0]
+                content = idiom_info(idiom_name)
+            else:
+                content = idiom_solitaire(text)
         else:
             content = poetry_content(db, request, text, skip)  # 古诗词返回判断
         if not content:
             if text in ["图片", "小七"] and token:
                 media_id = wx_media(token)
-            elif "#INFO#" in text:
-                idiom_name = text.split("-")[0]
-                content = idiom_info(idiom_name)
             elif text in ["all", "文章"]:
                 content = ArticleUrl
             elif text in ["follow", "功能"]:
