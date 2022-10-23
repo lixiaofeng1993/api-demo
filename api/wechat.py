@@ -53,7 +53,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
             to_user = rec_msg.FromUserName
             from_user = rec_msg.ToUserName
             text = rec_msg.Content
-            content, media_id, skip = "", "", ""
+            content, media_id, skip, idiom = "", "", "", ""
             if text:
                 if text == "推荐":
                     content = await request.app.state.redis.get("recommended-today")
@@ -64,6 +64,8 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
                 elif text in ["成语接龙", "接龙"]:
                     await request.app.state.redis.setex(key=f"IDIOM", value=text, seconds=30 * 60)
                     content = "进入时效30分钟的成语接龙时刻，输入成语开始吧~"
+                elif "IDIOM-INFO" in text and not idiom:
+                    content = "成语接龙会话时效只有30分钟，想了解更多，请重新发起~"
                 elif text == "exit":
                     await request.app.state.redis.delete("IDIOM")
                     content = "See you later..."
