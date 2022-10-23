@@ -143,12 +143,12 @@ def idiom_info(text: str):
             content += "基本释义：\n"
             for data in jbsy:
                 content += data + "\n"
-        elif chuchu:
+        if chuchu:
             content += f"出处：\n{chuchu}\n"
-    if liju:
-        content += f"例句：\n{liju}"
+        if liju:
+            content += f"例句：\n{liju}"
     return content
 
 
 if __name__ == '__main__':
-    print(idiom_info("野有饿莩"))
+    print(idiom_info("寅吃卯粮"))
