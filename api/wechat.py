@@ -69,6 +69,7 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
                     content = "进入时效30分钟的成语接龙时刻，输入成语开始吧~"
                 elif text == "exit":
                     await request.app.state.redis.delete("IDIOM")
+                    content = "See you later..."
             if not content:
                 idiom = await request.app.state.redis.get("IDIOM")
                 content, media_id = send_wx_msg(db, request, rec_msg, token, skip, idiom)
