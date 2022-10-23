@@ -244,8 +244,8 @@ def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str, i
         text = rec_msg.Content
         logger.info(f"文本信息：{text}")
         if idiom:
-            if "#INFO#" in text:
-                idiom_name = text.split("-")[0]
+            if "IDIOM-INFO" in text:
+                idiom_name = text.split("-")[-1]
                 content = idiom_info(idiom_name)
             else:
                 content = idiom_solitaire(text)

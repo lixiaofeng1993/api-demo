@@ -97,7 +97,7 @@ def idiom_solitaire(text: str):
     content += f'最后一个字：{last_word}\n'
     for data in res["result"]["data"]:
         content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data}&msgmenuid=9523'>{data}</a>\n"
-    content += f">>> 点击成语 或者查看 <a href='weixin://bizmsgmenu?msgmenucontent={text}-#INFO#&msgmenuid=9522'>{text}</a>"
+    content += f">>> 点击成语 或者查看 <a href='weixin://bizmsgmenu?msgmenucontent=IDIOM-INFO-{text}&msgmenuid={text}'>{text}</a>"
     return content
 
 
@@ -109,7 +109,7 @@ def idiom_info(text: str):
     }
     res = requests.get(url, params=params, verify=False).json()
     if res["error_code"] == 2015702:
-        content = f"emmm，么有查询到 【{text}】 的信息~"
+        content = f"emmm，么有查询到 【{text}】 的信息，要不试试 #{text} ？"
         return content
     elif res["error_code"] != 0:
         logger.error(f"成语大全api ===>>> {res['reason']} ===>>> {res['error_code']}")
