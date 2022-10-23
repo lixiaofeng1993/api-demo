@@ -66,18 +66,17 @@ def repeat_task(
                     await asyncio.sleep(seconds)
                 while max_repetitions is None or repetitions < max_repetitions:
                     try:
-                        if is_coroutine:
-                            # 以协程方式执行
-                            await func()  # type: ignore
-                        else:
-                            lock = await redis.get(key="LOCK")
-                            if lock:
-                                logger.info(f"多个进程同一时间多次执行定时任务的限制==>{lock}")
+                        lock = await redis.get(key="LOCK")
+                        if not lock:
+                            await redis.setex(key="LOCK", value="lock", seconds=seconds)
+                            if is_coroutine:
+                                # 以协程方式执行
+                                await func()  # type: ignore
                             else:
                                 # 以线程方式执行
-                                logger.info(f"=========>{lock}")
-                                await redis.setex(key="LOCK", value="lock", seconds=seconds)
                                 await run_in_threadpool(func)
+                        else:
+                            logger.info(f"多个进程同一时间多次执行定时任务的限制==>{lock}")
                         repetitions += 1
                     except Exception as exc:
                         logger.error(f'执行重复任务异常: {exc}')
