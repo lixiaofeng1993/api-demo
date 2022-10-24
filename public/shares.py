@@ -41,7 +41,7 @@ def shares(stock_code: str = ""):
     save_time = datetime(year, month, day, 15, 0, 0)
     if (now_time < start_time or now_time > end_time or am_time < now_time < pm_time) and not make:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
-        return
+        # return
     # 数据间隔时间为 1 分钟
     freq = 1
     # 获取最新一个交易日的分钟级别股票行情数据
@@ -90,8 +90,8 @@ def shares(stock_code: str = ""):
                f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n成交量：{turnover} 手\n" \
                f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股"
         if so_day:
-            data += f"\n\n过去{so_day}天最高价：{max_price} 元/股\n过去{so_day}天平均价：{avg_price} 元/股\n" \
-                    f"过去{so_day}天最低价：{min_price} 元/股"
+            data += f"\n\n历史 {so_day} 天最高价：{max_price} 元/股\n历史 {so_day} 天平均价：{avg_price} 元/股\n" \
+                    f"历史 {so_day} 天最低价：{min_price} 元/股"
         return data
     # f"> **状态** <font>开盘中</font> \n\n"
     body = {
@@ -110,9 +110,9 @@ def shares(stock_code: str = ""):
                     f"> **时间** <font>{new_time}</font>\n\n"
                     f"> **最新价** <font color={new_price_color}>{new_price}</font> 元/股\n\n"
                     f"> **折线图:** ![screenshot](http://121.41.54.234/Chart-{now_img}.jpg)\n\n"
-                    f"> **过去{so_day}天最高价** <font color={top_price_color}>{max_price}</font> 元/股\n\n"
-                    f"> **过去{so_day}天平均价** <font color=''>{avg_price}</font> 元/股\n\n"
-                    f"> **过去{so_day}天最低价** <font color={down_price_color}>{min_price}</font> 元/股 @15235514553\n\n"
+                    f"> **历史 {so_day} 天最高价** <font color={top_price_color}>{max_price}</font> 元/股\n\n"
+                    f"> **历史 {so_day} 天平均价** <font color=''>{avg_price}</font> 元/股\n\n"
+                    f"> **历史 {so_day} 天最低价** <font color={down_price_color}>{min_price}</font> 元/股 @15235514553\n\n"
         },
         "at": {
             "atMobiles": ["15235514553"],
@@ -137,4 +137,4 @@ def shares(stock_code: str = ""):
             shares_list.append(shares_dict)
         crud_shares.add_all_shares(db, shares_list)
         logger.info(f"股票： {share_name} 日期：{now_time} ==> 批量保存成功！")
-    send_ding(body)
+    # send_ding(body)
