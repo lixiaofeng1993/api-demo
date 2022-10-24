@@ -6,7 +6,7 @@
 # @Version：V 0.1
 # @desc :
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, distinct
 
 from sql_app.models import Shares
 
@@ -25,6 +25,11 @@ def get_shares_avg(db: Session, name: str):
     min_num = db.query(func.min(Shares.down_price)).filter(Shares.name == name, Shares.is_delete == 0).scalar()
     avg_num = db.query(func.avg(Shares.new_price)).filter(Shares.name == name, Shares.is_delete == 0).scalar()
     return round(float(max_num), 2), round(float(min_num), 2), round(float(avg_num), 2)
+
+
+def get_shares_days(db: Session, name: str):
+    day_list = db.query(distinct(Shares.date_time.day)).filter(Shares.name == name, Shares.is_delete == 0).all()
+    return day_list
 
 
 def add_all_shares(db: Session, shares_list: list):
