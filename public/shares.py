@@ -62,9 +62,12 @@ def shares(stock_code: str = ""):
         asc_data = crud_shares.get_shares_by_name(db, share_name, flag=True)
         desc_data = crud_shares.get_shares_by_name(db, share_name)
     if asc_data:
-        # so_day = (now_time - asc_data.date_time).days
+        # so_day = (now_time - asc_data.date_time)
         day_list = crud_shares.get_shares_days(db, share_name)
-        so_day = len(day_list)
+        _day_list = list()
+        for day in day_list:
+            _day_list.append(day[0].strftime("%Y-%m-%d"))
+        so_day = len(set(_day_list))
         max_price, min_price, avg_price = crud_shares.get_shares_avg(db, share_name)
     open_price = df["开盘"].values[0]
     new_price = df["收盘"].values[-1]
@@ -118,7 +121,7 @@ def shares(stock_code: str = ""):
 
     if not desc_data:
         save = True
-    elif desc_data and (now_time - desc_data.date_time).days and now_time > save_time:
+    elif desc_data and (now_time - desc_data.date_time).days and end_time > now_time > save_time:
         save = True
     else:
         save = False
