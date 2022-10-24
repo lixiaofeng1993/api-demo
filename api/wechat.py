@@ -50,6 +50,8 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
             token = ""
         try:
             rec_msg = parse_xml(await request.body())
+            if not rec_msg:
+                return HTMLResponse('success')
             to_user = rec_msg.FromUserName
             from_user = rec_msg.ToUserName
             text = rec_msg.Content
