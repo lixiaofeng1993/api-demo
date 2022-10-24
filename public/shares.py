@@ -41,7 +41,7 @@ def shares(stock_code: str = ""):
     save_time = datetime(year, month, day, 15, 0, 0)
     if (now_time < start_time or now_time > end_time or am_time < now_time < pm_time) and not make:
         logger.info(f"当前时间 {now_time} 未开盘!!!")
-        # return
+        return
     # 数据间隔时间为 1 分钟
     freq = 1
     # 获取最新一个交易日的分钟级别股票行情数据
