@@ -95,13 +95,14 @@ def idiom_solitaire(text: str):
     data_list = res["result"]["data"]
     last_word = res["result"]["last_word"]
     content = "成语接龙开始咯！\n"
+    more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=IDIOM-INFO-{text}&msgmenuid={text}'>{text}</a>"
     if not data_list:
-        content += f"emmm，结束了嘿，么有找到 {last_word} 开头的成语。"
+        content += f"emmm，结束了嘿，么有找到 {last_word} 开头的成语。\n了解更多点击 {more_text}"
         return content
     content += f'最后一个字：{last_word}\n'
     for data in res["result"]["data"]:
         content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data}&msgmenuid=9523'>{data}</a>\n"
-    content += f">>> 点击成语 或者查看 <a href='weixin://bizmsgmenu?msgmenucontent=IDIOM-INFO-{text}&msgmenuid={text}'>{text}</a>"
+    content += f">>> 点击成语 或者查看 {more_text}"
     return content
 
 
