@@ -50,19 +50,22 @@ def repeat_task(
         将修饰函数转换为自身重复且定期调用的版本.
         """
         is_coroutine = asyncio.iscoroutinefunction(func)
+        global redis
+        if not redis:
+            redis = await create_redis_pool(f"redis://:@127.0.0.1:6379/0", password="123456", encoding="utf-8")
+        logger.info("1")
 
         @wraps(func)
         async def wrapped() -> None:
             repetitions = 0  # 限制定时任务执行次数
-            global redis
-            if not redis:
-                redis = await create_redis_pool(f"redis://:@127.0.0.1:6379/0", password="123456", encoding="utf-8")
+            logger.info("2")
 
             async def loop() -> None:
                 nonlocal repetitions
                 if wait_first:
                     await asyncio.sleep(seconds)
                 while max_repetitions is None or repetitions < max_repetitions:
+                    logger.info("3")
                     try:
                         lock = await redis.get(key="LOCK")
                         if not lock:
@@ -82,6 +85,7 @@ def repeat_task(
                             raise exc
                     await asyncio.sleep(seconds)
 
+            logger.info("4")
             ensure_future(loop())
 
         return wrapped
