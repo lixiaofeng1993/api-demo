@@ -46,6 +46,6 @@ def send_ding(body: dict):
         "https://oapi.dingtalk.com/robot/send?access_token={}&timestamp={}&sign={}".format(
             access_token, timestamp, sign), headers=headers, json=body, verify=False).json()
     if res["errcode"] == 0 and res["errmsg"] == "ok":
-        logger.info("钉钉通知发送成功！info：{}".format(body["text"]["content"]))
+        logger.info("钉钉通知发送成功！info：{}".format(body["markdown"]["text"]))
     else:
         logger.error("钉钉通知发送失败！返回值：{}".format(res))
