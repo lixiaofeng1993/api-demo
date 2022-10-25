@@ -73,9 +73,9 @@ def repeat_task(
                             else:
                                 # 以线程方式执行
                                 await run_in_threadpool(func)
+                            repetitions += 1
                         else:
                             logger.info(f"多个进程同一时间多次执行定时任务的限制==>{lock}")
-                        repetitions += 1
                     except Exception as exc:
                         logger.error(f'执行重复任务异常: {exc}')
                         if raise_exceptions:

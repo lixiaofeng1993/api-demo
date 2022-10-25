@@ -62,9 +62,12 @@ def shares(stock_code: str = ""):
         asc_data = crud_shares.get_shares_by_name(db, share_name, flag=True)
         desc_data = crud_shares.get_shares_by_name(db, share_name)
     if asc_data:
-        # so_day = (now_time - asc_data.date_time).days
+        # so_day = (now_time - asc_data.date_time)
         day_list = crud_shares.get_shares_days(db, share_name)
-        so_day = len(day_list)
+        _day_list = list()
+        for day in day_list:
+            _day_list.append(day[0].strftime("%Y-%m-%d"))
+        so_day = len(set(_day_list))
         max_price, min_price, avg_price = crud_shares.get_shares_avg(db, share_name)
     open_price = df["开盘"].values[0]
     new_price = df["收盘"].values[-1]
@@ -87,8 +90,8 @@ def shares(stock_code: str = ""):
                f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n成交量：{turnover} 手\n" \
                f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股"
         if so_day:
-            data += f"\n\n过去{so_day}天最高价：{max_price} 元/股\n过去{so_day}天平均价：{avg_price} 元/股\n" \
-                    f"过去{so_day}天最低价：{min_price} 元/股"
+            data += f"\n\n历史 {so_day} 天最高价：{max_price} 元/股\n历史 {so_day} 天平均价：{avg_price} 元/股\n" \
+                    f"历史 {so_day} 天最低价：{min_price} 元/股"
         return data
     # f"> **状态** <font>开盘中</font> \n\n"
     body = {
@@ -107,9 +110,9 @@ def shares(stock_code: str = ""):
                     f"> **时间** <font>{new_time}</font>\n\n"
                     f"> **最新价** <font color={new_price_color}>{new_price}</font> 元/股\n\n"
                     f"> **折线图:** ![screenshot](http://121.41.54.234/Chart-{now_img}.jpg)\n\n"
-                    f"> **过去{so_day}天最高价** <font color={top_price_color}>{max_price}</font> 元/股\n\n"
-                    f"> **过去{so_day}天平均价** <font color=''>{avg_price}</font> 元/股\n\n"
-                    f"> **过去{so_day}天最低价** <font color={down_price_color}>{min_price}</font> 元/股 @15235514553\n\n"
+                    f"> **历史 {so_day} 天最高价** <font color={top_price_color}>{max_price}</font> 元/股\n\n"
+                    f"> **历史 {so_day} 天平均价** <font color=''>{avg_price}</font> 元/股\n\n"
+                    f"> **历史 {so_day} 天最低价** <font color={down_price_color}>{min_price}</font> 元/股 @15235514553\n\n"
         },
         "at": {
             "atMobiles": ["15235514553"],
@@ -118,7 +121,7 @@ def shares(stock_code: str = ""):
 
     if not desc_data:
         save = True
-    elif desc_data and (now_time - desc_data.date_time).days and now_time > save_time:
+    elif desc_data and (now_time - desc_data.date_time).days and end_time > now_time > save_time:
         save = True
     else:
         save = False

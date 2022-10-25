@@ -13,7 +13,11 @@ from public.log import logger
 
 def parse_xml(web_data):
     xml_data = Et.fromstring(web_data)
-    msg_type = xml_data.find('MsgType').text
+    try:
+        msg_type = xml_data.find('MsgType').text
+    except Exception as error:
+        logger.error(f"解析微信XML消息，获取 MsgType 文案报错 ===>>> {error}")
+        return
     if msg_type == 'text':
         return TextMsg(xml_data)
     elif msg_type == 'event':
