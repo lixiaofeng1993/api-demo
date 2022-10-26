@@ -84,6 +84,9 @@ def shares(stock_code: str = ""):
     new_price_color = "#FF0000" if new_price > open_price else "#00FF00"
     top_price_color = "#FF0000" if top_price > open_price else "#00FF00"
     down_price_color = "#FF0000" if down_price > open_price else "#00FF00"
+    max_price_color = "#FF0000" if max_price > top_price else "#00FF00"
+    avg_price_color = "#FF0000" if avg_price > average else "#00FF00"
+    min_price_color = "#FF0000" if min_price > down_price else "#00FF00"
 
     if make:
         data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元/股\n最低价：{down_price} 元/股\n" \
@@ -110,9 +113,9 @@ def shares(stock_code: str = ""):
                     f"> **时间** <font>{new_time}</font>\n\n"
                     f"> **最新价** <font color={new_price_color}>{new_price}</font> 元/股\n\n"
                     f"> **折线图:** ![screenshot](http://121.41.54.234/Chart-{now_img}.jpg)\n\n"
-                    f"> **历史 {so_day} 天最高价** <font color={top_price_color}>{max_price}</font> 元/股\n\n"
-                    f"> **历史 {so_day} 天平均价** <font color=''>{avg_price}</font> 元/股\n\n"
-                    f"> **历史 {so_day} 天最低价** <font color={down_price_color}>{min_price}</font> 元/股 @15235514553\n\n"
+                    f"> **历史 {so_day} 天最高价** <font color={max_price_color}>{max_price}</font> 元/股\n\n"
+                    f"> **历史 {so_day} 天平均价** <font color='{avg_price_color}'>{avg_price}</font> 元/股\n\n"
+                    f"> **历史 {so_day} 天最低价** <font color={min_price_color}>{min_price}</font> 元/股 @15235514553\n\n"
         },
         "at": {
             "atMobiles": ["15235514553"],
