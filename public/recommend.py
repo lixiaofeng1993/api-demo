@@ -11,20 +11,47 @@ from datetime import date
 from jsonpath import jsonpath
 from random import randint
 
-from conf.settings import GAO_KEY, CITY_CODE, IDIOM_KEY, IDIOM_INFO
+from conf.settings import GAO_KEY, CITY_CODE, IDIOM_KEY, IDIOM_INFO, CALENDAR_KEY, POETRY_TYPE, WEATHER_KEY, CITY_NAME
 from public.log import logger
 
 
+def get_holiday():
+    day = date.today()
+    res = requests.get(f"http://v.juhe.cn/calendar/day?date={day}&key={CALENDAR_KEY}").json()
+    if res["error_code"] == 10012:
+        logger.error(f"获取当天的详细信息接口 请求超过次数限制 ===>>> {res['reason']} ===>>> {res['error_code']}")
+        return
+    elif res["error_code"] != 0:
+        logger.error(f"获取当天的详细信息接口出现异常 ===>>> {res['reason']} ===>>> {res['error_code']}")
+        return
+    holiday = res["result"]["data"]["holiday"]
+    return holiday
+
+
 def get_weather():
-    params = {
-        "key": f"{GAO_KEY}",
-        "city": f"{CITY_CODE}",
-        "extensions": "base",
-        "output": "JSON",
+    # params = {
+    #     "key": f"{GAO_KEY}",
+    #     "city": f"{CITY_CODE}",
+    #     "extensions": "base",
+    #     "output": "JSON",
+    # }
+    # res = requests.get("https://restapi.amap.com/v3/weather/weatherInfo", params=params, verify=False)
+    # res.encoding = "utf-8"
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
     }
-    res = requests.get("https://restapi.amap.com/v3/weather/weatherInfo", params=params, verify=False)
-    res.encoding = "utf-8"
-    weather = jsonpath(res.json(), "$.lives[*].weather")
+    params = {
+        "key": WEATHER_KEY,
+        "city": CITY_NAME
+    }
+    res = requests.get("http://apis.juhe.cn/simpleWeather/query", headers=headers, params=params, verify=False).json()
+    if res["error_code"] == 10012:
+        logger.error(f"根据城市查询天气接口 请求超过次数限制 ===>>> {res['reason']} ===>>> {res['error_code']}")
+        return
+    elif res["error_code"] != 0:
+        logger.error(f"根据城市查询天气接口出现异常 ===>>> {res['reason']} ===>>> {res['error_code']}")
+        return
+    weather = jsonpath(res, "$.result.realtime.info")
     return weather[0] if weather else ""
 
 
@@ -32,38 +59,38 @@ def now_season():
     season = ""
     month = date.today().month
     if month in [3, 4, 5]:
-        season = ["春天", "清明节", "寒食节"]
+        season = "春天"
     elif month in [6, 7, 8]:
-        season = ["夏天", "七夕节", "端午节"]
+        season = "夏天"
     elif month in [9, 10, 11]:
-        season = ["秋天", "中秋节", "重阳节"]
+        season = "秋天"
     elif month in [12, 1, 2]:
-        season = ["冬天", "元宵节", "春节"]
+        season = "冬天"
     return season
 
 
 def recommend_handle():
-    weather = get_weather()
-    if "晴" in weather:
-        type_list = ["西湖", "爱情", "友情", "抒情"]
-    elif "雨" in weather:
-        type_list = ["写雨", "思乡", "离别", "伤感", "送别"]
-    elif "风" in weather:
-        type_list = ["写风", "柳树", "桃花", "菊花", "忧民"]
-    elif "雪" in weather:
-        type_list = ["写雪", "梅花"]
-    elif "阴" in weather:
-        type_list = ["小窗幽记", "闺怨", "怀古"]
-    elif "云" in weather:
-        type_list = ["星星", "月亮", "写云"]
-    elif "雾" in weather:
-        type_list = ["田园", "泰山", "庐山"]
-    elif "沙" in weather:
-        type_list = ["感恩", "哲理", "边塞"]
+    holiday = get_holiday()
+    if holiday and holiday in POETRY_TYPE.keys():
+        poetry_type = holiday
     else:
-        type_list = ["史记", "国语", "吕氏春秋", "贞观政要", "围炉夜话"]
-    type_list.extend(now_season())
-    poetry_type = type_list[randint(0, len(type_list) - 1)]
+        weather = get_weather()
+        type_list = list()
+        if weather:
+            if "晴" in weather:
+                type_list = ["爱情", "友情", "抒情"]
+            elif "雨" in weather:
+                type_list = ["写雨", "思乡", "离别", "伤感", "送别"]
+            elif "风" in weather:
+                type_list = ["写风"]
+            elif "雪" in weather:
+                type_list = ["写雪", "梅花"]
+            elif "云" in weather:
+                type_list = ["写云"]
+            elif "沙" in weather or "霾" in weather:
+                type_list = ["边塞"]
+        type_list.append(now_season())
+        poetry_type = type_list[randint(0, len(type_list) - 1)]
     return poetry_type
 
 
@@ -152,4 +179,4 @@ def idiom_info(text: str):
 
 
 if __name__ == '__main__':
-    print(idiom_info("寅吃卯粮"))
+    recommend_handle()

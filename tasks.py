@@ -54,15 +54,16 @@ def repeat_task(
         @wraps(func)
         async def wrapped() -> None:
             repetitions = 0  # 限制定时任务执行次数
-            global redis
-            if not redis:
-                redis = await create_redis_pool(f"redis://:@127.0.0.1:6379/0", password="123456", encoding="utf-8")
 
             async def loop() -> None:
                 nonlocal repetitions
                 if wait_first:
                     await asyncio.sleep(seconds)
                 while max_repetitions is None or repetitions < max_repetitions:
+                    global redis
+                    if not redis:
+                        redis = await create_redis_pool(f"redis://:@127.0.0.1:6379/0", password="123456",
+                                                        encoding="utf-8")
                     try:
                         lock = await redis.get(key="LOCK")
                         if not lock:
