@@ -73,6 +73,7 @@ class Message:
                         <Content><![CDATA[{self.content}]]></Content>
                         </xml>
                    """
+            logger.info(f"微信回复消息文案长度 {len(self.content)}")
         elif self.msg_type == "image":
             self.message = f"""
                     <xml>
@@ -85,5 +86,5 @@ class Message:
                       </Image>
                     </xml>
                     """
-        logger.info(f"微信回复消息文案长度 {len(self.content)} ==> 消息文案 {self.content}")
+            logger.info(f"微信回复图片 {self.media_id}")
         return self.message

@@ -252,6 +252,8 @@ def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str, i
                 content = idiom_solitaire(text)
         else:
             content = poetry_content(db, request, text, skip)  # 古诗词返回判断
+            if "贱比" in content:
+                content = content.replace("贱比", "贱bi")
         if not content:
             if text in ["图片", "小七"] and token:
                 media_id = wx_media(token)
