@@ -11,12 +11,16 @@ import datetime
 import requests
 import efinance as ef
 from faker import Faker
+from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
 from fastapi.responses import StreamingResponse
 
-from conf.settings import HOST, ASSETS_PATH, os, DEBUG, CALENDAR_KEY
+from conf.settings import HOST, ASSETS_PATH, os, DEBUG, CALENDAR_KEY, SHARES
+from public.common import get_db
+from public.log import logger
 from public.custom_code import result
+from sql_app import crud_shares
 
 router = APIRouter()
 
@@ -222,8 +226,8 @@ async def get_faker(number: int = 1):
     return result
 
 
-@router.get("/shares", summary="股票实时信息")
-async def shares(stock_code: str = ""):
+@router.get("/shares", summary="股票历史信息")
+async def shares(db: Session = Depends(get_db), beg: str = "20220922", end: str = "20221028", stock_code=""):
     # 股票代码
     stock_code = stock_code if stock_code else ["601069"]
     try:
@@ -235,31 +239,44 @@ async def shares(stock_code: str = ""):
     # 数据间隔时间为 1 分钟
     freq = 1
     # 获取最新一个交易日的分钟级别股票行情数据
-    df = ef.stock.get_quote_history(
-        stock_code, klt=freq)
-    data = list()
-    for d in df:
-        share_name = df[d]["股票名称"].values[0]
-        open_price = df[d]["开盘"].values[0]
-        new_price = df[d]["收盘"].values[-1]
-        top_price = df[d]["最高"].max()
-        down_price = df[d]["最低"].min()
-        turnover = df[d]["成交量"].sum()
-        average = df[d]["开盘"].mean()
-        rise_and_fall = df[d]["涨跌幅"].sum()
-        rise_and_price = df[d]["涨跌额"].sum()
-        turnover_rate = df[d]["换手率"].sum()
-        data.append({
-            "股票名称": f"【{share_name}】",
-            "开盘价": f" {open_price} 元/股",
-            "最高价": f" {top_price} 元/股",
-            "最低价": f" {down_price} 元/股",
-            "平均价": f" {round(average, 2)} 元/股",
-            "涨跌幅": f" {round(rise_and_fall, 2)} %",
-            "涨跌额": f" {round(rise_and_price, 2)} 元",
-            "成交量": f" {turnover} 手",
-            "换手率": f" {round(turnover_rate, 2)} %",
-            "最新价": f"【{new_price}】 元/股",
-        })
-    result["result"] = data
+    df = ef.stock.get_quote_history(stock_code, klt=5, beg=beg, end=end)
+    for key, value in df.items():
+        df_list = value.to_dict(orient="records")
+        shares_list = []
+        for data in df_list:
+            shares_dict = dict()
+            for k, v in SHARES.items():
+                shares_dict.update({
+                    k: data[v]
+                })
+            shares_list.append(shares_dict)
+        share = crud_shares.get_shares_code(db, key)
+        if not share:
+            crud_shares.add_all_shares(db, shares_list)
+            logger.info(f"保存成功===>>>{len(shares_list)} 条")
+    # data = list()
+    # for d in df:
+    #     share_name = df[d]["股票名称"].values[0]
+    #     open_price = df[d]["开盘"].values[0]
+    #     new_price = df[d]["收盘"].values[-1]
+    #     top_price = df[d]["最高"].max()
+    #     down_price = df[d]["最低"].min()
+    #     turnover = df[d]["成交量"].sum()
+    #     average = df[d]["开盘"].mean()
+    #     rise_and_fall = df[d]["涨跌幅"].sum()
+    #     rise_and_price = df[d]["涨跌额"].sum()
+    #     turnover_rate = df[d]["换手率"].sum()
+    #     data.append({
+    #         "股票名称": f"【{share_name}】",
+    #         "开盘价": f" {open_price} 元/股",
+    #         "最高价": f" {top_price} 元/股",
+    #         "最低价": f" {down_price} 元/股",
+    #         "平均价": f" {round(average, 2)} 元/股",
+    #         "涨跌幅": f" {round(rise_and_fall, 2)} %",
+    #         "涨跌额": f" {round(rise_and_price, 2)} 元",
+    #         "成交量": f" {turnover} 手",
+    #         "换手率": f" {round(turnover_rate, 2)} %",
+    #         "最新价": f"【{new_price}】 元/股",
+    #     })
+    # result["result"] = data
     return result

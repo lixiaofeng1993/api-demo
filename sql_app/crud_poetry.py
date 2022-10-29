@@ -19,6 +19,10 @@ def get_author_by_name(db: Session, name: str):
     return db.query(Author).filter(Author.name == name, Author.is_delete == 0).first()
 
 
+def get_author_by_all(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(Author).filter(Author.is_delete == 0).offset(skip).limit(limit).all()
+
+
 def get_author_by_dynasty(db: Session, dynasty: str, skip: int = 0, limit: int = 10):
     return db.query(Author).filter(Author.dynasty == dynasty, Author.is_delete == 0).offset(skip).limit(limit).all()
 
@@ -123,6 +127,15 @@ def add_all_poetry(db: Session, poetry_list: list):
             author_id=poetry["author_id"],
         )
         case.append(db_poetry)
+    db.add_all(case)
+    db.commit()
+
+
+def add_all_author(db: Session, author_list: list):
+    case = []
+    for author in author_list:
+        db_author = Author(name=author["name"], dynasty=author["dynasty"], introduce=author["introduce"])
+        case.append(db_author)
     db.add_all(case)
     db.commit()
 

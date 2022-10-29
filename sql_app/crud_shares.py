@@ -28,8 +28,12 @@ def get_shares_avg(db: Session, name: str):
 
 
 def get_shares_days(db: Session, name: str):
-    day_list = db.query(distinct(Shares.create_date)).filter(Shares.name == name, Shares.is_delete == 0).all()
+    day_list = db.query(distinct(Shares.date_time)).filter(Shares.name == name, Shares.is_delete == 0).all()
     return day_list
+
+
+def get_shares_code(db: Session, code: str):
+    return db.query(Shares).filter(Shares.code == code, Shares.is_delete == 0).first()
 
 
 def add_all_shares(db: Session, shares_list: list):
