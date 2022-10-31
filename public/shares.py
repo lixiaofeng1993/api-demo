@@ -14,7 +14,7 @@ from chinese_calendar import is_workday
 from sql_app.database import SessionLocal
 from public.send_ding import send_ding
 from sql_app import crud_shares
-from conf.settings import SHARES
+from conf.settings import SHARES, BUY_NUM, BUY_PRICE, LOSS_PRICE
 from public.log import logger, BASE_PATH, os
 
 
@@ -70,7 +70,7 @@ def shares(stock_code: str = ""):
         so_day = len(set(_day_list))
         max_price, min_price, avg_price = crud_shares.get_shares_avg(db, share_name)
     open_price = df["开盘"].values[0]
-    new_price = df["收盘"].values[-1]
+    new_price = round(float(df["收盘"].values[-1]), 2)
     new_time = df["日期"].values[-1]
     top_price = df["最高"].max()
     down_price = df["最低"].min()
@@ -79,6 +79,7 @@ def shares(stock_code: str = ""):
     rise_and_fall = round(df["涨跌幅"].sum(), 2)
     rise_and_price = round(df["涨跌额"].sum(), 2)
     turnover_rate = round(df["换手率"].sum(), 2)
+    profit_and_loss = (new_price - BUY_PRICE) * BUY_NUM - LOSS_PRICE
     rise_and_fall_color = "#FF0000" if rise_and_fall > 0 else "#00FF00"
     rise_and_price_color = "#FF0000" if rise_and_price > 0 else "#00FF00"
     new_price_color = "#FF0000" if new_price > open_price else "#00FF00"
@@ -87,11 +88,12 @@ def shares(stock_code: str = ""):
     max_price_color = "#FF0000" if max_price > top_price else "#00FF00"
     avg_price_color = "#FF0000" if avg_price > average else "#00FF00"
     min_price_color = "#FF0000" if min_price > down_price else "#00FF00"
+    profit_and_loss_color = "#FF0000" if profit_and_loss else "#00FF00"
 
     if make:
         data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元/股\n最低价：{down_price} 元/股\n" \
                f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n成交量：{turnover} 手\n" \
-               f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股"
+               f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股\n持仓盈亏：{profit_and_loss} 元"
         if so_day:
             data += f"\n\n历史 {so_day} 天最高价：{max_price} 元/股\n历史 {so_day} 天平均价：{avg_price} 元/股\n" \
                     f"历史 {so_day} 天最低价：{min_price} 元/股"
@@ -102,6 +104,10 @@ def shares(stock_code: str = ""):
         "markdown": {
             "title": share_name,
             "text": f"### {share_name}\n\n"
+                    f"> **历史 {so_day} 天最高价** <font color={max_price_color}>{max_price}</font> 元/股\n\n"
+                    f"> **历史 {so_day} 天平均价** <font color='{avg_price_color}'>{avg_price}</font> 元/股\n\n"
+                    f"> **历史 {so_day} 天最低价** <font color={min_price_color}>{min_price}</font> 元/股 \n\n"
+                    f"> **<font size=5>ToDay</font>**\n\n"
                     f"> **开盘价** <font>{open_price}</font> 元/股\n\n"
                     f"> **最高价** <font color={top_price_color}>{top_price}</font> 元/股\n\n"
                     f"> **最低价** <font color={down_price_color}>{down_price}</font> 元/股\n\n"
@@ -112,10 +118,9 @@ def shares(stock_code: str = ""):
                     f"> **换手率** <font>{turnover_rate}</font> %\n\n"
                     f"> **时间** <font>{new_time}</font>\n\n"
                     f"> **最新价** <font color={new_price_color}>{new_price}</font> 元/股\n\n"
-                    f"> **折线图:** ![screenshot](http://121.41.54.234/Chart-{now_img}.jpg)\n\n"
-                    f"> **历史 {so_day} 天最高价** <font color={max_price_color}>{max_price}</font> 元/股\n\n"
-                    f"> **历史 {so_day} 天平均价** <font color='{avg_price_color}'>{avg_price}</font> 元/股\n\n"
-                    f"> **历史 {so_day} 天最低价** <font color={min_price_color}>{min_price}</font> 元/股 @15235514553\n\n"
+                    f"> **持仓盈亏** <font color={profit_and_loss_color}>{profit_and_loss}</font> 元\n\n"
+                    f"> **折线图:** ![screenshot](http://121.41.54.234/Chart-{now_img}.jpg) @15235514553\n\n"
+
         },
         "at": {
             "atMobiles": ["15235514553"],

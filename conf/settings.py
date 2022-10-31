@@ -115,6 +115,12 @@ SHARES = {
     "rise_and_price": "涨跌额",
     "turnover_rate": "换手率"
 }
+# 持仓数量 股
+BUY_NUM = 1000
+# 持仓成本 元
+BUY_PRICE = 11.683
+# 原始亏损 元
+LOSS_PRICE = 130.75
 
 # 万年历KEY
 CALENDAR_KEY = "197557d5fc1f3a26fa772bc694ea4c2d"
