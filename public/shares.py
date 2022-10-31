@@ -79,7 +79,7 @@ def shares(stock_code: str = ""):
     rise_and_fall = round(df["涨跌幅"].sum(), 2)
     rise_and_price = round(df["涨跌额"].sum(), 2)
     turnover_rate = round(df["换手率"].sum(), 2)
-    profit_and_loss = (new_price - BUY_PRICE) * BUY_NUM - LOSS_PRICE
+    profit_and_loss = round((new_price - BUY_PRICE) * BUY_NUM - LOSS_PRICE, 2)
     rise_and_fall_color = "#FF0000" if rise_and_fall > 0 else "#00FF00"
     rise_and_price_color = "#FF0000" if rise_and_price > 0 else "#00FF00"
     new_price_color = "#FF0000" if new_price > open_price else "#00FF00"
@@ -107,7 +107,7 @@ def shares(stock_code: str = ""):
                     f"> **历史 {so_day} 天最高价** <font color={max_price_color}>{max_price}</font> 元/股\n\n"
                     f"> **历史 {so_day} 天平均价** <font color='{avg_price_color}'>{avg_price}</font> 元/股\n\n"
                     f"> **历史 {so_day} 天最低价** <font color={min_price_color}>{min_price}</font> 元/股 \n\n"
-                    f"> **<font size=5>ToDay</font>**\n\n"
+                    f"> **<font size=5>ToDay：</font>**\n\n"
                     f"> **开盘价** <font>{open_price}</font> 元/股\n\n"
                     f"> **最高价** <font color={top_price_color}>{top_price}</font> 元/股\n\n"
                     f"> **最低价** <font color={down_price_color}>{down_price}</font> 元/股\n\n"
