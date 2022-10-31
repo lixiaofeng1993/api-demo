@@ -88,7 +88,7 @@ def shares(stock_code: str = ""):
     max_price_color = "#FF0000" if max_price > top_price else "#00FF00"
     avg_price_color = "#FF0000" if avg_price > average else "#00FF00"
     min_price_color = "#FF0000" if min_price > down_price else "#00FF00"
-    profit_and_loss_color = "#FF0000" if profit_and_loss else "#00FF00"
+    profit_and_loss_color = "#FF0000" if profit_and_loss > 0 else "#00FF00"
 
     if make:
         data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元/股\n最低价：{down_price} 元/股\n" \
