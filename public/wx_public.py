@@ -191,6 +191,7 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
     else:
         if text == "推荐":
             poetry_type = recommend_handle()  # 根据季节、天气返回古诗词类型
+            logger.info(f"推荐诗词类型 ===>>> {poetry_type}")
             poetry = crud_poetry.get_poetry_by_type_random(db, poetry_type)
             phrase = poetry.phrase.strip('\n')
             if poetry.author_id:

@@ -78,9 +78,9 @@ def recommend_handle():
         type_list = list()
         if weather:
             if "晴" in weather:
-                type_list = ["爱情", "友情", "抒情"]
+                type_list = ["爱情", "友情"]
             elif "雨" in weather:
-                type_list = ["写雨", "思乡", "离别", "伤感", "送别"]
+                type_list = ["写雨", "思乡", "离别", "伤感"]
             elif "风" in weather:
                 type_list = ["写风"]
             elif "雪" in weather:
