@@ -70,6 +70,7 @@ def shares(stock_code: str = ""):
         so_day = len(set(_day_list))
         max_price, min_price, avg_price = crud_shares.get_shares_avg(db, share_name)
     open_price = df["开盘"].values[0]
+    logger.info(f"开盘=========>>>{open_price}")
     new_price = round(float(df["收盘"].values[-1]), 2)
     new_time = df["日期"].values[-1]
     top_price = df["最高"].max()
