@@ -29,4 +29,4 @@ def sensitive_words(text: str = ""):
                     text = text.replace(msg, "*" * len(msg))
     except Exception as error:
         logger.error(f"敏感词请求出现异常 ===>>> {error}")
-        return
+    return text
