@@ -64,12 +64,12 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
                     skip = await request.app.state.redis.get(text)
                     if not skip:
                         content = "会话只有30分钟，想了解更多，请重新发起~"
-                elif text in ["成语接龙", "接龙"]:
+                elif not idiom and text in ["成语接龙", "接龙"]:
                     await request.app.state.redis.setex(key=f"IDIOM", value=text, seconds=30 * 60)
                     content = "进入时效30分钟的成语接龙时刻，输入成语开始吧~"
-                elif "IDIOM-INFO" in text and not idiom:
+                elif not idiom and "IDIOM-INFO" in text:
                     content = "成语接龙会话时效只有30分钟，想了解更多，请重新发起~"
-                elif text == "exit":
+                elif idiom and text == "exit":
                     await request.app.state.redis.delete("IDIOM")
                     content = "See you later..."
             if not content:
@@ -77,8 +77,8 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
             if rec_msg.MsgType == 'text' and not media_id:
                 if "</a>" in content and len(content) >= 2000:
                     content = "..." + content[len(content) - 2000:]
-                elif len(content) >= 666 and "</a>" not in content:
-                    content = content[:666] + "..."
+                elif len(content) >= 777 and "</a>" not in content:
+                    content = content[:777] + "..."
                 return Response(
                     Message(to_user, from_user, content=content).send(),
                     media_type="application/xml")

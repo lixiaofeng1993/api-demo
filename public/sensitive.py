@@ -34,5 +34,5 @@ def sensitive_words(text: str = ""):
     # except Exception as error:
     #     logger.error(f"敏感词请求出现异常 ===>>> {error}")
     for msg in sensitive_list:
-        text = text.replace(msg, "*" * len(text))
+        text = text.replace(msg, "*" * len(msg))
     return text
