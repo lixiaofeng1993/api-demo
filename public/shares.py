@@ -70,7 +70,6 @@ def shares(stock_code: str = ""):
         so_day = len(set(_day_list))
         max_price, min_price, avg_price = crud_shares.get_shares_avg(db, share_name)
     open_price = df["开盘"].values[0]
-    logger.info(f"开盘=========>>>{open_price}")
     new_price = round(float(df["收盘"].values[-1]), 2)
     new_time = df["日期"].values[-1]
     top_price = df["最高"].max()
@@ -81,17 +80,15 @@ def shares(stock_code: str = ""):
     rise_and_price = round(df["涨跌额"].sum(), 2)
     turnover_rate = round(df["换手率"].sum(), 2)
     profit_and_loss = round((new_price - BUY_PRICE) * BUY_NUM - LOSS_PRICE, 2)
-    logger.info(f"持仓盈亏=============>>>{profit_and_loss}")
     rise_and_fall_color = "#FF0000" if rise_and_fall > 0 else "#00FF00"
     rise_and_price_color = "#FF0000" if rise_and_price > 0 else "#00FF00"
     new_price_color = "#FF0000" if new_price > open_price else "#00FF00"
     top_price_color = "#FF0000" if top_price > open_price else "#00FF00"
     down_price_color = "#FF0000" if down_price > open_price else "#00FF00"
-    max_price_color = "#FF0000" if max_price > top_price else "#00FF00"
-    avg_price_color = "#FF0000" if avg_price > average else "#00FF00"
-    min_price_color = "#FF0000" if min_price > down_price else "#00FF00"
+    max_price_color = "#FF0000" if max_price and max_price > top_price else "#00FF00"
+    avg_price_color = "#FF0000" if avg_price and avg_price > average else "#00FF00"
+    min_price_color = "#FF0000" if min_price and min_price > down_price else "#00FF00"
     profit_and_loss_color = "#FF0000" if profit_and_loss > 0 else "#00FF00"
-    logger.info(f"====>{profit_and_loss_color}")
 
     if make:
         data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元/股\n最低价：{down_price} 元/股\n" \
