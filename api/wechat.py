@@ -77,8 +77,8 @@ async def wx_msg(request: Request, signature, timestamp, nonce, openid, db: Sess
             if rec_msg.MsgType == 'text' and not media_id:
                 if "</a>" in content and len(content) >= 2000:
                     content = "..." + content[len(content) - 2000:]
-                elif len(content) >= 666 and "</a>" not in content:
-                    content = content[:715] + "..."
+                elif len(content) >= 710 and "</a>" not in content:
+                    content = content[:710] + "..."
                 return Response(
                     Message(to_user, from_user, content=content).send(),
                     media_type="application/xml")
