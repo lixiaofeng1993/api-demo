@@ -91,12 +91,13 @@ def poetry_by_type(db: Session, request: Request, text: str, skip: int, val):
     """
     content = f"古诗类型：{text}\n古诗名字：\n"
     data_list = crud_poetry.get_poetry_by_type(db, text, skip=skip)
-    content += handle_wx_text(data_list)
-    content += ">>> 点击古诗名字 "
-    more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{val}&msgmenuid=9529'>更多</a> "
-    content += "或者查看 " + more_text if len(data_list) == 10 else ""
-    request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=str(skip), seconds=30 * 60)
-    return content
+    if data_list:
+        content += handle_wx_text(data_list)
+        content += ">>> 点击古诗名字 "
+        more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=POETRY_TYPE-{val}&msgmenuid=9529'>更多</a> "
+        content += "或者查看 " + more_text if len(data_list) == 10 else ""
+        request.app.state.redis.setex(key=f"POETRY_TYPE-{val}", value=str(skip), seconds=30 * 60)
+        return content
 
 
 def author_by_dynasty(db: Session, request: Request, text: str, skip: int, val):
@@ -105,12 +106,13 @@ def author_by_dynasty(db: Session, request: Request, text: str, skip: int, val):
     """
     content = f"朝代：{text}\n诗人：\n"
     data_list = crud_poetry.get_author_by_dynasty(db, text, skip=skip)
-    content += handle_wx_text(data_list)
-    content += ">>> 点击诗人名字 "
-    more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=DYNASTY-{val}&msgmenuid=9526'>更多</a> "
-    content += "或者查看 " + more_text if len(data_list) == 10 else ""
-    request.app.state.redis.setex(key=f"DYNASTY-{val}", value=str(skip), seconds=30 * 60)
-    return content
+    if data_list:
+        content += handle_wx_text(data_list)
+        content += ">>> 点击诗人名字 "
+        more_text = f"<a href='weixin://bizmsgmenu?msgmenucontent=DYNASTY-{val}&msgmenuid=9526'>更多</a> "
+        content += "或者查看 " + more_text if len(data_list) == 10 else ""
+        request.app.state.redis.setex(key=f"DYNASTY-{val}", value=str(skip), seconds=30 * 60)
+        return content
 
 
 def send_author(db: Session, request: Request, data):
@@ -193,21 +195,22 @@ def poetry_content(db: Session, request: Request, text: str, skip: str = "0"):
             poetry_type = recommend_handle()  # 根据季节、天气返回古诗词类型
             logger.info(f"推荐诗词类型 ===>>> {poetry_type}")
             poetry = crud_poetry.get_poetry_by_type_random(db, poetry_type)
-            phrase = poetry.phrase.strip('\n')
-            if poetry.author_id:
-                content = f"今天推荐：\n出自{poetry.author.dynasty}{poetry.author.name}的《{poetry.name}》" \
-                          f"\n类型：{poetry_type}\n\n{phrase}\n"
-            else:
-                content = f"今天推荐：\n摘自《{poetry.name}》\n类型：{poetry_type}\n\n{phrase}\n"
-            if poetry.explain:
-                explain = poetry.explain.strip('\n')
-                content += f"\n赏析：\n{explain}"
-            content += "\n>>> 点击查看 " \
-                       f"<a href='weixin://bizmsgmenu?msgmenucontent=RECOMMEND-{poetry.id}&msgmenuid=9525'>更多</a>"
-            seconds = surplus_second()  # 返回今天剩余秒数
-            request.app.state.redis.setex(key=f"RECOMMEND-{poetry.id}", value=poetry.id, seconds=seconds)  # 更多缓存
-            request.app.state.redis.setex(key=f"recommended-today", value=content, seconds=seconds)  # 推荐缓存
-            return content
+            if poetry:
+                phrase = poetry.phrase.strip('\n')
+                if poetry.author_id:
+                    content = f"今天推荐：\n出自{poetry.author.dynasty}{poetry.author.name}的《{poetry.name}》" \
+                              f"\n类型：{poetry_type}\n\n{phrase}\n"
+                else:
+                    content = f"今天推荐：\n摘自《{poetry.name}》\n类型：{poetry_type}\n\n{phrase}\n"
+                if poetry.explain:
+                    explain = poetry.explain.strip('\n')
+                    content += f"\n赏析：\n{explain}"
+                content += "\n>>> 点击查看 " \
+                           f"<a href='weixin://bizmsgmenu?msgmenucontent=RECOMMEND-{poetry.id}&msgmenuid=9525'>更多</a>"
+                seconds = surplus_second()  # 返回今天剩余秒数
+                request.app.state.redis.setex(key=f"RECOMMEND-{poetry.id}", value=poetry.id, seconds=seconds)  # 更多缓存
+                request.app.state.redis.setex(key=f"recommended-today", value=content, seconds=seconds)  # 推荐缓存
+                return content
         for key, value in DYNASTY.items():  # 诗人朝代
             if text == key:
                 content = author_by_dynasty(db, request, text, 0, value)

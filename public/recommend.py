@@ -16,7 +16,8 @@ from public.log import logger
 
 
 def get_holiday():
-    day = date.today()
+    now = date.today()
+    day = str(int(now.year)) + "-" + str(int(now.month)) + "-" + str(int(now.day))
     res = requests.get(f"http://v.juhe.cn/calendar/day?date={day}&key={CALENDAR_KEY}").json()
     if res["error_code"] == 10012:
         logger.error(f"获取当天的详细信息接口 请求超过次数限制 ===>>> {res['reason']} ===>>> {res['error_code']}")
