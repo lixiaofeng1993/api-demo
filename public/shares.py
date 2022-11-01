@@ -81,6 +81,7 @@ def shares(stock_code: str = ""):
     rise_and_price = round(df["涨跌额"].sum(), 2)
     turnover_rate = round(df["换手率"].sum(), 2)
     profit_and_loss = round((new_price - BUY_PRICE) * BUY_NUM - LOSS_PRICE, 2)
+    logger.info(f"持仓盈亏=============>>>{profit_and_loss}")
     rise_and_fall_color = "#FF0000" if rise_and_fall > 0 else "#00FF00"
     rise_and_price_color = "#FF0000" if rise_and_price > 0 else "#00FF00"
     new_price_color = "#FF0000" if new_price > open_price else "#00FF00"
@@ -90,6 +91,7 @@ def shares(stock_code: str = ""):
     avg_price_color = "#FF0000" if avg_price > average else "#00FF00"
     min_price_color = "#FF0000" if min_price > down_price else "#00FF00"
     profit_and_loss_color = "#FF0000" if profit_and_loss > 0 else "#00FF00"
+    logger.info(f"====>{profit_and_loss_color}")
 
     if make:
         data = f"{share_name}\n开盘价：{open_price} 元/股\n最高价：{top_price} 元/股\n最低价：{down_price} 元/股\n" \
