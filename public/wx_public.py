@@ -257,7 +257,7 @@ def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str, i
                 content = idiom_solitaire(text)
         else:
             content = poetry_content(db, request, text, skip)  # 古诗词返回判断
-            content = sensitive_words(content, token) if content else ""
+            content = sensitive_words(content) if content else ""
         if not content:
             if text in ["图片", "小七"] and token:
                 media_id = wx_media(token)
