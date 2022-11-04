@@ -116,9 +116,9 @@ SHARES = {
     "turnover_rate": "换手率"
 }
 # 持仓数量 股
-BUY_NUM = 800
+BUY_NUM = 400
 # 持仓成本 元
-BUY_PRICE = 11.613
+BUY_PRICE = 10.839
 # 原始亏损 元
 LOSS_PRICE = 130.75
 
