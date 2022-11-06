@@ -81,6 +81,7 @@ def stock():
     一般来说，量比为0.8-1.5倍，则说明成交量处于正常水平；量比在1.5-2.5倍之间则为温和放量，我们选股多考虑量比在这一范围的个股
     :return:
     """
+    daily_billboard_list = get_daily_billboard_list()
     df = ef.stock.get_realtime_quotes()
     df.drop(df.index[df["涨跌幅"] == "-"], inplace=True)
     df_down = df.sort_values(["涨跌幅", "量比"], ascending=[True, False])
@@ -89,16 +90,22 @@ def stock():
     df_top_100 = df_top[:20]
     choice_down_list = stock_analysis(df_down_100)[:5]
     choice_top_list = stock_analysis(df_top_100)[:5]
-    content = "今日股票推荐：\n跌幅榜\n"
-    for data in choice_down_list:
-        for name, value in data.items():
-            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a>" \
-                       f"\n 60日均价：{value[0]}，10日均价：{value[1]}，5日均价：{value[2]}, 最近交易日均价：{value[3]}\n"
-    content += "涨幅榜\n"
+    content = "今日股票推荐：\n涨幅榜\n"
     for data in choice_top_list:
         for name, value in data.items():
             content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a>" \
-                       f"\n 60日均价：{value[0]}，10日均价：{value[1]}，5日均价：{value[2]}, 最近交易日均价：{value[3]}\n"
+                       f"\n 60日均价：{value[0]} 元/股,10日均价：{value[1]} 元/股,5日均价：{value[2]} 元/股,最近交易日均价：{value[3]} 元/股\n"
+            for daily_billboard in daily_billboard_list:
+                if name == daily_billboard[0]:
+                    content += f"龙虎榜：{daily_billboard[1]}\n"
+    content += "\n跌幅榜\n"
+    for data in choice_down_list:
+        for name, value in data.items():
+            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a>" \
+                       f"\n 60日均价：{value[0]} 元/股,10日均价：{value[1]} 元/股,5日均价：{value[2]} 元/股,最近交易日均价：{value[3]} 元/股\n"
+            for daily_billboard in daily_billboard_list:
+                if name == daily_billboard[0]:
+                    content += f"龙虎榜：{daily_billboard[1]}\n"
     return content
 
 
