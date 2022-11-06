@@ -100,7 +100,7 @@ def stock():
     content += "\n跌幅榜\n"
     for data in choice_down_list:
         for name, value in data.items():
-            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a>\n"
+            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a> 最新价 {value} \n"
             for daily_billboard in daily_billboard_list:
                 if name == daily_billboard[0]:
                     content += f"龙虎榜：{daily_billboard[1]}\n"
