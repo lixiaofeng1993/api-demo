@@ -53,7 +53,7 @@ def stock_analysis(data: DataFrame):
     # time_5 = (now_time + relativedelta(days=-7)).strftime("%Y%m%d")
 
     choice_list = []
-    for r in zip(data["股票名称"], data["最新价"]):
+    for r in zip(data["股票名称"], data["量比"]):
         if "ST" in r[0]:
             continue
         if r[1] > 18:
@@ -93,14 +93,14 @@ def stock():
     content = "今日股票推荐：\n涨幅榜\n"
     for data in choice_top_list:
         for name, value in data.items():
-            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a> 最新价 {value} \n"
+            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a> 量比 {value} \n"
             for daily_billboard in daily_billboard_list:
                 if name == daily_billboard[0]:
                     content += f"龙虎榜：{daily_billboard[1]}\n"
     content += "\n跌幅榜\n"
     for data in choice_down_list:
         for name, value in data.items():
-            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a> 最新价 {value} \n"
+            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a> 量比 {value} \n"
             for daily_billboard in daily_billboard_list:
                 if name == daily_billboard[0]:
                     content += f"龙虎榜：{daily_billboard[1]}\n"
