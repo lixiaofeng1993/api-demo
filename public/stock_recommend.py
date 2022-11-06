@@ -95,17 +95,17 @@ def stock():
         for name, value in data.items():
             content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a>" \
                        f"\n 60日均价：{value[0]} 元/股,10日均价：{value[1]} 元/股,5日均价：{value[2]} 元/股,最近交易日均价：{value[3]} 元/股\n"
-            for daily_billboard in daily_billboard_list:
-                if name == daily_billboard[0]:
-                    content += f"龙虎榜：{daily_billboard[1]}\n"
+            # for daily_billboard in daily_billboard_list:
+            #     if name == daily_billboard[0]:
+            #         content += f"龙虎榜：{daily_billboard[1]}\n"
     content += "\n跌幅榜\n"
     for data in choice_down_list:
         for name, value in data.items():
             content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a>" \
                        f"\n 60日均价：{value[0]} 元/股,10日均价：{value[1]} 元/股,5日均价：{value[2]} 元/股,最近交易日均价：{value[3]} 元/股\n"
-            for daily_billboard in daily_billboard_list:
-                if name == daily_billboard[0]:
-                    content += f"龙虎榜：{daily_billboard[1]}\n"
+            # for daily_billboard in daily_billboard_list:
+            #     if name == daily_billboard[0]:
+            #         content += f"龙虎榜：{daily_billboard[1]}\n"
     return content
 
 
