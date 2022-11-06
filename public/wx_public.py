@@ -18,6 +18,7 @@ from public.recommend import recommend_handle, surplus_second, idiom_solitaire, 
 from conf.settings import TOKEN, FOLLOW, ArticleUrl, DYNASTY, POETRY_TYPE
 from public.shares import shares
 from public.sensitive import sensitive_words
+from public.stock_recommend import stock
 from public.log import logger
 
 
@@ -255,6 +256,8 @@ def send_wx_msg(db: Session, request: Request, rec_msg, token: str, skip: str, i
                 content = idiom_info(idiom_name)
             else:
                 content = idiom_solitaire(text)
+        elif text == "股票":
+            content = stock()
         else:
             content = poetry_content(db, request, text, skip)  # 古诗词返回判断
             content = sensitive_words(content) if content else ""

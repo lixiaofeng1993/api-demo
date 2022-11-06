@@ -236,10 +236,10 @@ async def shares(db: Session = Depends(get_db), beg: str = "20220922", end: str 
     except:
         result["result"] = "参数类型错误！！！"
         return result
-    # 数据间隔时间为 1 分钟
-    freq = 1
+    # 数据间隔时间为 5 分钟
+    freq = 5
     # 获取最新一个交易日的分钟级别股票行情数据
-    df = ef.stock.get_quote_history(stock_code, klt=5, beg=beg, end=end)
+    df = ef.stock.get_quote_history(stock_code, klt=freq, beg=beg, end=end)
     for key, value in df.items():
         df_list = value.to_dict(orient="records")
         shares_list = []
