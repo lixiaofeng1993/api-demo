@@ -17,7 +17,7 @@ SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:123456@127.0.0.1:3306/fastapi" i
 
 engine = create_engine(
     # SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-    SQLALCHEMY_DATABASE_URL, pool_pre_ping=True
+    SQLALCHEMY_DATABASE_URL, pool_pre_ping=True, pool_recycle=18000,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
