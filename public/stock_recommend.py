@@ -48,9 +48,9 @@ def shares_avg(code: str = "西部黄金", klt: int = 101, beg: str = ""):
 
 
 def stock_analysis(data: DataFrame):
-    time_60 = (now_time + relativedelta(days=-76)).strftime("%Y%m%d")
-    time_10 = (now_time + relativedelta(days=-12)).strftime("%Y%m%d")
-    time_5 = (now_time + relativedelta(days=-7)).strftime("%Y%m%d")
+    # time_60 = (now_time + relativedelta(days=-76)).strftime("%Y%m%d")
+    # time_10 = (now_time + relativedelta(days=-12)).strftime("%Y%m%d")
+    # time_5 = (now_time + relativedelta(days=-7)).strftime("%Y%m%d")
 
     choice_list = []
     for r in zip(data["股票名称"], data["最新价"]):
@@ -58,19 +58,19 @@ def stock_analysis(data: DataFrame):
             continue
         if r[1] > 18:
             continue
-        average_60 = shares_avg(r[0], beg=time_60)
-        average_10 = shares_avg(r[0], beg=time_10)
-        average_5 = shares_avg(r[0], beg=time_5)
-        average = shares_avg(r[0], klt=60)
-        average_dict = {
-            r[0]: [average_60, average_10, average_5, average]
-        }
+        # average_60 = shares_avg(r[0], beg=time_60)
+        # average_10 = shares_avg(r[0], beg=time_10)
+        # average_5 = shares_avg(r[0], beg=time_5)
+        # average = shares_avg(r[0], klt=60)
+        # average_dict = {
+        #     r[0]: [average_60, average_10, average_5, average]
+        # }
         # if average_60 >= average:
         #     choice_list.append(average_dict)
         # elif average >= average_5:
         #     choice_list.append(average_dict)
         # elif average >= average_10:
-        choice_list.append(average_dict)
+        choice_list.append({r[0]: r[1]})
     return choice_list
 
 
@@ -93,19 +93,17 @@ def stock():
     content = "今日股票推荐：\n涨幅榜\n"
     for data in choice_top_list:
         for name, value in data.items():
-            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a>" \
-                       f"\n 60日均价：{value[0]} 元/股,10日均价：{value[1]} 元/股,5日均价：{value[2]} 元/股,最近交易日均价：{value[3]} 元/股\n"
-            # for daily_billboard in daily_billboard_list:
-            #     if name == daily_billboard[0]:
-            #         content += f"龙虎榜：{daily_billboard[1]}\n"
+            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a> 最新价 {value} \n"
+            for daily_billboard in daily_billboard_list:
+                if name == daily_billboard[0]:
+                    content += f"龙虎榜：{daily_billboard[1]}\n"
     content += "\n跌幅榜\n"
     for data in choice_down_list:
         for name, value in data.items():
-            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a>" \
-                       f"\n 60日均价：{value[0]} 元/股,10日均价：{value[1]} 元/股,5日均价：{value[2]} 元/股,最近交易日均价：{value[3]} 元/股\n"
-            # for daily_billboard in daily_billboard_list:
-            #     if name == daily_billboard[0]:
-            #         content += f"龙虎榜：{daily_billboard[1]}\n"
+            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={name}&msgmenuid=9530'>{name}</a>\n"
+            for daily_billboard in daily_billboard_list:
+                if name == daily_billboard[0]:
+                    content += f"龙虎榜：{daily_billboard[1]}\n"
     return content
 
 
