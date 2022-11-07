@@ -52,7 +52,7 @@ async def startup_event():
 
 
 @app.on_event('startup')
-@repeat_task(seconds=60 * 30, wait_first=False)
+@repeat_task(seconds=60 * 60, wait_first=False)
 def repeat_task_aggregate_request_records() -> None:
     shares()
 
