@@ -6,6 +6,7 @@
 # @Version：V 0.1
 # @desc :
 import efinance as ef
+import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from pandas import DataFrame
@@ -54,15 +55,21 @@ def stock_analysis(data: DataFrame):
 
     choice_list = []
     for index, row in data.iterrows():
+        print(type(row))
         if "ST" in row["股票名称"]:
             continue
         if row["最新价"] > 18:
             continue
+        if 2.5 >= row["量比"] >= 1.5:
+            row = row.append(pd.Series({
+                "状态": "量比"
+            }))
+            choice_list.append(row)
         # average_60 = shares_avg(r[0], beg=time_60)
         # average_10 = shares_avg(r[0], beg=time_10)
         # average_5 = shares_avg(r[0], beg=time_5)
         # average = shares_avg(r[0], klt=60)
-        choice_list.append(row)
+        # choice_list.append(row)
     return choice_list
 
 
@@ -79,22 +86,25 @@ def stock():
     df.drop(df.index[df["量比"] == "-"], inplace=True)
     df_down = df.sort_values(["涨跌幅", "成交量"], ascending=[True, False])
     df_down_100 = df_down[:20]
+
     df_top = df.sort_values(["涨跌幅", "成交量"], ascending=[False, False])
     df_top_100 = df_top[:20]
+    df_top_100.to_csv("1.csv")
     choice_down_list = stock_analysis(df_down_100)[:5]
     choice_top_list = stock_analysis(df_top_100)[:5]
     content = "今日股票推荐：\n涨幅榜\n"
     for data in choice_top_list:
-        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> 最新价 {data['最新价']} 元/股\n"
-        for daily_billboard in daily_billboard_list:
-            if data['股票名称'] == daily_billboard[0]:
-                content += f"龙虎榜：{daily_billboard[1]}\n"
-    content += "\n跌幅榜\n"
-    for data in choice_down_list:
-        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> 最新价 {data['最新价']} 元/股\n"
-        for daily_billboard in daily_billboard_list:
-            if data['股票名称'] == daily_billboard[0]:
-                content += f"龙虎榜：{daily_billboard[1]}\n"
+        print(data["状态"])
+    #     content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> 最新价 {data['最新价']} 元/股\n"
+    #     for daily_billboard in daily_billboard_list:
+    #         if data['股票名称'] == daily_billboard[0]:
+    #             content += f"龙虎榜：{daily_billboard[1]}\n"
+    # content += "\n跌幅榜\n"
+    # for data in choice_down_list:
+    #     content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> 最新价 {data['最新价']} 元/股\n"
+    #     for daily_billboard in daily_billboard_list:
+    #         if data['股票名称'] == daily_billboard[0]:
+    #             content += f"龙虎榜：{daily_billboard[1]}\n"
     return content
 
 
