@@ -115,6 +115,8 @@ SHARES = {
     "rise_and_price": "涨跌额",
     "turnover_rate": "换手率"
 }
+# 是否持仓
+STOCK_FLAG = False
 # 持仓股票
 STOCK_NAME = "西部黄金"
 # 持仓数量 股
