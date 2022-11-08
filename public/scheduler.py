@@ -26,7 +26,7 @@ interval_task = {
     # 配置执行器
     "executors": {
         # 使用进程池进行调度，最大进程数是10个
-        'default': ProcessPoolExecutor(2)
+        'default': ProcessPoolExecutor(10)
     },
     # 创建job时的默认参数
     "job_defaults": {
