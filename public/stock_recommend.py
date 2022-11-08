@@ -97,11 +97,11 @@ def stock():
     df.drop(df.index[df["涨跌幅"] == "-"], inplace=True)
     df.drop(df.index[df["量比"] == "-"], inplace=True)
     df_down = df.sort_values(["涨跌幅", "成交量"], ascending=[True, False])
-    df_down_100 = df_down[:50]
+    df_down_100 = df_down[:20]
     df_top = df.sort_values(["涨跌幅", "成交量"], ascending=[False, False])
-    df_top_100 = df_top[:50]
-    choice_down_list = stock_analysis(df_down_100)[:10]
-    choice_top_list = stock_analysis(df_top_100)[:10]
+    df_top_100 = df_top[:20]
+    choice_down_list = stock_analysis(df_down_100)[:5]
+    choice_top_list = stock_analysis(df_top_100)[:5]
     content = "今日股票推荐：\n涨幅榜\n"
     for data in choice_top_list:
         content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> " \
