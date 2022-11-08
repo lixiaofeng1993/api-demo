@@ -37,5 +37,5 @@ interval_task = {
 }
 scheduler = AsyncIOScheduler(**interval_task)
 # 添加一个定时任务
-scheduler.add_job(stock, trigger='cron', hour=20, minute="*", args=[True], id="desire_job2", replace_existing=True)
+scheduler.add_job(stock, trigger='cron', hour=21, minute="*", args=[True], id="desire_job2", replace_existing=True)
 scheduler.add_job(shares, trigger='interval', seconds=30, id="desire_job1", replace_existing=True)
