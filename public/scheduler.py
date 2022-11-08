@@ -10,7 +10,7 @@ from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 
 from public.stock_recommend import stock
-# from public.shares import shares
+from public.shares import shares
 
 REDIS_DB = {
     "host": "127.0.0.1",
@@ -38,4 +38,4 @@ interval_task = {
 scheduler = AsyncIOScheduler(**interval_task)
 # 添加一个定时任务
 scheduler.add_job(stock, trigger='cron', hour="9-15", minute=30, args=[True], id="stock_job", replace_existing=True)
-# scheduler.add_job(shares, trigger='interval', seconds=60 * 5, id="shares_job", replace_existing=True)
+scheduler.add_job(shares, trigger='interval', seconds=60 * 5, id="shares_job", replace_existing=True)
