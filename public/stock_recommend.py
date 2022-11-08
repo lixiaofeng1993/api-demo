@@ -13,6 +13,7 @@ from pandas import DataFrame
 
 from public.send_ding import send_ding
 from public.get_daily_billboard import get_daily_billboard
+from public.log import logger
 
 now_time = datetime.now()
 
@@ -118,6 +119,7 @@ def stock(flag: bool = False):
         for data in choice_down_list:
             content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}" \
                        f"【{data['股票代码']}】</a>{data['分析']}\n"
+        logger.info(content)
         return content
     else:
         content = "@15235514553\n### 今日股票推荐\n\n> **<font size=5>涨幅榜：</font>**\n\n"

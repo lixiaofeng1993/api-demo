@@ -15,6 +15,7 @@ from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html, get_swagge
 from pathlib import Path
 
 from tasks import repeat_task
+from public.scheduler import scheduler
 from public.shares import shares
 from api import users, project, sign, api, wechat, poetry
 from dependencies import get_current_user
@@ -49,12 +50,13 @@ async def get_redis_pool() -> Redis:
 @app.on_event("startup")
 async def startup_event():
     app.state.redis = await get_redis_pool()
+    scheduler.start()
 
 
-@app.on_event('startup')
-@repeat_task(seconds=60 * 5, wait_first=False)
-def repeat_task_aggregate_request_records() -> None:
-    shares()
+# @app.on_event('startup')
+# @repeat_task(seconds=60 * 5, wait_first=False)
+# def repeat_task_aggregate_request_records() -> None:
+#     shares()
 
 
 @app.on_event("shutdown")
