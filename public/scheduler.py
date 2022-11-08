@@ -10,7 +10,7 @@ from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 
 from public.stock_recommend import stock
-from public.shares import shares
+# from public.shares import shares
 
 REDIS_DB = {
     "host": "127.0.0.1",
@@ -26,7 +26,7 @@ interval_task = {
     # 配置执行器
     "executors": {
         # 使用进程池进行调度，最大进程数是10个
-        'default': ProcessPoolExecutor(10)
+        'default': ProcessPoolExecutor(1)
     },
     # 创建job时的默认参数
     "job_defaults": {
