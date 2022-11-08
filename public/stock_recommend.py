@@ -69,11 +69,11 @@ def stock_analysis(data: DataFrame):
             make_content += f"量比：{row['量比']} 明显放量\n"
         if make_content:
             if 10 < row["换手率"] or row["换手率"] <= 1:
-                make_content += f"换手率：{row['换手率']} 谨慎选择\n"
+                make_content += f"换手率：{row['换手率']} 谨慎选择"
             else:
-                make_content += f"换手率：{row['换手率']} 着重关注\n"
+                make_content += f"换手率：{row['换手率']} 着重关注"
             if row["股票名称"] in daily_billboard_dict.keys():
-                make_content += f"龙虎榜：{daily_billboard_dict[row['股票名称']]}\n"
+                make_content += f"\n龙虎榜：{daily_billboard_dict[row['股票名称']]}"
             row = row.append(pd.Series({
                 "分析": make_content
             }))
@@ -86,7 +86,7 @@ def stock_analysis(data: DataFrame):
     return choice_list
 
 
-def stock():
+def stock(flag: bool = False):
     """
     量比=（现成交总手数/现累计开市时间(分)）/过去5日平均每分钟成交量
     量比反映出的主力行为从计算公式中可以看出，量比的数值越大，表明了该股当日流入的资金越多，市场活跃度越高；反之，量比值越小，说明了资金的流入越少，市场活跃度越低。
@@ -96,22 +96,43 @@ def stock():
     df = ef.stock.get_realtime_quotes()
     df.drop(df.index[df["涨跌幅"] == "-"], inplace=True)
     df.drop(df.index[df["量比"] == "-"], inplace=True)
+    num = 20 if not flag else 100
+    top_num = 5 if not flag else 10
     df_down = df.sort_values(["涨跌幅", "成交量"], ascending=[True, False])
-    df_down_100 = df_down[:20]
+    df_down_100 = df_down[:num]
     df_top = df.sort_values(["涨跌幅", "成交量"], ascending=[False, False])
-    df_top_100 = df_top[:20]
-    choice_down_list = stock_analysis(df_down_100)[:5]
-    choice_top_list = stock_analysis(df_top_100)[:5]
-    content = "今日股票推荐：\n涨幅榜\n"
-    for data in choice_top_list:
-        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> " \
-                   f"\n分析 \n{data['分析']}\n"
-    content += "\n跌幅榜\n"
-    for data in choice_down_list:
-        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> " \
-                   f"\n分析 \n{data['分析']}\n"
-    return content
+    df_top_100 = df_top[:num]
+    choice_down_list = stock_analysis(df_down_100)[:top_num]
+    choice_top_list = stock_analysis(df_top_100)[:top_num]
+    if not flag:
+        content = "今日股票推荐：\n涨幅榜\n"
+        for data in choice_top_list:
+            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a>" \
+                       f"\n{data['分析']}\n"
+        content += "\n跌幅榜\n"
+        for data in choice_down_list:
+            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a>" \
+                       f"\n{data['分析']}\n"
+        return content
+    else:
+        content = "@15235514553\n### 今日股票推荐\n\n> **<font size=5>涨幅榜：</font>**"
+        for data in choice_top_list:
+            content += f"> **{data['股票名称']}** {data['分析']}\n\n"
+        content += "> **<font size=5>跌幅榜：</font>**\n"
+        for data in choice_down_list:
+            content += f"> **{data['股票名称']}** {data['分析']}\n\n"
+        body = {
+            "msgtype": "markdown",
+            "markdown": {
+                "title": "今日股票推荐",
+                "text": content
+            },
+            "at": {
+                "atMobiles": ["15235514553"],
+                "isAtAll": False,
+            }}
+        return body
 
 
 if __name__ == '__main__':
-    print(stock())
+    print(stock(flag=True))
