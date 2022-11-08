@@ -26,7 +26,7 @@ interval_task = {
     # 配置执行器
     "executors": {
         # 使用进程池进行调度，最大进程数是10个
-        'default': ProcessPoolExecutor(1)
+        'default': ProcessPoolExecutor(2)
     },
     # 创建job时的默认参数
     "job_defaults": {
@@ -37,5 +37,5 @@ interval_task = {
 }
 scheduler = AsyncIOScheduler(**interval_task)
 # 添加一个定时任务
-scheduler.add_job(stock, trigger='cron', hour="9-15", minute=30, args=[True], id="stock_job", replace_existing=True)
-scheduler.add_job(shares, trigger='interval', seconds=60 * 5, id="shares_job", replace_existing=True)
+scheduler.add_job(stock, trigger='cron', hour="9-15", minute=32, args=[True], id="stock_job", replace_existing=True)
+scheduler.add_job(shares, trigger='interval', seconds=30, id="shares_job", replace_existing=True)
