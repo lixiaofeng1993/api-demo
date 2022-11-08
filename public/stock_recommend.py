@@ -16,16 +16,18 @@ from public.get_daily_billboard import get_daily_billboard
 now_time = datetime.now()
 
 
-def get_daily_billboard_list():
+def get_daily_billboard_dict():
     """
     股票龙虎榜
     :return:
     """
     daily_billboard = get_daily_billboard()
-    daily_billboard_list = []
+    daily_billboard_dict = {}
     for daily in zip(daily_billboard["股票名称"], daily_billboard["上榜原因"]):
-        daily_billboard_list.append(daily)
-    return daily_billboard_list
+        daily_billboard_dict.update({
+            daily[0]: daily[1]
+        })
+    return daily_billboard_dict
 
 
 def shares_avg(code: str = "西部黄金", klt: int = 101, beg: str = ""):
@@ -54,15 +56,28 @@ def stock_analysis(data: DataFrame):
     # time_5 = (now_time + relativedelta(days=-7)).strftime("%Y%m%d")
 
     choice_list = []
+    daily_billboard_dict = get_daily_billboard_dict()
     for index, row in data.iterrows():
-        print(type(row))
+        make_content = ""
         if "ST" in row["股票名称"]:
             continue
         if row["最新价"] > 18:
             continue
         if 2.5 >= row["量比"] >= 1.5:
+            make_content += f"量比：{row['量比']} 温和放量\n"
+        elif 5.0 >= row["量比"] > 2.5:
+            make_content += f"量比：{row['量比']} 明显放量\n"
+        elif 15 > row["换手率"] > 1:
+            make_content += f"量比：{row['量比']} 明显放量\n"
+        if row["股票名称"] in daily_billboard_dict.keys():
+            make_content += f"龙虎榜：{daily_billboard_dict[row['股票名称']]}\n"
+        if make_content:
+            if 10 < row["换手率"] or row["换手率"] <= 1:
+                make_content += f"换手率：{row['换手率']} 谨慎选择\n"
+            else:
+                make_content += f"换手率：{row['换手率']} 着重关注\n"
             row = row.append(pd.Series({
-                "状态": "量比"
+                "分析": make_content
             }))
             choice_list.append(row)
         # average_60 = shares_avg(r[0], beg=time_60)
@@ -80,31 +95,23 @@ def stock():
     一般来说，量比为0.8-1.5倍，则说明成交量处于正常水平；量比在1.5-2.5倍之间则为温和放量，我们选股多考虑量比在这一范围的个股
     :return:
     """
-    daily_billboard_list = get_daily_billboard_list()
     df = ef.stock.get_realtime_quotes()
     df.drop(df.index[df["涨跌幅"] == "-"], inplace=True)
     df.drop(df.index[df["量比"] == "-"], inplace=True)
     df_down = df.sort_values(["涨跌幅", "成交量"], ascending=[True, False])
     df_down_100 = df_down[:20]
-
     df_top = df.sort_values(["涨跌幅", "成交量"], ascending=[False, False])
     df_top_100 = df_top[:20]
-    df_top_100.to_csv("1.csv")
     choice_down_list = stock_analysis(df_down_100)[:5]
     choice_top_list = stock_analysis(df_top_100)[:5]
     content = "今日股票推荐：\n涨幅榜\n"
     for data in choice_top_list:
-        print(data["状态"])
-    #     content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> 最新价 {data['最新价']} 元/股\n"
-    #     for daily_billboard in daily_billboard_list:
-    #         if data['股票名称'] == daily_billboard[0]:
-    #             content += f"龙虎榜：{daily_billboard[1]}\n"
-    # content += "\n跌幅榜\n"
-    # for data in choice_down_list:
-    #     content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> 最新价 {data['最新价']} 元/股\n"
-    #     for daily_billboard in daily_billboard_list:
-    #         if data['股票名称'] == daily_billboard[0]:
-    #             content += f"龙虎榜：{daily_billboard[1]}\n"
+        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> " \
+                   f"\n分析 \n{data['分析']}\n"
+    content += "\n跌幅榜\n"
+    for data in choice_down_list:
+        content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> " \
+                   f"\n分析 \n{data['分析']}\n"
     return content
 
 
