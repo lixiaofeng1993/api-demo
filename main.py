@@ -53,10 +53,10 @@ async def startup_event():
     scheduler.start()
 
 
-# @app.on_event('startup')
-# @repeat_task(seconds=60 * 5, wait_first=False)
-# def repeat_task_aggregate_request_records() -> None:
-#     shares()
+@app.on_event('startup')
+@repeat_task(seconds=60 * 5, wait_first=False)
+def repeat_task_aggregate_request_records() -> None:
+    shares()
 
 
 @app.on_event("shutdown")
