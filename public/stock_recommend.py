@@ -11,6 +11,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from pandas import DataFrame
 
+from public.send_ding import send_ding
 from public.get_daily_billboard import get_daily_billboard
 
 now_time = datetime.now()
@@ -50,11 +51,11 @@ def shares_avg(code: str = "西部黄金", klt: int = 101, beg: str = ""):
     return average
 
 
-def stock_analysis(data: DataFrame):
+def stock_analysis(data: DataFrame, flag: bool):
     # time_60 = (now_time + relativedelta(days=-76)).strftime("%Y%m%d")
     # time_10 = (now_time + relativedelta(days=-12)).strftime("%Y%m%d")
     # time_5 = (now_time + relativedelta(days=-7)).strftime("%Y%m%d")
-
+    enter = "\n" if not flag else "\n\n"
     choice_list = []
     daily_billboard_dict = get_daily_billboard_dict()
     for index, row in data.iterrows():
@@ -64,16 +65,20 @@ def stock_analysis(data: DataFrame):
         if row["最新价"] > 18:
             continue
         if 2.5 >= row["量比"] >= 1.5:
-            make_content += f"量比：{row['量比']} 温和放量\n"
+            volume = row['量比'] if not flag else f"<font color=#FF0000>{row['量比']}</font>"
+            make_content += f"{enter}量比：{volume} 温和放量{enter}"
         elif 5.0 >= row["量比"] > 2.5:
-            make_content += f"量比：{row['量比']} 明显放量\n"
+            volume = row['量比'] if not flag else f"<font color=#00FF00>{row['量比']}</font>"
+            make_content += f"{enter}量比：{volume} 明显放量{enter}"
         if make_content:
             if 10 < row["换手率"] or row["换手率"] <= 1:
-                make_content += f"换手率：{row['换手率']} 谨慎选择"
+                turnover_rate = row['换手率'] if not flag else f"<font color=#00FF00>{row['换手率']}</font>"
+                make_content += f"换手率：{turnover_rate} 谨慎选择"
             else:
-                make_content += f"换手率：{row['换手率']} 着重关注"
+                turnover_rate = row['换手率'] if not flag else f"<font color=#FF0000>{row['换手率']}</font>"
+                make_content += f"换手率：{turnover_rate} 着重关注"
             if row["股票名称"] in daily_billboard_dict.keys():
-                make_content += f"\n龙虎榜：{daily_billboard_dict[row['股票名称']]}"
+                make_content += f"{enter}龙虎榜：{daily_billboard_dict[row['股票名称']]}"
             row = row.append(pd.Series({
                 "分析": make_content
             }))
@@ -102,25 +107,25 @@ def stock(flag: bool = False):
     df_down_100 = df_down[:num]
     df_top = df.sort_values(["涨跌幅", "成交量"], ascending=[False, False])
     df_top_100 = df_top[:num]
-    choice_down_list = stock_analysis(df_down_100)[:top_num]
-    choice_top_list = stock_analysis(df_top_100)[:top_num]
+    choice_down_list = stock_analysis(df_down_100, flag)[:top_num]
+    choice_top_list = stock_analysis(df_top_100, flag)[:top_num]
     if not flag:
         content = "今日股票推荐：\n涨幅榜\n"
         for data in choice_top_list:
-            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a>" \
-                       f"\n{data['分析']}\n"
+            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}" \
+                       f"【{data['股票代码']}】</a>{data['分析']}\n"
         content += "\n跌幅榜\n"
         for data in choice_down_list:
-            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a>" \
-                       f"\n{data['分析']}\n"
+            content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}" \
+                       f"【{data['股票代码']}】</a>{data['分析']}\n"
         return content
     else:
-        content = "@15235514553\n### 今日股票推荐\n\n> **<font size=5>涨幅榜：</font>**"
+        content = "@15235514553\n### 今日股票推荐\n\n> **<font size=5>涨幅榜：</font>**\n\n"
         for data in choice_top_list:
-            content += f"> **{data['股票名称']}** {data['分析']}\n\n"
-        content += "> **<font size=5>跌幅榜：</font>**\n"
+            content += f"> **{data['股票名称']}【{data['股票代码']}】** {data['分析']}\n\n"
+        content += "> **<font size=5>跌幅榜：</font>**\n\n"
         for data in choice_down_list:
-            content += f"> **{data['股票名称']}** {data['分析']}\n\n"
+            content += f"> **{data['股票名称']}【{data['股票代码']}】** {data['分析']}\n\n"
         body = {
             "msgtype": "markdown",
             "markdown": {
@@ -131,8 +136,8 @@ def stock(flag: bool = False):
                 "atMobiles": ["15235514553"],
                 "isAtAll": False,
             }}
-        return body
+        send_ding(body)
 
 
 if __name__ == '__main__':
-    print(stock(flag=True))
+    print(stock())
