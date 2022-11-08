@@ -67,15 +67,13 @@ def stock_analysis(data: DataFrame):
             make_content += f"量比：{row['量比']} 温和放量\n"
         elif 5.0 >= row["量比"] > 2.5:
             make_content += f"量比：{row['量比']} 明显放量\n"
-        elif 15 > row["换手率"] > 1:
-            make_content += f"量比：{row['量比']} 明显放量\n"
-        if row["股票名称"] in daily_billboard_dict.keys():
-            make_content += f"龙虎榜：{daily_billboard_dict[row['股票名称']]}\n"
         if make_content:
             if 10 < row["换手率"] or row["换手率"] <= 1:
                 make_content += f"换手率：{row['换手率']} 谨慎选择\n"
             else:
                 make_content += f"换手率：{row['换手率']} 着重关注\n"
+            if row["股票名称"] in daily_billboard_dict.keys():
+                make_content += f"龙虎榜：{daily_billboard_dict[row['股票名称']]}\n"
             row = row.append(pd.Series({
                 "分析": make_content
             }))
@@ -99,11 +97,11 @@ def stock():
     df.drop(df.index[df["涨跌幅"] == "-"], inplace=True)
     df.drop(df.index[df["量比"] == "-"], inplace=True)
     df_down = df.sort_values(["涨跌幅", "成交量"], ascending=[True, False])
-    df_down_100 = df_down[:20]
+    df_down_100 = df_down[:50]
     df_top = df.sort_values(["涨跌幅", "成交量"], ascending=[False, False])
-    df_top_100 = df_top[:20]
-    choice_down_list = stock_analysis(df_down_100)[:5]
-    choice_top_list = stock_analysis(df_top_100)[:5]
+    df_top_100 = df_top[:50]
+    choice_down_list = stock_analysis(df_down_100)[:10]
+    choice_top_list = stock_analysis(df_top_100)[:10]
     content = "今日股票推荐：\n涨幅榜\n"
     for data in choice_top_list:
         content += f"<a href='weixin://bizmsgmenu?msgmenucontent={data['股票名称']}&msgmenuid=9530'>{data['股票名称']}</a> " \
