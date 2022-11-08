@@ -14,9 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
 from pathlib import Path
 
-from tasks import repeat_task
+# from tasks import repeat_task
 from public.scheduler import scheduler
-from public.shares import shares
+# from public.shares import shares
 from api import users, project, sign, api, wechat, poetry
 from dependencies import get_current_user
 from public.custom_code import response_error
