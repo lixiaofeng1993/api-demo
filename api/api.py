@@ -234,7 +234,7 @@ async def shares(db: Session = Depends(get_db), beg: str = "20220922", end: str 
     freq = 5
     # 获取最新一个交易日的分钟级别股票行情数据
     df = ef.stock.get_quote_history(stock_code, klt=freq, beg=beg, end=end)
-    if df.empty:
+    if not df:
         result["result"] = "查询数据为空！！！"
         return result
     for key, value in df.items():
