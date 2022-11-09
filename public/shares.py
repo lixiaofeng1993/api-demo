@@ -120,7 +120,7 @@ def shares(stock_code: str = ""):
                     f"> **换手率** <font>{turnover_rate}</font> %\n\n"
                     f"> **时间** <font>{new_time}</font>\n\n"
                     f"> **最新价** <font color={new_price_color}>{new_price}</font> 元/股\n\n"
-                    # f"> **持仓盈亏** <font color={profit_and_loss_color}>{profit_and_loss}</font> 元\n\n"
+                    f"> **持仓盈亏** <font color={profit_and_loss_color}>{profit_and_loss}</font> 元\n\n"
                     f"> **折线图:** ![screenshot](http://121.41.54.234/Chart-{now_img}.jpg) @15235514553\n\n"
 
         },

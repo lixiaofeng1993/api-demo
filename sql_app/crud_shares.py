@@ -24,7 +24,10 @@ def get_shares_avg(db: Session, name: str):
     max_num = db.query(func.max(Shares.top_price)).filter(Shares.name == name, Shares.is_delete == 0).scalar()
     min_num = db.query(func.min(Shares.down_price)).filter(Shares.name == name, Shares.is_delete == 0).scalar()
     avg_num = db.query(func.avg(Shares.new_price)).filter(Shares.name == name, Shares.is_delete == 0).scalar()
-    return round(float(max_num), 2), round(float(min_num), 2), round(float(avg_num), 2)
+    max_num = round(float(max_num), 2) if max_num else 0
+    min_num = round(float(min_num), 2) if min_num else 0
+    avg_num = round(float(avg_num), 2) if avg_num else 0
+    return max_num, min_num, avg_num
 
 
 def get_shares_days(db: Session, name: str):
