@@ -16,7 +16,7 @@ from fastapi import Depends, APIRouter
 from requests_html import HTMLSession
 from fastapi.responses import StreamingResponse
 
-from conf.settings import HOST, ASSETS_PATH, os, DEBUG, CALENDAR_KEY, SHARES
+from conf.settings import HOST, ASSETS_PATH, os, DEBUG, CALENDAR_KEY, SHARES, STOCK_NAME
 from public.common import get_db
 from public.log import logger
 from public.custom_code import result
@@ -229,17 +229,14 @@ async def get_faker(number: int = 1):
 @router.get("/shares", summary="股票历史信息")
 async def shares(db: Session = Depends(get_db), beg: str = "20220922", end: str = "20221028", stock_code=""):
     # 股票代码
-    stock_code = stock_code if stock_code else ["601069"]
-    try:
-        if isinstance(stock_code, str):
-            stock_code = eval(stock_code)
-    except:
-        result["result"] = "参数类型错误！！！"
-        return result
+    stock_code = stock_code if stock_code else STOCK_NAME
     # 数据间隔时间为 5 分钟
     freq = 5
     # 获取最新一个交易日的分钟级别股票行情数据
     df = ef.stock.get_quote_history(stock_code, klt=freq, beg=beg, end=end)
+    if df.empty:
+        result["result"] = "查询数据为空！！！"
+        return result
     for key, value in df.items():
         df_list = value.to_dict(orient="records")
         shares_list = []

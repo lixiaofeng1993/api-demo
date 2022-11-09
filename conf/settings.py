@@ -116,15 +116,15 @@ SHARES = {
     "turnover_rate": "换手率"
 }
 # 是否持仓
-STOCK_FLAG = False
+STOCK_FLAG = True
 # 持仓股票
-STOCK_NAME = "西部黄金"
+STOCK_NAME = "宝鹰股份"
 # 持仓数量 股
-BUY_NUM = 400
+BUY_NUM = 200
 # 持仓成本 元
-BUY_PRICE = 10.839
+BUY_PRICE = 4.975
 # 原始亏损 元
-LOSS_PRICE = 130.75
+LOSS_PRICE = 0
 
 # 万年历KEY
 CALENDAR_KEY = "197557d5fc1f3a26fa772bc694ea4c2d"
