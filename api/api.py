@@ -229,7 +229,7 @@ async def get_faker(number: int = 1):
 @router.get("/shares", summary="股票历史信息")
 async def shares(db: Session = Depends(get_db), beg: str = "20220922", end: str = "20221028", stock_code=""):
     # 股票代码
-    stock_code = stock_code if stock_code else STOCK_NAME
+    stock_code = stock_code if stock_code else [STOCK_NAME]
     # 数据间隔时间为 5 分钟
     freq = 5
     # 获取最新一个交易日的分钟级别股票行情数据
