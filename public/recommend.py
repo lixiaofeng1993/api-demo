@@ -57,16 +57,44 @@ def get_weather():
 
 
 def now_season():
+    """
+    立春 2月3-5日
+    立夏 5月05-07日
+    立秋 8月7或8日
+    立冬 11月7-8日
+    """
     season = ""
     month = date.today().month
-    if month in [3, 4, 5]:
+    day = date.today().day
+    if month in [3, 4]:
         season = "春天"
-    elif month in [6, 7, 8]:
+    elif month in [6, 7]:
         season = "夏天"
-    elif month in [9, 10, 11]:
+    elif month in [9, 10]:
         season = "秋天"
-    elif month in [12, 1, 2]:
+    elif month in [12, 1]:
         season = "冬天"
+    elif month == 2:
+        if day in [3, 4, 5]:
+            return "豪放"
+        elif day < 3:
+            return "冬天"
+        elif day > 5:
+            return "春天"
+    elif month == 5:
+        if day in [5, 6, 7]:
+            return "豪放"
+        elif day < 5:
+            return "春天"
+        elif day > 7:
+            return "夏天"
+    elif month in [8, 11]:
+        if day in [7, 8]:
+            return "豪放"
+        elif day < 7:
+            return "夏天" if month == 8 else "秋天"
+        elif day > 8:
+            return "秋天" if month == 8 else "冬天"
     return season
 
 
@@ -180,4 +208,4 @@ def idiom_info(text: str):
 
 
 if __name__ == '__main__':
-    recommend_handle()
+    print(now_season())

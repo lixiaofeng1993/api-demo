@@ -95,7 +95,7 @@ def shares(stock_code: str = ""):
                f"平均价：{average} 元/股\n涨跌幅：{rise_and_fall} %\n涨跌额：{rise_and_price} 元\n成交量：{turnover} 手\n" \
                f"换手率：{turnover_rate} %\n时间：{new_time} \n最新价：{new_price} 元/股"
         if share_name == STOCK_NAME and STOCK_FLAG:
-            data += "\n持仓盈亏：{profit_and_loss} 元"
+            data += f"\n持仓盈亏：{profit_and_loss} 元"
         if so_day:
             data += f"\n\n历史 {so_day} 天最高价：{max_price} 元/股\n历史 {so_day} 天平均价：{avg_price} 元/股\n" \
                     f"历史 {so_day} 天最低价：{min_price} 元/股"
