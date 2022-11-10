@@ -15,9 +15,12 @@ from conf.settings import GAO_KEY, CITY_CODE, IDIOM_KEY, IDIOM_INFO, CALENDAR_KE
 from public.log import logger
 
 
-def get_holiday():
-    now = date.today()
-    day = str(int(now.year)) + "-" + str(int(now.month)) + "-" + str(int(now.day))
+def get_holiday(msg: str = ""):
+    if not msg:
+        now = date.today()
+        day = str(int(now.year)) + "-" + str(int(now.month)) + "-" + str(int(now.day))
+    else:
+        day = msg
     res = requests.get(f"http://v.juhe.cn/calendar/day?date={day}&key={CALENDAR_KEY}").json()
     if res["error_code"] == 10012:
         logger.error(f"获取当天的详细信息接口 请求超过次数限制 ===>>> {res['reason']} ===>>> {res['error_code']}")
@@ -60,10 +63,11 @@ def now_season():
     """
     立春 2月3-5日
     立夏 5月05-07日
-    立秋 8月7或8日
+    立秋 8月7或9日
     立冬 11月7-8日
     """
     season = ""
+    year = date.today().year
     month = date.today().month
     day = date.today().day
     if month in [3, 4]:
@@ -75,26 +79,41 @@ def now_season():
     elif month in [12, 1]:
         season = "冬天"
     elif month == 2:
-        if day in [3, 4, 5]:
-            return "豪放"
-        elif day < 3:
-            return "冬天"
-        elif day > 5:
-            return "春天"
+        value = 3
+        for i in [3, 4, 5]:
+            msg = f"{year}-2-{i}"
+            msg_data = get_holiday(msg=msg)
+            if msg_data == "立春":
+                value = i
+                break
+        season = "春天" if day >= value else "冬天"
     elif month == 5:
-        if day in [5, 6, 7]:
-            return "豪放"
-        elif day < 5:
-            return "春天"
-        elif day > 7:
-            return "夏天"
-    elif month in [8, 11]:
-        if day in [7, 8]:
-            return "豪放"
-        elif day < 7:
-            return "夏天" if month == 8 else "秋天"
-        elif day > 8:
-            return "秋天" if month == 8 else "冬天"
+        value = 5
+        for i in [5, 6, 7]:
+            msg = f"{year}-5-{i}"
+            msg_data = get_holiday(msg=msg)
+            if msg_data == "立夏":
+                value = i
+                break
+        season = "夏天" if day >= value else "春天"
+    elif month == 8:
+        value = 7
+        for i in [7, 8, 9]:
+            msg = f"{year}-8-{i}"
+            msg_data = get_holiday(msg=msg)
+            if msg_data == "立秋":
+                value = i
+                break
+        season = "秋天" if day >= value else "夏天"
+    elif month == 11:
+        value = 7
+        for i in [7, 8]:
+            msg = f"{year}-11-{i}"
+            msg_data = get_holiday(msg=msg)
+            if msg_data == "立冬":
+                value = i
+                break
+        season = "冬天" if day >= value else "秋天"
     return season
 
 
