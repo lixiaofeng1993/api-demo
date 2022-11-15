@@ -124,7 +124,7 @@ BUY_NUM = 1300
 # 持仓成本 元
 BUY_PRICE = 4.739
 # 原始亏损 元
-LOSS_PRICE = 0
+LOSS_PRICE = 3.68
 
 # 万年历KEY
 CALENDAR_KEY = "197557d5fc1f3a26fa772bc694ea4c2d"
