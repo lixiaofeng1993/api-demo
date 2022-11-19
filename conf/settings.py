@@ -120,9 +120,9 @@ STOCK_FLAG = True
 # 持仓股票
 STOCK_NAME = "宝鹰股份"
 # 持仓数量 股
-BUY_NUM = 1300
+BUY_NUM = 1700
 # 持仓成本 元
-BUY_PRICE = 4.739
+BUY_PRICE = 4.676
 # 原始亏损 元
 LOSS_PRICE = 3.68
 
