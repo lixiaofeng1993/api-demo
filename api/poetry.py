@@ -266,7 +266,7 @@ async def get_all_poetry(db: Session = Depends(get_db)):
             name_str = original_list[1]
             # 冯延巳 / 欧阳修 〔宋代〕
             if "〔" in name_str:
-                _name_patt = "(.+)\\s〔"
+                _name_patt = "(.+)〔"
                 _name = re.findall(_name_patt, name_str)[0]
                 if " 撰 " in _name:
                     name = _name.split(" 撰")[0]

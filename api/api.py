@@ -89,6 +89,8 @@ def get_calendar():
         day = res.xpath(f'//*[@id="fjb_id"]/tr[{key}]/td[2]')[0].text
         work_day = res.xpath(f'//*[@id="fjb_id"]/tr[{key}]/td[3]')[0].text
         days = res.xpath(f'//*[@id="fjb_id"]/tr[{key}]/td[4]')[0].text[:1]
+        if not days.isdigit():
+            days = res.xpath(f'//*[@id="fjb_id"]/tr[{key}]/td[4]')[0].text[1:2]
         data[value[1]].update({
             "节日": value[0],
             "放假时间": day,
@@ -234,6 +236,7 @@ async def shares(db: Session = Depends(get_db), beg: str = "20220922", end: str 
     freq = 5
     # 获取最新一个交易日的分钟级别股票行情数据
     df = ef.stock.get_quote_history(stock_code, klt=freq, beg=beg, end=end)
+    print(df)
     if not df:
         result["result"] = "查询数据为空！！！"
         return result

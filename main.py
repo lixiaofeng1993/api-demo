@@ -117,7 +117,7 @@ async def root():
     return {
         "message": "儿砸，叫爸爸！！！",
         "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "doc": "http://121.41.54.234/docs#/"
+        "doc": "http://127.0.0.1:8000/docs#/"
     }
 
 
